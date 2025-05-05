@@ -1,0 +1,64 @@
+<div class="perfil-container">
+    <div class="perfil-header">
+      <img [src]="perfil.avatarUrl" class="avatar" alt="User Avatar">
+      <div>
+        <h3>{{ perfil.nombre }}</h3>
+        <p>{{ perfil.email }}</p>
+      </div>
+    </div>
+  
+    <div class="perfil-details">
+      <h5>Account Details</h5>
+      <ul>
+        <li><strong>Username:</strong> {{ '@' + perfil.nombre }}</li>
+        <li><strong>Email:</strong> {{ perfil.email }}</li>
+      </ul>
+    </div>
+  
+    <!-- Cambiar contraseña -->
+    <div class="change-password">
+      <h5>Cambiar Contraseña</h5>
+      <input 
+        type="password" 
+        class="form-control mb-2"
+        [(ngModel)]="nuevaPassword"
+        placeholder="Nueva contraseña">
+      <button class="btn btn-warning" (click)="cambiarPassword(nuevaPassword)">
+        Cambiar Contraseña
+      </button>
+    </div>
+  </div>
+  
+  
+<!--
+<div class="perfil-container p-4 bg-white shadow-sm rounded border border-light-subtle">
+  <h2 class="h4 border-bottom pb-2">Mi Perfil</h2>
+
+  <form [formGroup]="userForm">
+    <div class="mb-3">
+      <label class="form-label">Usuario</label>
+      <input type="text" class="form-control" formControlName="username" [attr.disabled]="true">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Rol</label>
+      <input type="text" class="form-control" formControlName="role" [attr.disabled]="true">
+      >
+    </div>
+  </form>
+
+  <h3 class="h5 mt-4 border-bottom pb-2">Cambiar Contraseña</h3>
+  <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+    <div class="mb-3">
+      <label class="form-label">Contraseña Actual</label>
+      <input type="password" class="form-control" formControlName="currentPassword">
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Nueva Contraseña</label>
+      <input type="password" class="form-control" formControlName="newPassword">
+    </div>
+    <button type="submit" class="btn btn-primary w-100" [disabled]="passwordForm.invalid">Actualizar Contraseña</button>
+    <button class="btn btn-secondary w-100 mt-3" (click)="goToControlPanel()"> Volver al Panel de Control</button>
+  </form>
+</div>-->
+
+
