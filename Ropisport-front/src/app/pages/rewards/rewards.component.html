@@ -1,0 +1,8 @@
+<h2>Recompensas</h2>
+<div class="rewards-container">
+  <div class="reward-card" *ngFor="let reward of rewards">
+    <h5>{{ reward.nombre }}</h5>
+    <p>{{ reward.descripcion }}</p>
+    <small>Puntos: {{ reward.puntos }}</small>
+  </div>
+</div>
