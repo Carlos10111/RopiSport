@@ -1,0 +1,17 @@
+<form method="post" [formGroup]="productosForm" class="busqueda-container m-auto mt-4 mb-4 row justify-content-center align-items-end border-top pt-3 column-gap-2 row-gap-2">
+  <div class="col-lg-3 p-0">
+    <label class="form-label fw-bold" for="nombre">Nombre:</label>
+    <input formControlName="nombre" class="form-control rounded-3" type="text" id="nombre" placeholder="Nombre producto" required>
+  </div>
+  <div class="col-lg-3 p-0">
+    <label class="form-label fw-bold" for="identifier">ID producto:</label>
+    <input formControlName="identificador" class="form-control rounded-3" type="number" id="identifier" placeholder="1234" required>
+  </div>
+  <div class="col-lg-3 p-0 d-flex align-items-center gap-2">
+    <input formControlName="todos" class="form-check-input m-0" type="checkbox" id="see-all" required>
+    <label class="form-check-label" for="see-all">Ver todos los productos</label>
+  </div>
+  <div class="col-lg-2 p-0 text-center">
+    <button class="btn btn-primary w-75" type="submit">Buscar</button>
+  </div>
+</form>

@@ -1,0 +1,44 @@
+<div class="row">
+  <!-- Sidebar -->
+  <div class="col-2">
+    <div class="settings-container bg-light shadow rounded p-3">
+      <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+        <h5 class="mb-0">RopiSport</h5>
+        <button class="btn btn-sm btn-danger">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+      <div class="settings-content mt-3">
+        <button class="btn w-100 text-start mb-3 px-4 d-flex flex-row flex-nowrap align-items-center justify-content-start column-gap-2" (click)="goToInicio()">
+          <i class="bi bi-house fs-5"></i> <span class="fs-6">Home</span>
+        </button>
+
+        <!--<button class="btn w-100 text-start mb-3 px-4 d-flex flex-row flex-nowrap align-items-center justify-content-start column-gap-2" (click)="goToProfile()">
+          <i class="bi bi-person fs-5"></i> <span class="fs-6">Mi perfil</span>
+        </button>-->
+
+        <button class="btn w-100 text-start mb-3 px-4 d-flex flex-row flex-nowrap align-items-center justify-content-start column-gap-2" (click)="irASocias()">
+          <i class="bi bi-person fs-5 text-blue"></i> <span class="fs-5 text-blue" (click)="irASocias()">SOCIAS</span>
+        </button>
+
+        <button class="btn w-100 text-start mb-3 px-4 d-flex flex-row flex-nowrap align-items-center justify-content-start column-gap-2" (click)="irAProveedores()">
+          <i class="bi bi-person fs-5 text-blue"></i> <span class="fs-5 text-blue">PROVEEDORES</span>
+        </button>
+        <br><br><br><br><br><br><br><br><br>
+
+        <button class="btn w-100 text-start mb-3 px-4 d-flex flex-row flex-nowrap align-items-center justify-content-start column-gap-2">
+          <i class="bi bi-tools fs-6"></i> <span class="fs-6">Herramientas</span>
+        </button>
+
+        <button (click)="closeSession()" class="btn w-100 text-start mb-3 px-4 d-flex flex-row flex-nowrap align-items-center justify-content-start column-gap-2" (click)="closeSession()">
+          <i class="bi bi-power fs-5"></i> <span class="fs-6">Cerrar sesión</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido principal (ocupa el 75%) -->
+  <div class="col-9">
+    <!-- Aquí puedes colocar el contenido principal -->
+  </div>
+</div>

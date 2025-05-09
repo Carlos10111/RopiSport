@@ -1,0 +1,22 @@
+
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+
+$primary: #de283b;
+$secondary: #ff6366;
+/*$tertiary: pink;*/
+$blue: #0f42cf;
+
+$theme-colors: (
+  "primary": $primary,
+  "secondary": $secondary,
+  "info": $info,
+  "light": $light,
+  "dark": $dark,
+  "warning": $warning,
+  "danger": $danger,
+  "white": $white,
+  "success": $success,
+  "blue" : $blue,
+  /*"tertiary": $tertiary,*/
+);
