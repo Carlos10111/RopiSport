@@ -1,5 +1,32 @@
 package com.ropisport.gestion.model.dto.request;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
+@Data 
+@NoArgsConstructor
+@AllArgsConstructor
 public class InstitucionRequest {
+	
+	private String personaContactoString;
 
+	@NotBlank(message = "El nombre de institución es obligatorio")
+	private String nombreInstitucion;
+	
+	private String cargo;
+	private String telefono;
+	
+	@Email(message = "Formato de email invalido")
+	private String email;
+	private String web;
+	
+	@NotNull(message = "El tipo de institucion es obligatio")
+	private Integer tipoInstitucionId;
+	
+	
+	private String observaciones;
+	
+	
+	
 }
