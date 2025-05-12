@@ -1,9 +1,9 @@
 package com.ropisport.gestion.model.entity;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ropisport.gestion.model.audit.Auditable;
 
 import jakarta.persistence.*;
@@ -77,11 +77,11 @@ public class Socia extends Auditable {
     
     private String observaciones;
     
-    @OneToOne(mappedBy = "socia", cascade = CascadeType.ALL)
-    @JsonManagedReference
-    private Empresa empresa;
+    @Builder.Default
+    @OneToMany(mappedBy = "socia", cascade = CascadeType.ALL)
+    private List<Pago> pagos = new ArrayList<>();
     
-    @OneToMany(mappedBy = "socia")
-    @JsonManagedReference
-    private List<Pago> pagos;
+    @Builder.Default
+    @OneToMany(mappedBy = "socia", cascade = CascadeType.ALL)
+    private List<Empresa> empresas = new ArrayList<>();
 }

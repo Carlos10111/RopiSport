@@ -1,14 +1,15 @@
 package com.ropisport.gestion.repository;
 
-import java.util.Optional;
-
+import com.ropisport.gestion.model.entity.CategoriaNegocio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.ropisport.gestion.model.entity.CategoriaNegocio;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CategoriaNegocioRepository extends JpaRepository<CategoriaNegocio, Integer> {
     Optional<CategoriaNegocio> findByNombre(String nombre);
+    List<CategoriaNegocio> findByNombreContainingIgnoreCase(String nombre);
     boolean existsByNombre(String nombre);
 }

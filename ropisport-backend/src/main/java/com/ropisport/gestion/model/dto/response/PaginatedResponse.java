@@ -1,7 +1,11 @@
-package com.ropisport.gestion.model.dto.responde;
- import java.util.List;
+package com.ropisport.gestion.model.dto.response;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

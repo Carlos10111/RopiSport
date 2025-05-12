@@ -1,17 +1,14 @@
 package com.ropisport.gestion.model.entity;
-import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ropisport.gestion.model.audit.Auditable;
 import com.ropisport.gestion.model.enums.MetodoPago;
-
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.*;
 @Entity
 @Table(name = "pagos")
 @Data
@@ -19,27 +16,44 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Pago extends Auditable {
+public class Pago extends Auditable{
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
-    @ManyToOne
-    @JoinColumn(name = "socia_id")
-    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "socia_id", nullable = false)
     private Socia socia;
     
-    private Float monto;
+    @Column(name = "monto", nullable = false, precision = 10, scale = 2)
+    private BigDecimal monto;
     
-    @Column(name = "fecha_pago")
+    @Column(name = "fecha_pago", nullable = false)
     private LocalDateTime fechaPago;
     
+    @Column(name = "concepto")
     private String concepto;
     
     @Column(name = "metodo_pago")
     @Enumerated(EnumType.STRING)
     private MetodoPago metodoPago;
     
+    @Column(name = "confirmado")
     private Boolean confirmado;
+    
+    @OneToMany(mappedBy = "pago", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PagoDetalle> detalles = new ArrayList<>();
+    
+    // Método helper para agregar detalles
+    public void addDetalle(PagoDetalle detalle) {
+        detalles.add(detalle);
+        detalle.setPago(this);
+    }
+    
+    // Método helper para remover detalles
+    public void removeDetalle(PagoDetalle detalle) {
+        detalles.remove(detalle);
+        detalle.setPago(null);
+    }
 }

@@ -12,10 +12,14 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @Data
+@Getter 
+@Setter
 public abstract class Auditable {
     
     @CreatedDate

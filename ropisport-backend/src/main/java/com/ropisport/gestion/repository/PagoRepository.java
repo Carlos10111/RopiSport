@@ -1,28 +1,16 @@
 package com.ropisport.gestion.repository;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.ropisport.gestion.model.entity.Pago;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.ropisport.gestion.model.entity.Pago;
-import com.ropisport.gestion.model.enums.MetodoPago;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 public interface PagoRepository extends JpaRepository<Pago, Integer> {
     List<Pago> findBySociaId(Integer sociaId);
-    
-    Page<Pago> findBySociaId(Integer sociaId, Pageable pageable);
-    
-    @Query("SELECT p FROM Pago p WHERE p.fechaPago BETWEEN :inicio AND :fin")
-    List<Pago> findByRangoDeFechas(@Param("inicio") LocalDateTime inicio, @Param("fin") LocalDateTime fin);
-    
-    List<Pago> findByMetodoPago(MetodoPago metodoPago);
-    
+    List<Pago> findByFechaPagoBetween(LocalDateTime inicio, LocalDateTime fin);
     List<Pago> findByConfirmado(Boolean confirmado);
+    List<Pago> findByConceptoContainingIgnoreCase(String concepto);
 }

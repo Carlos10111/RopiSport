@@ -1,17 +1,18 @@
 package com.ropisport.gestion.model.dto.request;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class LoginRequest {
-	@NotBlank(message = "Nombre de usuario obligatorio")
-	private String username;
-	 
-	@NotBlank(message = "Contraseña obligatoia")
-	private String passaward;
-	
-
+    
+    @NotBlank(message = "El nombre de usuario es obligatorio")
+    private String username;
+    
+    @NotBlank(message = "La contraseña es obligatoria")
+    private String password;
 }

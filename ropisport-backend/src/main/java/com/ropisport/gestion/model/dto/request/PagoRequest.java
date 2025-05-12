@@ -1,38 +1,42 @@
 package com.ropisport.gestion.model.dto.request;
-import java.time.LocalDateTime;
 
-
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import com.ropisport.gestion.model.enums.MetodoPago;
 
 @Data
-@NotBlank
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Builder
 public class PagoRequest {
-	@NotNull(message = "ID de la socia es obligatorio")
-	private Integer sociaId;
-	
-	
-	@NotNull(message = "El monto es obligatirio")
-	@Min(value=0 , message = "El monot debe ser mayor o igual a 0")
-	private Float monto;
-	
-	
-	private LocalDateTime fechaPago = LocalDateTime.now();
-	
-	@NotBlank(message = "El concepto es obligatorio")
-	private String concepto;
-	
-	private String metodoPagoString;
-	
-	private Boolean confirmadoBoolean = false;
-	
-	
-	
-
+    
+    @NotNull(message = "El ID de la socia es obligatorio")
+    private Integer sociaId;
+    
+    @NotNull(message = "El monto es obligatorio")
+    @Positive(message = "El monto debe ser un valor positivo")
+    private BigDecimal monto;
+    
+    @NotNull(message = "La fecha de pago es obligatoria")
+    private LocalDateTime fechaPago;
+    
+    @Size(max = 200, message = "El concepto no puede tener más de 200 caracteres")
+    private String concepto;
+    
+    @NotNull(message = "El método de pago es obligatorio")
+    private MetodoPago metodoPago;
+    
+    private Boolean confirmado;
+    
+    private List<PagoDetalleRequest> detalles;
 }

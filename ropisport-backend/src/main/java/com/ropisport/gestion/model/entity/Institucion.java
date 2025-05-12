@@ -30,11 +30,13 @@ public class Institucion extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
+
+    @Column(name = "nombre_institucion")
+    private String nombreInstitucion;
+    
     @Column(name = "persona_contacto")
     private String personaContacto;
     
-    @Column(name = "nombre_institucion")
-    private String nombreInstitucion;
     
     private String cargo;
     

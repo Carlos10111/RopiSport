@@ -1,18 +1,27 @@
-package com.ropisport.gestion.model.dto.responde;
+package com.ropisport.gestion.model.dto.response;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
-import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class SociaResponse {
     private Integer id;
     private String numeroSocia;
-    private String nombreApellidos;
-    private UsuarioResponse usuario;
+    private String nombre;
+    private String apellidos;
+    private Integer usuarioId;
+    private String username;
     private String nombreNegocio;
     private String descripcionNegocio;
-    private CategoriaResponse categoria;
+    private Integer categoriaId;
+    private String nombreCategoria;
     private String direccion;
     private String telefonoPersonal;
     private String telefonoNegocio;
@@ -24,5 +33,6 @@ public class SociaResponse {
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaBaja;
     private String observaciones;
-    private EmpresaResponse empresa;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
