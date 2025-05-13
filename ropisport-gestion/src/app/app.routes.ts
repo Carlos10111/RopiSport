@@ -10,6 +10,7 @@ import { authGuard } from './core/guards/auth.guard';
 import { publicGuard } from './core/guards/public.guard';
 import { InstitucionListComponent } from './features/institucion/institucion-list/institucion-list.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { InstitucionFormComponent } from './features/institucion/institucion-form/institucion-form.component';
 
 export const routes: Routes = [
   {
@@ -18,7 +19,7 @@ export const routes: Routes = [
     //canActivate: [authGuard],       // rutas privadas (protegidas por AuthGuard)
     children: [
       { path: '', component: HomeComponent },
-      { path: 'instituciones', component: InstitucionListComponent },
+      //{ path: 'instituciones', component: InstitucionListComponent },
     ]
   },
   {
@@ -27,7 +28,8 @@ export const routes: Routes = [
     //canActivate: [publicGuard],
     children: [
       { path: '', component: HomeComponent },
-      { path: 'instituciones', component: InstitucionListComponent },
+      { path: 'institucion-list', component: InstitucionListComponent },
+      { path: 'institucion-form', component: InstitucionFormComponent },
       { path: 'login', component: LoginComponent },
       { path: 'registro', component: RegistroComponent },
       { path: 'cambiar-password', component: ChangePasswordComponent },

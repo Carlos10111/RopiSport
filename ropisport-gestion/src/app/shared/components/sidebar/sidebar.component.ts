@@ -3,11 +3,11 @@ import { SidebarStatusService } from '../../status/sidebar-status.service';
 import { UseStateService } from '../../../core/auth/use-state.service';
 import { PopupService } from '../../utils/popup.service';
 import { TokenService } from '../../../core/auth/token.service';
-import {Router, RouterLink, RouterLinkActive} from '@angular/router';
+import {Router, RouterModule, RouterLink, RouterLinkActive} from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [],
+  imports: [RouterModule],
   standalone: true,
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'
@@ -53,6 +53,9 @@ goToInicio() {
 
   irAProveedores() {
     this.router.navigate(['/proveedores']);
+  }
+  irAInstituciones() {
+    this.router.navigate(['/institucion-list']);
   }
 }
 
