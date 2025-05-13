@@ -20,13 +20,13 @@ export const routes: Routes = [
     children: [
       { path: '', component: HomeComponent },
       //{ path: 'instituciones', component: InstitucionListComponent },
-    ]
-  },
-  {
-    path: '',
-    component: AuthLayoutComponent,
+    //]
+  //},
+  //{
+    //path: '',
+    //component: AuthLayoutComponent,
     //canActivate: [publicGuard],
-    children: [
+    //children: [
       { path: '', component: HomeComponent },
       { path: 'institucion-list', component: InstitucionListComponent },
       { path: 'institucion-form', component: InstitucionFormComponent },
