@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { CredentialsService } from '../../services/auth/credentials.service';
-import { LoginInterface } from '../../services/interfaces/auth';
-import { TokenService } from '../../services/auth/token.service';
+import { CredentialsService } from '../../../core/auth/credentials.service';
+import { LoginRequest } from '../../../core/models/auth';
+import { TokenService } from '../../../core/auth/token.service';
 import { Router } from '@angular/router';
-import { UseStateService } from '../../services/auth/use-state.service';
-import { PopupService } from '../../services/utils/popup.service';
+import { UseStateService } from '../../../core/auth/use-state.service';
+import { PopupService } from '../../../shared/utils/popup.service';
 
 @Component({
   selector: 'app-login',
@@ -38,10 +38,10 @@ export class LoginComponent {
 
     this.popupService.loader("Cargando...", "Espere un momento");
 
-    this.credentialsService.login(this.loginForm.value as LoginInterface).subscribe({
+    this.credentialsService.login(this.loginForm.value as LoginRequest).subscribe({
       next: (data) => {
         this.tokenService.saveTokens(data.token, '');
-        this.useStateService.save(data.username, data.role);
+        this.useStateService.save(data.user.username, data.user.role_id.toString());
 
         this.router.navigate(['/app/control-panel']).then(() => {
           this.popupService.close();

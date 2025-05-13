@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
-import { CredentialsService } from '../../services/auth/credentials.service';
-import { UserInterface } from '../../services/interfaces/auth';
+import { CredentialsService } from '../../../core/auth/credentials.service';
+import { Usuario } from '../../../core/models/usuario';
 import { Router } from '@angular/router';
-import { PopupService } from '../../services/utils/popup.service';
+import { PopupService } from '../../../shared/utils/popup.service';
 
 @Component({
   selector: 'app-registro',
@@ -36,7 +36,7 @@ export class RegistroComponent {
       return;
     }
 
-    this.credentialsService.register(this.registerForm.value as UserInterface).subscribe({
+    this.credentialsService.register(this.registerForm.value as Usuario).subscribe({
       next: () => {
         this.popupService.showMessage('Registro exitoso', 'Ahora puedes iniciar sesión.', 'success');
         setTimeout(() => {
