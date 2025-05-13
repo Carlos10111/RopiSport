@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SociasComponent } from './socias.component';
+import { SociasListComponent } from './socias-list.component';
 
-describe('SociasComponent', () => {
-  let component: SociasComponent;
-  let fixture: ComponentFixture<SociasComponent>;
+describe('SociasListComponent', () => {
+  let component: SociasListComponent;
+  let fixture: ComponentFixture<SociasListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SociasComponent]
+      imports: [SociasListComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SociasComponent);
+    fixture = TestBed.createComponent(SociasListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,12 +1,11 @@
+// app.component.ts
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  standalone: true,
+  imports: [RouterOutlet,],  // Importa RouterOutlet para que funcione el <router-outlet>
+  template: `<router-outlet></router-outlet>`
 })
-export class AppComponent {
-  title = 'ropisport-gestion';
-}
+export class AppComponent {}
