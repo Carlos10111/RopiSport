@@ -1,0 +1,10 @@
+package com.ropisport.gestion.service;
+import com.ropisport.gestion.model.dto.response.EmpresaResponse;
+
+import java.awt.print.Pageable;
+
+public class EmpresaService {
+	Page<EmpresaResponse> getAllEmpresas(Pageable pageable);
+	
+
+}

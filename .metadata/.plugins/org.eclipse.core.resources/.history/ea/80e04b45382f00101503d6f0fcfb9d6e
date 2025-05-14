@@ -1,0 +1,86 @@
+package com.ropisport.gestion.service.impl;
+
+import com.ropisport.gestion.model.dto.excel.EmpresaExcelDto;
+import com.ropisport.gestion.model.dto.excel.PagoExcelDto;
+import com.ropisport.gestion.model.dto.excel.SociaExcelDto;
+import com.ropisport.gestion.model.entity.Empresa;
+import com.ropisport.gestion.model.entity.Institucion;
+import com.ropisport.gestion.model.entity.Pago;
+import com.ropisport.gestion.model.entity.Socia;
+import com.ropisport.gestion.repository.EmpresaRepository;
+import com.ropisport.gestion.repository.InstitucionRepository;
+import com.ropisport.gestion.repository.PagoRepository;
+import com.ropisport.gestion.repository.SociaRepository;
+import com.ropisport.gestion.service.ExcelExportService;
+import com.ropisport.gestion.util.ExcelHelper;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class ExcelExportServiceImpl implements ExcelExportService {
+
+    @Autowired
+    private SociaRepository sociaRepository;
+    
+    @Autowired
+    private EmpresaRepository empresaRepository;
+    
+    @Autowired
+    private PagoRepository pagoRepository;
+    
+    @Autowired
+    private InstitucionRepository institucionRepository;
+    
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    @Override
+    public void exportSociasToExcel(OutputStream outputStream) throws IOException {
+        List<Socia> socias = sociaRepository.findAll();
+        List<SociaExcelDto> sociasDto = socias.stream()
+                .map(this::convertToSociaDto)
+                .collect(Collectors.toList());
+        
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Socias");
+            
+            // Crear estilos
+            CellStyle headerStyle = ExcelHelper.createHeaderStyle(workbook);
+            
+            // Crear encabezados
+            Row headerRow = sheet.createRow(0);
+            String[] columns = {"ID", "Número", "Nombre", "Apellidos", "Usuario", "Negocio", 
+                               "Categoría", "Teléfono Personal", "Teléfono Negocio", "Email", 
+                               "CIF", "Activa", "Fecha Inicio", "Fecha Baja"};
+            
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(columns[i]);
+                cell.setCellStyle(headerStyle);
+            }
+            
+            // Llenar datos
+            int rowNum = 1;
+            for (SociaExcelDto socia : sociasDto) {
+                Row row = sheet.createRow(rowNum++);
+                
+                row.createCell(0).setCellValue(socia.getId());
+                row.createCell(1).setCellValue(socia.getNumeroSocia());
+                row.createCell(2).setCellValue(socia.getNombre());
+                row.createCell(3).setCellValue(socia.getApellidos());
+                row.createCell(4).setCellValue(socia.getUsername());
+                row.createCell(5).setCellValue(socia.getNombreNegocio());
+                row.createCell(6).setCellValue(socia.getNombreCategoria());
+                row.createCell(7).setCellValue(socia.getTelefonoPersonal());
+                row.createCell(8).setCellValue(socia.getTelefonoNegocio());
+                row.createCell(9).setCellValue(socia.getEmail());
+                row.createCell(10).setCellValue(socia.getCif());
+                row.createCell(11).setCellValue(socia.getActiva() ? "Sí" : "No");
+                row.

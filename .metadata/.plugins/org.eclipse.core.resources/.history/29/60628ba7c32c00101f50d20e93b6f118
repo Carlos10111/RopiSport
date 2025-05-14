@@ -1,0 +1,5 @@
+package com.ropisport.gestion.model.entity;
+
+public class PagoDetalle {
+
+}

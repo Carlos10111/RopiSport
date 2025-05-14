@@ -1,0 +1,5 @@
+package com.ropisport.gestion.service.impl;
+
+public class CategoriaNegocioServiceImpl {
+
+}

@@ -1,0 +1,54 @@
+package com.ropisport.gestion.controller;
+
+import com.ropisport.gestion.model.dto.request.LoginRequest;
+import com.ropisport.gestion.model.dto.request.PasswordChangeRequest;
+import com.ropisport.gestion.model.dto.response.ApiResponse;
+import com.ropisport.gestion.model.dto.response.JwtResponse;
+import com.ropisport.gestion.security.jwt.JwtUtils;
+import com.ropisport.gestion.security.service.UserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/api/auth")
+public class AuthController {
+    
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    
+    @Autowired
+    private JwtUtils jwtUtils;
+    
+    @PostMapping("/login")
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+        );
+        
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
+        
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        
+        return ResponseEntity.ok(new JwtResponse(
+            jwt,
+            userDetails.getId(),
+            userDetails.getUsername(),
+            userDetails.getEmail(),
+            userDetails.getRol()
+        ));
+    }
+    
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@Valid @RequestBody PasswordChangeRequest request) {
+        // Implementar lógica para cambiar contraseña
+        return ResponseEntity.ok(new ApiResponse(true, "Contraseña actualizada correctamente"));
+    }
+}

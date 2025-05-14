@@ -1,0 +1,19 @@
+package com.ropisport.gestion.repository;
+
+import com.ropisport.gestion.model.entity.PagoDetalle;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface PagoDetalleRepository extends JpaRepository<PagoDetalle, Integer> {
+    
+    List<PagoDetalle> findByPagoId(Integer pagoId);
+    
+    @Query("SELECT pd FROM PagoDetalle pd JOIN pd.pago p JOIN p.socia s WHERE s.id = :sociaId")
+    List<PagoDetalle> findBySociaId(Integer sociaId);
+    
+    void deleteByPagoId(Integer pagoId);
+}

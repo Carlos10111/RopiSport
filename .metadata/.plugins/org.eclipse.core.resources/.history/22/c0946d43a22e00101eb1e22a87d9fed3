@@ -1,0 +1,144 @@
+package com.ropisport.gestion.service.impl;
+
+import com.ropisport.gestion.exception.EntityNotFoundException;
+import com.ropisport.gestion.model.dto.request.PagoDetalleRequest;
+import com.ropisport.gestion.model.dto.responde.PagoDetalleResponse;
+import com.ropisport.gestion.model.entity.Pago;
+import com.ropisport.gestion.model.entity.PagoDetalle;
+import com.ropisport.gestion.repository.PagoDetalleRepository;
+import com.ropisport.gestion.repository.PagoRepository;
+import com.ropisport.gestion.service.PagoDetalleService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+public class PagoDetalleServiceImpl implements PagoDetalleService {
+
+    private final PagoDetalleRepository pagoDetalleRepository;
+    private final PagoRepository pagoRepository;
+
+    @Override
+    @Transactional
+    public PagoDetalleResponse createPagoDetalle(PagoDetalleRequest request) {
+        PagoDetalle pagoDetalle = mapToEntity(request);
+        PagoDetalle savedPagoDetalle = pagoDetalleRepository.save(pagoDetalle);
+        return mapToDto(savedPagoDetalle);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PagoDetalleResponse getPagoDetalleById(Integer id) {
+        PagoDetalle pagoDetalle = pagoDetalleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("PagoDetalle no encontrado con ID: " + id));
+        return mapToDto(pagoDetalle);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PagoDetalleResponse> getAllPagoDetalles() {
+        return pagoDetalleRepository.findAll().stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PagoDetalleResponse> getPagoDetallesByPagoId(Integer pagoId) {
+        return pagoDetalleRepository.findByPagoId(pagoId).stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PagoDetalleResponse> getPagoDetallesBySociaId(Integer sociaId) {
+        return pagoDetalleRepository.findBySociaId(sociaId).stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public PagoDetalleResponse updatePagoDetalle(Integer id, PagoDetalleRequest request) {
+        PagoDetalle pagoDetalle = pagoDetalleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("PagoDetalle no encontrado con ID: " + id));
+
+        updateEntityFromRequest(pagoDetalle, request);
+        PagoDetalle updatedPagoDetalle = pagoDetalleRepository.save(pagoDetalle);
+        return mapToDto(updatedPagoDetalle);
+    }
+
+    @Override
+    @Transactional
+    public void deletePagoDetalle(Integer id) {
+        if (!pagoDetalleRepository.existsById(id)) {
+            throw new EntityNotFoundException("PagoDetalle no encontrado con ID: " + id);
+        }
+        pagoDetalleRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void deletePagoDetallesByPagoId(Integer pagoId) {
+        pagoDetalleRepository.deleteByPagoId(pagoId);
+    }
+
+    private PagoDetalle mapToEntity(PagoDetalleRequest request) {
+        PagoDetalle pagoDetalle = new PagoDetalle();
+
+        Pago pago = pagoRepository.findById(request.getPagoId())
+                .orElseThrow(() -> new EntityNotFoundException("Pago no encontrado con ID: " + request.getPagoId()));
+
+        pagoDetalle.setPago(pago);
+        pagoDetalle.setConcepto(request.getConcepto());
+        pagoDetalle.setMonto(request.getMonto());
+        pagoDetalle.setFechaDetalle(request.getFechaDetalle() != null ? request.getFechaDetalle() : LocalDateTime.now());
+        pagoDetalle.setNotas(request.getNotas());
+
+        return pagoDetalle;
+    }
+
+    private void updateEntityFromRequest(PagoDetalle pagoDetalle, PagoDetalleRequest request) {
+        if (request.getPagoId() != null && !request.getPagoId().equals(pagoDetalle.getPago().getId())) {
+            Pago pago = pagoRepository.findById(request.getPagoId())
+                    .orElseThrow(() -> new EntityNotFoundException("Pago no encontrado con ID: " + request.getPagoId()));
+            pagoDetalle.setPago(pago);
+        }
+
+        if (request.getConcepto() != null) {
+            pagoDetalle.setConcepto(request.getConcepto());
+        }
+
+        if (request.getMonto() != null) {
+            pagoDetalle.setMonto(request.getMonto());
+        }
+
+        if (request.getFechaDetalle() != null) {
+            pagoDetalle.setFechaDetalle(request.getFechaDetalle());
+        }
+
+        if (request.getNotas() != null) {
+            pagoDetalle.setNotas(request.getNotas());
+        }
+    }
+
+    private PagoDetalleResponse mapToDto(PagoDetalle pagoDetalle) {
+        PagoDetalleResponse response = new PagoDetalleResponse();
+        response.setId(pagoDetalle.getId());
+        response.setPagoId(pagoDetalle.getPago().getId());
+        response.setConcepto(pagoDetalle.getConcepto());
+        response.setMonto(pagoDetalle.getMonto());
+        response.setFechaDetalle(pagoDetalle.getFechaDetalle());
+        response.setNotas(pagoDetalle.getNotas());
+        response.setCreatedDate(pagoDetalle.getCreatedDate());
+        response.setCreatedBy(pagoDetalle.getCreatedBy());
+        response.setLastModifiedDate(pagoDetalle.getLastModifiedDate());
+        response.setLastModifiedBy(pagoDetalle.getLastModifiedBy());
+        return response;
+    }

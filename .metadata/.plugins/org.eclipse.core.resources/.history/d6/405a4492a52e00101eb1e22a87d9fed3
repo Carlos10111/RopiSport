@@ -1,0 +1,108 @@
+package com.ropisport.gestion.service.impl;
+
+import com.ropisport.gestion.exception.EntityNotFoundException;
+import com.ropisport.gestion.model.dto.request.SociaRequest;
+import com.ropisport.gestion.model.dto.response.CategoriaResponse;
+import com.ropisport.gestion.model.dto.response.SociaResponse;
+import com.ropisport.gestion.model.dto.response.UsuarioResponse;
+import com.ropisport.gestion.model.entity.CategoriaNegocio;
+import com.ropisport.gestion.model.entity.Socia;
+import com.ropisport.gestion.model.entity.Usuario;
+import com.ropisport.gestion.repository.CategoriaNegocioRepository;
+import com.ropisport.gestion.repository.SociaRepository;
+import com.ropisport.gestion.repository.UsuarioRepository;
+import com.ropisport.gestion.service.SociaService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+// Otros imports necesarios...
+
+@Service
+@RequiredArgsConstructor
+public class SociaServiceImpl implements SociaService {
+    
+    private final SociaRepository sociaRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final CategoriaNegocioRepository categoriaNegocioRepository;
+    
+    // Otros métodos del servicio...
+    
+    private Socia mapToEntity(SociaRequest request) {
+        Socia socia = new Socia();
+        
+        if (request.getId() != null) {
+            socia = sociaRepository.findById(request.getId())
+                    .orElse(new Socia());
+        }
+        
+        socia.setNumeroSocia(request.getNumeroSocia());
+        socia.setNombre(request.getNombre());
+        socia.setApellidos(request.getApellidos());
+        
+        if (request.getUsuarioId() != null) {
+            Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
+                    .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + request.getUsuarioId()));
+            socia.setUsuario(usuario);
+        }
+        
+        socia.setNombreNegocio(request.getNombreNegocio());
+        socia.setDescripcionNegocio(request.getDescripcionNegocio());
+        
+        if (request.getCategoriaId() != null) {
+            CategoriaNegocio categoria = categoriaNegocioRepository.findById(request.getCategoriaId())
+                    .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con ID: " + request.getCategoriaId()));
+            socia.setCategoria(categoria);
+        }
+        
+        socia.setDireccion(request.getDireccion());
+        socia.setTelefonoPersonal(request.getTelefonoPersonal());
+        socia.setTelefonoNegocio(request.getTelefonoNegocio());
+        socia.setEmail(request.getEmail());
+        socia.setCif(request.getCif());
+        socia.setNumeroCuenta(request.getNumeroCuenta());
+        socia.setEpigrafe(request.getEpigrafe());
+        
+        if (request.getActiva() != null) {
+            socia.setActiva(request.getActiva());
+        }
+        
+        socia.setFechaInicio(request.getFechaInicio());
+        socia.setFechaBaja(request.getFechaBaja());
+        socia.setObservaciones(request.getObservaciones());
+        
+        return socia;
+    }
+    
+    private SociaResponse mapToDto(Socia socia) {
+        SociaResponse response = new SociaResponse();
+        response.setId(socia.getId());
+        response.setNumeroSocia(socia.getNumeroSocia());
+        response.setNombre(socia.getNombre());
+        response.setApellidos(socia.getApellidos());
+        response.setNombreCompleto(socia.getNombre() + " " + socia.getApellidos());
+        
+        if (socia.getUsuario() != null) {
+            UsuarioResponse usuarioResponse = new UsuarioResponse();
+            usuarioResponse.setId(socia.getUsuario().getId());
+            usuarioResponse.setUsername(socia.getUsuario().getUsername());
+            usuarioResponse.setEmail(socia.getUsuario().getEmail());
+            usuarioResponse.setNombreCompleto(socia.getUsuario().getNombreCompleto());
+            response.setUsuario(usuarioResponse);
+        }
+        
+        response.setNombreNegocio(socia.getNombreNegocio());
+        response.setDescripcionNegocio(socia.getDescripcionNegocio());
+        
+        if (socia.getCategoria() != null) {
+            CategoriaResponse categoriaResponse = new CategoriaResponse();
+            categoriaResponse.setId(socia.getCategoria().getId());
+            categoriaResponse.setNombre(socia.getCategoria().getNombre());
+            categoriaResponse.setDescripcion(socia.getCategoria().getDescripcion());
+            response.setCategoria(categoriaResponse);
+        }
+        
+        response.setDireccion(socia.getDireccion());
+        response.setTelefonoPersonal(socia.getTelefonoPersonal());
+        response.setTelefonoNegocio(socia.getTelefonoNegocio());
+        response.setEmail(

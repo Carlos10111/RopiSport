@@ -1,0 +1,243 @@
+package com.ropisport.gestion.service.impl;
+
+import com.ropisport.gestion.exception.EntityNotFoundException;
+import com.ropisport.gestion.model.dto.request.SociaRequest;
+import com.ropisport.gestion.model.dto.response.CategoriaResponse;
+import com.ropisport.gestion.model.dto.response.SociaResponse;
+import com.ropisport.gestion.model.dto.response.UsuarioResponse;
+import com.ropisport.gestion.model.entity.CategoriaNegocio;
+import com.ropisport.gestion.model.entity.Socia;
+import com.ropisport.gestion.model.entity.Usuario;
+import com.ropisport.gestion.repository.CategoriaNegocioRepository;
+import com.ropisport.gestion.repository.SociaRepository;
+import com.ropisport.gestion.repository.UsuarioRepository;
+import com.ropisport.gestion.service.SociaService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+// Otros imports necesarios...
+
+@Service
+@RequiredArgsConstructor
+public class SociaServiceImpl implements SociaService {
+    
+    private final SociaRepository sociaRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final CategoriaNegocioRepository categoriaNegocioRepository;
+    
+    // Otros métodos del servicio...
+    
+    private Socia mapToEntity(SociaRequest request) {
+        Socia socia = new Socia();
+        
+        if (request.getId() != null) {
+            socia = sociaRepository.findById(request.getId())
+                    .orElse(new Socia());
+        }
+        
+        socia.setNumeroSocia(request.getNumeroSocia());
+        socia.setNombre(request.getNombre());
+        socia.setApellidos(request.getApellidos());
+        
+        if (request.getUsuarioId() != null) {
+            Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
+                    .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + request.getUsuarioId()));
+            socia.setUsuario(usuario);
+        }
+        
+        socia.setNombreNegocio(request.getNombreNegocio());
+        socia.setDescripcionNegocio(request.getDescripcionNegocio());
+        
+        if (request.getCategoriaId() != null) {
+            CategoriaNegocio categoria = categoriaNegocioRepository.findById(request.getCategoriaId())
+                    .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con ID: " + request.getCategoriaId()));
+            socia.setCategoria(categoria);
+        }
+        
+        socia.setDireccion(request.getDireccion());
+        socia.setTelefonoPersonal(request.getTelefonoPersonal());
+        socia.setTelefonoNegocio(request.getTelefonoNegocio());
+        socia.setEmail(request.getEmail());
+        socia.setCif(request.getCif());
+        socia.setNumeroCuenta(request.getNumeroCuenta());
+        socia.setEpigrafe(request.getEpigrafe());
+        
+        if (request.getActiva() != null) {
+            socia.setActiva(request.getActiva());
+        }
+        
+        socia.setFechaInicio(request.getFechaInicio());
+        socia.setFechaBaja(request.getFechaBaja());
+        socia.setObservaciones(request.getObservaciones());
+        
+        return socia;
+    }
+    
+    private SociaResponse mapToDto(Socia socia) {
+        SociaResponse response = new SociaResponse();
+        response.setId(socia.getId());
+        response.setNumeroSocia(socia.getNumeroSocia());
+        response.setNombre(socia.getNombre());
+        response.setApellidos(socia.getApellidos());
+        response.setNombreCompleto(socia.getNombre() + " " + socia.getApellidos());
+        
+        if (socia.getUsuario() != null) {
+            UsuarioResponse usuarioResponse = new UsuarioResponse();
+            usuarioResponse.setId(socia.getUsuario().getId());
+            usuarioResponse.setUsername(socia.getUsuario().getUsername());
+            usuarioResponse.setEmail(socia.getUsuario().getEmail());
+            usuarioResponse.setNombreCompleto(socia.getUsuario().getNombreCompleto());
+            response.setUsuario(usuarioResponse);
+        }
+        
+        response.setNombreNegocio(socia.getNombreNegocio());
+        response.setDescripcionNegocio(socia.getDescripcionNegocio());
+        
+        if (socia.getCategoria() != null) {
+            CategoriaResponse categoriaResponse = new CategoriaResponse();
+            categoriaResponse.setId(socia.getCategoria().getId());
+            categoriaResponse.setNombre(socia.getCategoria().getNombre());
+            categoriaResponse.setDescripcion(socia.getCategoria().getDescripcion());
+            response.setCategoria(categoriaResponse);
+        }
+        
+        response.setDireccion(socia.getDireccion());
+        response.setTelefonoPersonal(socia.getTelefonoPersonal());
+        response.setTelefonoNegocio(socia.getTelefonoNegocio());
+        response.setEmail(socia.getEmail());
+        response.setCif(socia.getCif());
+        response.setNumeroCuenta(socia.getNumeroCuenta());
+        response.setEpigrafe(socia.getEpigrafe());
+        
+        if (socia.getActiva() != null) {
+            response.setActiva(socia.getActiva());
+        }
+        
+        response.setFechaInicio(socia.getFechaInicio());
+        response.setFechaBaja(socia.getFechaBaja());
+        response.setObservaciones(socia.getObservaciones());
+
+        // Campos de auditoría
+        response.setCreatedDate(socia.getCreatedAt());
+        response.setCreatedBy(socia.getCreatedBy());
+        response.setLastModifiedDate(socia.getUpdatedAt());
+        response.setLastModifiedBy(socia.getUpdatedBy());
+
+        return response;
+    }
+
+    @Override
+    @Transactional
+    public SociaResponse createSocia(SociaRequest request) {
+        Socia socia = mapToEntity(request);
+        Socia savedSocia = sociaRepository.save(socia);
+        return mapToDto(savedSocia);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SociaResponse getSociaById(Integer id) {
+        Socia socia = sociaRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Socia no encontrada con ID: " + id));
+        return mapToDto(socia);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SociaResponse> getAllSocias() {
+        return sociaRepository.findAll().stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SociaResponse> getSociasByCategoriaId(Integer categoriaId) {
+        return sociaRepository.findByCategoriaId(categoriaId).stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public SociaResponse updateSocia(Integer id, SociaRequest request) {
+        Socia socia = sociaRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Socia no encontrada con ID: " + id));
+
+        // Actualizar los campos de la entidad socia
+        updateEntityFromRequest(socia, request);
+        Socia updatedSocia = sociaRepository.save(socia);
+        return mapToDto(updatedSocia);
+    }
+
+    @Override
+    @Transactional
+    public void deleteSocia(Integer id) {
+        if (!sociaRepository.existsById(id)) {
+            throw new EntityNotFoundException("Socia no encontrada con ID: " + id);
+        }
+        sociaRepository.deleteById(id);
+    }
+
+    private void updateEntityFromRequest(Socia socia, SociaRequest request) {
+        if (request.getNumeroSocia() != null) {
+            socia.setNumeroSocia(request.getNumeroSocia());
+        }
+        if (request.getNombre() != null) {
+            socia.setNombre(request.getNombre());
+        }
+        if (request.getApellidos() != null) {
+            socia.setApellidos(request.getApellidos());
+        }
+        if (request.getUsuarioId() != null) {
+            Usuario usuario = usuarioRepository.findById(request.getUsuarioId())
+                    .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + request.getUsuarioId()));
+            socia.setUsuario(usuario);
+        }
+        if (request.getNombreNegocio() != null) {
+            socia.setNombreNegocio(request.getNombreNegocio());
+        }
+        if (request.getDescripcionNegocio() != null) {
+            socia.setDescripcionNegocio(request.getDescripcionNegocio());
+        }
+        if (request.getCategoriaId() != null) {
+            CategoriaNegocio categoria = categoriaNegocioRepository.findById(request.getCategoriaId())
+                    .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con ID: " + request.getCategoriaId()));
+            socia.setCategoria(categoria);
+        }
+        if (request.getDireccion() != null) {
+            socia.setDireccion(request.getDireccion());
+        }
+        if (request.getTelefonoPersonal() != null) {
+            socia.setTelefonoPersonal(request.getTelefonoPersonal());
+        }
+        if (request.getTelefonoNegocio() != null) {
+            socia.setTelefonoNegocio(request.getTelefonoNegocio());
+        }
+        if (request.getEmail() != null) {
+            socia.setEmail(request.getEmail());
+        }
+        if (request.getCif() != null) {
+            socia.setCif(request.getCif());
+        }
+        if (request.getNumeroCuenta() != null) {
+            socia.setNumeroCuenta(request.getNumeroCuenta());
+        }
+        if (request.getEpigrafe() != null) {
+            socia.setEpigrafe(request.getEpigrafe());
+        }
+        if (request.getActiva() != null) {
+            socia.setActiva(request.getActiva());
+        }
+        if (request.getFechaInicio() != null) {
+            socia.setFechaInicio(request.getFechaInicio());
+        }
+        if (request.getFechaBaja() != null) {
+            socia.setFechaBaja(request.getFechaBaja());
+        }
+        if (request.getObservaciones() != null) {
+            socia.setObservaciones(request.getObservaciones());
+        }
+    }
+}

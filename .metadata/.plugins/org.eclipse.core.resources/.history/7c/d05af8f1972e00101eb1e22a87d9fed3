@@ -1,0 +1,61 @@
+package com.ropisport.gestion.model.entity;
+
+import com.ropisport.gestion.model.audit.Auditable;
+import com.ropisport.gestion.model.enums.EstadoPago;
+import com.ropisport.gestion.model.enums.MetodoPago;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "pagos")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Pago extends Auditable<String> {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "socia_id", nullable = false)
+    private Socia socia;
+    
+    @Column(name = "monto", nullable = false, precision = 10, scale = 2)
+    private BigDecimal monto;
+    
+    @Column(name = "fecha_pago", nullable = false)
+    private LocalDateTime fechaPago;
+    
+    @Column(name = "concepto")
+    private String concepto;
+    
+    @Column(name = "metodo_pago")
+    @Enumerated(EnumType.STRING)
+    private MetodoPago metodoPago;
+    
+    @Column(name = "confirmado")
+    private Boolean confirmado;
+    
+    @OneToMany(mappedBy = "pago", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PagoDetalle> detalles = new ArrayList<>();
+    
+    // Método helper para agregar detalles
+    public void addDetalle(PagoDetalle detalle) {
+        detalles.add(detalle);
+        detalle.setPago(this);
+    }
+    
+    // Método helper para remover detalles
+    public void removeDetalle(PagoDetalle detalle) {
+        detalles.remove(detalle);
+        detalle.setPago(null);
+    }
+}

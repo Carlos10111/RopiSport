@@ -1,0 +1,80 @@
+package com.ropisport.gestion.controller;
+
+import com.ropisport.gestion.model.dto.request.PagoDetalleRequest;
+import com.ropisport.gestion.model.dto.responde.ApiResponse;
+import com.ropisport.gestion.model.dto.responde.PagoDetalleResponse;
+import com.ropisport.gestion.service.PagoDetalleService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import jakarta.validation.Valid;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/pagos-detalle")
+@RequiredArgsConstructor
+public class PagoDetalleController {
+    
+    private final PagoDetalleService pagoDetalleService;
+    
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TESORERO')")
+    public ResponseEntity<PagoDetalleResponse> createPagoDetalle(@Valid @RequestBody PagoDetalleRequest request) {
+        PagoDetalleResponse response = pagoDetalleService.createPagoDetalle(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+    
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TESORERO') or hasRole('USUARIO')")
+    public ResponseEntity<PagoDetalleResponse> getPagoDetalleById(@PathVariable Integer id) {
+        PagoDetalleResponse response = pagoDetalleService.getPagoDetalleById(id);
+        return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TESORERO')")
+    public ResponseEntity<List<PagoDetalleResponse>> getAllPagoDetalles() {
+        List<PagoDetalleResponse> response = pagoDetalleService.getAllPagoDetalles();
+        return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/pago/{pagoId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TESORERO') or hasRole('USUARIO')")
+    public ResponseEntity<List<PagoDetalleResponse>> getPagoDetallesByPagoId(@PathVariable Integer pagoId) {
+        List<PagoDetalleResponse> response = pagoDetalleService.getPagoDetallesByPagoId(pagoId);
+        return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/socia/{sociaId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TESORERO') or hasRole('USUARIO')")
+    public ResponseEntity<List<PagoDetalleResponse>> getPagoDetallesBySociaId(@PathVariable Integer sociaId) {
+        List<PagoDetalleResponse> response = pagoDetalleService.getPagoDetallesBySociaId(sociaId);
+        return ResponseEntity.ok(response);
+    }
+    
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TESORERO')")
+    public ResponseEntity<PagoDetalleResponse> updatePagoDetalle(
+            @PathVariable Integer id,
+            @Valid @RequestBody PagoDetalleRequest request) {
+        PagoDetalleResponse response = pagoDetalleService.updatePagoDetalle(id, request);
+        return ResponseEntity.ok(response);
+    }
+    
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TESORERO')")
+    public ResponseEntity<ApiResponse> deletePagoDetalle(@PathVariable Integer id) {
+        pagoDetalleService.deletePagoDetalle(id);
+        return ResponseEntity.ok(new ApiResponse(true, "PagoDetalle eliminado correctamente"));
+    }
+    
+    @DeleteMapping("/pago/{pagoId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('TESORERO')")
+    public ResponseEntity<ApiResponse> deletePagoDetallesByPagoId(@PathVariable Integer pagoId) {
+        pagoDetalleService.deletePagoDetallesByPagoId(pagoId);
+        return ResponseEntity.ok(new ApiResponse(true, "Detalles de pago eliminados correctamente"));
+    }
+}
