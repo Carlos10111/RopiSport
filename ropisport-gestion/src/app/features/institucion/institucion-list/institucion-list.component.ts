@@ -6,6 +6,7 @@ import { catchError } from 'rxjs/operators';
 import { RouterLink } from '@angular/router';
 
 
+
 @Component({
   selector: 'app-institucion-list',
   standalone: true,

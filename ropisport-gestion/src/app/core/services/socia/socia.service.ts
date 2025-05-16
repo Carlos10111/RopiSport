@@ -3,9 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Socia } from '../../models/socia';
 import { environment } from '../../../../environments/environment';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class SociaService {
+  private sociasSubject = new BehaviorSubject<Socia[]>([]);
+  socias$ = this.sociasSubject.asObservable();
+  private socias: Socia[] = [];
   private apiUrl = `${environment.apiUrl}/socias`;
 
   constructor(private http: HttpClient) {}
@@ -28,5 +32,17 @@ export class SociaService {
 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  // Agrega una nueva socia a la lista local y actualiza los subscriptores
+  addSocia(socia: Socia): void {
+
+    this.socias.push(socia);
+    this.sociasSubject.next([...this.socias]);
+  }
+
+  // Emite la lista actual de socias
+  getSocias(): void {
+    this.sociasSubject.next([...this.socias]);
   }
 }
