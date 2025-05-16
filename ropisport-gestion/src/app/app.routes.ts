@@ -10,7 +10,9 @@ import { authGuard } from './core/guards/auth.guard';
 import { publicGuard } from './core/guards/public.guard';
 import { InstitucionListComponent } from './features/institucion/institucion-list/institucion-list.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-
+import { InstitucionFormComponent } from './features/institucion/institucion-form/institucion-form.component';
+import { SociasFormComponent } from './features/socias/socias-form/socias-form.component';
+import { SociasListComponent } from './features/socias/socias-list/socias-list.component';
 export const routes: Routes = [
   {
     path: '',
@@ -18,19 +20,21 @@ export const routes: Routes = [
     //canActivate: [authGuard],       // rutas privadas (protegidas por AuthGuard)
     children: [
       { path: '', component: HomeComponent },
-      { path: 'instituciones', component: InstitucionListComponent },
-    ]
-  },
-  {
-    path: '',
-    component: AuthLayoutComponent,
+      //{ path: 'instituciones', component: InstitucionListComponent },
+    //]
+  //},
+  //{
+    //path: '',
+    //component: AuthLayoutComponent,
     //canActivate: [publicGuard],
-    children: [
-      { path: '', component: HomeComponent },
-      { path: 'instituciones', component: InstitucionListComponent },
+    //children: [
+      { path: 'institucion-list', component: InstitucionListComponent },
+      { path: 'institucion-form', component: InstitucionFormComponent },
       { path: 'login', component: LoginComponent },
       { path: 'registro', component: RegistroComponent },
       { path: 'cambiar-password', component: ChangePasswordComponent },
+      { path: 'formulario', component: SociasFormComponent },
+      { path: 'listado', component: SociasListComponent },  
       // Más rutas públicas si lo necesitas
     ]
   },
@@ -45,21 +49,5 @@ export const routes: Routes = [
 })
 
 export class AppRoutingModule { }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

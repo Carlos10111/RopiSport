@@ -18,7 +18,7 @@ export class HomeComponent {
     this.router.navigate(['/socias']);
   }
 
-  irAProveedores() {
-    this.router.navigate(['/proveedores']);
+  irAInstituciones() {
+    this.router.navigate(['/instituciones']);
   }
 }

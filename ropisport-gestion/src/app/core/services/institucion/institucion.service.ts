@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Institucion } from '../../models/institucion';
+import { InstitucionDTO } from '../../dtos/institucion-dto';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -18,12 +19,12 @@ export class InstitucionService {
     return this.http.get<Institucion>(`${this.apiUrl}/${id}`);
   }
 
-  create(institucion: Institucion): Observable<Institucion> {
-    return this.http.post<Institucion>(this.apiUrl, institucion);
+  create(institucionDTO: InstitucionDTO): Observable<Institucion> {
+    return this.http.post<Institucion>(this.apiUrl, institucionDTO);
   }
 
-  update(id: number, institucion: Institucion): Observable<Institucion> {
-    return this.http.put<Institucion>(`${this.apiUrl}/${id}`, institucion);
+  update(id: number, institucionDTO: InstitucionDTO): Observable<Institucion> {
+    return this.http.put<Institucion>(`${this.apiUrl}/${id}`, institucionDTO);
   }
 
   delete(id: number): Observable<void> {

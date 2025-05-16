@@ -4,11 +4,12 @@ import { Institucion } from '../../../core/models/institucion';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-institucion-list',
   standalone: true,
-  imports: [RouterLink],
+  imports: [CommonModule, RouterLink],
   templateUrl: './institucion-list.component.html',
   styleUrls: ['./institucion-list.component.scss']
 })
