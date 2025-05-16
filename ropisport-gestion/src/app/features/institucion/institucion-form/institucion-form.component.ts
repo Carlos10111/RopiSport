@@ -74,13 +74,13 @@ export class InstitucionFormComponent implements OnInit {
     const raw = this.form.getRawValue();
     const institucion: Institucion = {
       id: raw.id ?? 0,
-      persona_contacto: raw.persona_contacto!,
-      nombre_institucion: raw.nombre_institucion!,
+      personaContacto: raw.persona_contacto!,
+      nombreInstitucion: raw.nombre_institucion!,
       cargo: raw.cargo!,
       telefono: raw.telefono!,
       email: raw.email!,
       web: raw.web!,
-      tipo_institucion_id: raw.tipo_institucion_id!,
+      tipoInstitucionId: raw.tipo_institucion_id!,
       observaciones: raw.observaciones || ''
     };
 

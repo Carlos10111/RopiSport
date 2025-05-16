@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Empresa } from '../../models/empresa';
+import { EmpresaDTO } from '../../dtos/empresa-dto';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -18,12 +19,12 @@ export class EmpresaService {
     return this.http.get<Empresa>(`${this.apiUrl}/${id}`);
   }
 
-  create(empresa: Empresa): Observable<Empresa> {
-    return this.http.post<Empresa>(this.apiUrl, empresa);
+  create(empresaDTO: EmpresaDTO): Observable<Empresa> {
+    return this.http.post<Empresa>(this.apiUrl, empresaDTO);
   }
 
-  update(id: number, empresa: Empresa): Observable<Empresa> {
-    return this.http.put<Empresa>(`${this.apiUrl}/${id}`, empresa);
+  update(id: number, empresaDTO: EmpresaDTO): Observable<Empresa> {
+    return this.http.put<Empresa>(`${this.apiUrl}/${id}`, empresaDTO);
   }
 
   delete(id: number): Observable<void> {

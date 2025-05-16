@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Pago } from '../../models/pago';
+import { PagoDTO } from '../../dtos/pago-dto';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -18,12 +19,12 @@ export class PagoService {
     return this.http.get<Pago>(`${this.apiUrl}/${id}`);
   }
 
-  create(pago: Pago): Observable<Pago> {
-    return this.http.post<Pago>(this.apiUrl, pago);
+  create(pagoDTO: PagoDTO): Observable<Pago> {
+    return this.http.post<Pago>(this.apiUrl, pagoDTO);
   }
 
-  update(id: number, pago: Pago): Observable<Pago> {
-    return this.http.put<Pago>(`${this.apiUrl}/${id}`, pago);
+  update(id: number, pagoDTO: PagoDTO): Observable<Pago> {
+    return this.http.put<Pago>(`${this.apiUrl}/${id}`, pagoDTO);
   }
 
   delete(id: number): Observable<void> {
