@@ -28,7 +28,6 @@ export const routes: Routes = [
     //component: AuthLayoutComponent,
     //canActivate: [publicGuard],
     //children: [
-      { path: '', component: HomeComponent },
       { path: 'institucion-list', component: InstitucionListComponent },
       { path: 'institucion-form', component: InstitucionFormComponent },
       { path: 'login', component: LoginComponent },

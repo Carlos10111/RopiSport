@@ -41,7 +41,7 @@ export class LoginComponent {
     this.credentialsService.login(this.loginForm.value as LoginRequest).subscribe({
       next: (data) => {
         this.tokenService.saveTokens(data.token, '');
-        this.useStateService.save(data.user.username, data.user.role_id.toString());
+        this.useStateService.save(data.user.username, data.user.rol.nombre);
 
         this.router.navigate(['/app/control-panel']).then(() => {
           this.popupService.close();
