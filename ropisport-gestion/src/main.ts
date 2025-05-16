@@ -8,4 +8,5 @@ import { routes } from './app/app.routes';
 /*bootstrapApplication(AppComponent, {
   providers: [provideRouter(routes)]
 });*/
-bootstrapApplication(AppComponent, appConfig);
+bootstrapApplication(AppComponent, appConfig)
+.catch((err) => console.error(err));
