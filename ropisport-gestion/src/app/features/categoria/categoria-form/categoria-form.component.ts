@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Categoria } from '../../../core/models/categoria';
+import { Categoria } from '../../../core/models/categoriaNegocio';
 
 @Component({
   selector: 'app-categoria-form',

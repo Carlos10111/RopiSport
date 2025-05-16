@@ -1,12 +1,16 @@
+import { Rol } from './rol';
+import { Socia } from './socia';
+
 export interface Usuario {
-    id: number;
-    username: string;
-    password_hash: string;
-    email: string;
-    nombre_completo: string;
-    role_id: number;
-    activo: boolean;
-    fecha_creacion: Date;
-    ultimo_acceso: Date;
+  id: number;
+  username: string;
+  passwordHash: string;
+  email: string;
+  nombreCompleto: string;
+  rol: Rol;
+  activo: boolean;
+  fechaCreacion: string;   // ISO date string
+  ultimoAcceso: string;    // ISO date string
+  socia: Socia | null;
   }
   

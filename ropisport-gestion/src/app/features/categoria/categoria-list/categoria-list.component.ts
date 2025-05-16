@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { CategoriaService } from '../../../core/services/categoria/categoria.service';
-import { Categoria } from '../../../core/models/categoria';
+import { CategoriaService } from '../../../core/services/categoriaNegocio/categoria.service';
+import { Categoria } from '../../../core/models/categoriaNegocio';
 
 @Component({
   selector: 'app-categoria-list',

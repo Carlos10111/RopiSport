@@ -1,21 +1,29 @@
+import { Rol } from './rol';
+import { CategoriaNegocio } from './categoriaNegocio';
+import { Pago } from './pago';
+import { Empresa } from './empresa';
+import { Usuario } from './usuario';
 export interface Socia {        // ID único de la socia
+  id: number;
   numeroSocia: string;
   nombre: string;
   apellidos: string;
-  email: string;
-  telefonoPersonal: string;
-  telefonoNegocio: string;
+  usuario: Usuario;
   nombreNegocio: string;
   descripcionNegocio: string;
+  categoria: CategoriaNegocio;
   direccion: string;
-  web: string;
+  telefonoPersonal: string;
+  telefonoNegocio: string;
+  email: string;
   cif: string;
   numeroCuenta: string;
   epigrafe: string;
-  estado: string;
-  fechaInicio: string;   // ISO string, e.g., "2025-05-16T00:00:00Z"
-  fechaBaja: string | null; // Puede ser null si no hay baja
-  pagos: any;            // Reemplaza 'any' por un array de tipo Pago si lo tienes definido
+  activa: boolean;
+  fechaInicio: string;     // ISO date string
+  fechaBaja: string;       // ISO date string
   observaciones: string;
+  pagos: Pago[];
+  empresas: Empresa[];
   logo: string;          // Base64 o URL al logo
 }

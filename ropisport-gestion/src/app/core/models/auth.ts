@@ -5,14 +5,6 @@ export interface LoginRequest {
   password: string;
 }
 
-/*export interface RegisterRequest {
-  username: string;
-  password: string;
-  email: string;
-  nombre_completo: string;
-  role_id: number;
-}*/
-
 export interface AuthResponse {
   token: string;
   refreshToken?: string;

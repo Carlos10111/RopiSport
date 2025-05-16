@@ -1,6 +1,6 @@
 <div class="card shadow-sm mb-5">
   <div class="card-header bg-primary text-white">
-    {{ newSocia.id ? 'Editar Socia' : 'Alta de Socia' }}
+    {{ nuevaSocia.id ? 'Editar Socia' : 'Alta de Socia' }}
   </div>
 
   <div class="card-body">
@@ -11,57 +11,66 @@
         <div class="card-header fw-bold">Datos Personales</div>
         <div class="card-body row g-3">
           <div class="col-md-6">
-            <label class="form-label">Nombre y Apellidos</label>
-            <input type="text" class="form-control" [(ngModel)]="newSocia.nombre" name="nombre" required />
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" [(ngModel)]="nuevaSocia.nombre" name="nombre" required />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Apellidos</label>
+            <input type="text" class="form-control" [(ngModel)]="nuevaSocia.apellidos" name="apellidos" />
           </div>
           <div class="col-md-6">
             <label class="form-label">Email</label>
-            <input type="email" class="form-control" [(ngModel)]="newSocia.email" name="email" />
+            <input type="email" class="form-control" [(ngModel)]="nuevaSocia.email" name="email" />
           </div>
           <div class="col-md-6">
             <label class="form-label">Teléfono Personal</label>
-            <input type="text" class="form-control" [(ngModel)]="newSocia.telefonoPersonal" name="telefonoPersonal" />
+            <input type="text" class="form-control" [(ngModel)]="nuevaSocia.telefonoPersonal" name="telefonoPersonal" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Teléfono Negocio</label>
+            <input type="text" class="form-control" [(ngModel)]="nuevaSocia.telefonoNegocio" name="telefonoNegocio" />
           </div>
           <div class="col-md-6">
             <label class="form-label">Estado</label>
-            <select class="form-select" [(ngModel)]="newSocia.estado" name="estado">
-              <option value="activa">Activa</option>
-              <option value="baja">Baja</option>
+            <select class="form-select" [(ngModel)]="nuevaSocia.activa" name="activa">
+              <option [ngValue]="true">Activa</option>
+              <option [ngValue]="false">Inactiva</option>
             </select>
           </div>
         </div>
       </div>
+
       <!-- Información del Negocio -->
       <div class="card mb-4">
         <div class="card-header fw-bold">Información del Negocio</div>
         <div class="card-body row g-3">
           <div class="col-md-6">
-            <label class="form-label">Negocio</label>
-            <input type="text" class="form-control" [(ngModel)]="newSocia.negocio" name="negocio" />
+            <label class="form-label">Nombre Negocio</label>
+            <input type="text" class="form-control" [(ngModel)]="nuevaSocia.nombreNegocio" name="nombreNegocio" />
           </div>
-           <div class="col-md-6">
-            <label class="form-label">Teléfono Negocio</label>
-            <input type="text" class="form-control" [(ngModel)]="newSocia.telefonoNegocio" name="telefonoNegocio" />
+          <div class="col-md-6">
+            <label class="form-label">Descripción Negocio</label>
+            <input type="text" class="form-control" [(ngModel)]="nuevaSocia.descripcionNegocio" name="descripcionNegocio" />
           </div>
+          <div class="col-md-6">
+            <label class="form-label">Categoría</label>
+            <!-- Aquí puedes cambiar por un select si tienes lista de categorías -->
+            <option *ngFor="let cat of categorias" [ngValue]="cat">{{ cat.nombre }}</option>          </div>
           <div class="col-md-6">
             <label class="form-label">Dirección</label>
-            <input type="text" class="form-control" [(ngModel)]="newSocia.direccion" name="direccion" />
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Web</label>
-            <input type="text" class="form-control" [(ngModel)]="newSocia.web" name="web" />
+            <input type="text" class="form-control" [(ngModel)]="nuevaSocia.direccion" name="direccion" />
           </div>
           <div class="col-md-6">
             <label class="form-label">CIF</label>
-            <input type="text" class="form-control" [(ngModel)]="newSocia.cif" name="cif" />
+            <input type="text" class="form-control" [(ngModel)]="nuevaSocia.cif" name="cif" />
           </div>
           <div class="col-md-6">
             <label class="form-label">Número de Cuenta</label>
-            <input type="text" class="form-control" [(ngModel)]="newSocia.numeroCuenta" name="numeroCuenta" />
+            <input type="text" class="form-control" [(ngModel)]="nuevaSocia.numeroCuenta" name="numeroCuenta" />
           </div>
           <div class="col-md-6">
             <label class="form-label">Epígrafe</label>
-            <input type="text" class="form-control" [(ngModel)]="newSocia.epigrafe" name="epigrafe" />
+            <input type="text" class="form-control" [(ngModel)]="nuevaSocia.epigrafe" name="epigrafe" />
           </div>
           <div class="col-md-6">
             <label class="form-label">Logo</label>
@@ -74,33 +83,24 @@
       <div class="card mb-4">
         <div class="card-header fw-bold">Fechas</div>
         <div class="card-body row g-3">
-          
           <div class="col-md-6">
             <label class="form-label">Fecha Inicio</label>
-            <input type="date" class="form-control" [(ngModel)]="newSocia.fechaInicio" name="fechaInicio" />
+            <input type="date" class="form-control" [(ngModel)]="nuevaSocia.fechaInicio" name="fechaInicio" />
           </div>
           <div class="col-md-6">
             <label class="form-label">Fecha Baja</label>
-            <input type="date" class="form-control" [(ngModel)]="newSocia.fechaBaja" name="fechaBaja" />
+            <input type="date" class="form-control" [(ngModel)]="nuevaSocia.fechaBaja" name="fechaBaja" />
           </div>
         </div>
       </div>
 
-      <!-- Descripciones -->
+      <!-- Descripciones y otros -->
       <div class="card mb-4">
         <div class="card-header fw-bold">Descripción y Otros</div>
         <div class="card-body row g-3">
           <div class="col-md-12">
-            <label class="form-label">Descripción</label>
-            <textarea class="form-control" [(ngModel)]="newSocia.descripcion" name="descripcion" rows="2"></textarea>
-          </div>
-          <div class="col-md-12">
-            <label class="form-label">Pagos</label>
-            <textarea class="form-control" [(ngModel)]="newSocia.pagos" name="pagos" rows="2"></textarea>
-          </div>
-          <div class="col-md-12">
             <label class="form-label">Observaciones</label>
-            <textarea class="form-control" [(ngModel)]="newSocia.observaciones" name="observaciones" rows="2"></textarea>
+            <textarea class="form-control" [(ngModel)]="nuevaSocia.observaciones" name="observaciones" rows="3"></textarea>
           </div>
         </div>
       </div>
@@ -109,7 +109,7 @@
       <div class="text-end mt-4">
         <button type="submit" class="btn btn-success">
           <i class="bi bi-check-circle"></i>
-          {{ newSocia.id ? 'Actualizar' : 'Agregar Socia' }}
+          {{ nuevaSocia.id ? 'Actualizar' : 'Agregar Socia' }}
         </button>
       </div>
     </form>

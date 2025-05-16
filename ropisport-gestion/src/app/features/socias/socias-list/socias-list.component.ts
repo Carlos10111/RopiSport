@@ -2,11 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { Socia } from '../../../core/models/socia';
 import { SociaService } from '../../../core/services/socia/socia.service';
 import { RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+//       const reader = new FileReader();{}
 
 @Component({
   selector: 'app-socias-list',
+  standalone: true,
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './socias-list.component.html',
-  styleUrls: ['./socias-list.component.css']
+  styleUrls: ['./socias-list.component.scss']
 })
 export class SociasListComponent implements OnInit {
   socias: Socia[] = [];

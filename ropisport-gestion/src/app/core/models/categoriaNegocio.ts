@@ -1,4 +1,4 @@
-export interface Categoria {
+export interface CategoriaNegocio{
     nombre: string;
     descripcion?: string;
   }

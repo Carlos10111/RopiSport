@@ -15,8 +15,8 @@
           <th>Tel. Negocio</th>
           <th>Negocio</th>
           <th>Descripción</th>
+          <th>Categoría</th>
           <th>Dirección</th>
-          <th>Web</th>
           <th>CIF</th>
           <th>Cuenta</th>
           <th>Epígrafe</th>
@@ -32,33 +32,36 @@
       <tbody>
         <tr *ngFor="let socia of socias; let i = index">
           <td>{{ i + 1 }}</td>
-          <td>{{ socia.nombre }}</td>
+          <td>{{ socia.nombre }} {{ socia.apellidos }}</td>
           <td>{{ socia.email }}</td>
           <td>{{ socia.telefonoPersonal }}</td>
           <td>{{ socia.telefonoNegocio }}</td>
-          <td>{{ socia.negocio }}</td>
-          <td>{{ socia.descripcion }}</td>
+          <td>{{ socia.nombreNegocio }}</td>
+          <td class="text-truncate" style="max-width: 200px;" [title]="socia.descripcionNegocio">
+            {{ socia.descripcionNegocio }}
+          </td>
+          <td>{{ socia.categoria?.nombre }}</td>
           <td>{{ socia.direccion }}</td>
-          <td>{{ socia.web }}</td>
           <td>{{ socia.cif }}</td>
           <td>{{ socia.numeroCuenta }}</td>
           <td>{{ socia.epigrafe }}</td>
           <td>
-            <span class="badge bg-success" *ngIf="socia.estado === 'activa'">Activa</span>
-            <span class="badge bg-secondary" *ngIf="socia.estado === 'baja'">Baja</span>
+            <span class="badge" [ngClass]="socia.activa ? 'bg-success' : 'bg-secondary'">
+              {{ socia.activa ? 'Activa' : 'Baja' }}
+            </span>
           </td>
           <td>{{ socia.fechaInicio | date:'shortDate' }}</td>
           <td>{{ socia.fechaBaja | date:'shortDate' }}</td>
-          <td>{{ socia.pagos }}</td>
+          <td>{{ socia.pagos?.length }}</td>
           <td>{{ socia.observaciones }}</td>
           <td>
             <img *ngIf="socia.logo" [src]="socia.logo" alt="Logo" height="40">
           </td>
           <td>
-            <button class="btn btn-sm btn-warning me-2" (click)="editarSocia(socia)">
+            <button class="btn btn-sm btn-warning me-2" (click)="editarSocia(socia)" title="Editar">
               <i class="bi bi-pencil-fill"></i>
             </button>
-            <button class="btn btn-sm btn-danger" (click)="eliminarSocia(i)">
+            <button class="btn btn-sm btn-danger" (click)="eliminarSocia(i)" title="Eliminar">
               <i class="bi bi-trash-fill"></i>
             </button>
           </td>
@@ -66,13 +69,14 @@
       </tbody>
     </table>
   </div>
-</div>
-<div class="d-flex justify-content-end mb-3">
-  <button class="btn btn-primary" [routerLink]="['/formulario']">
-    <i class="bi bi-plus-lg"></i> Añadir nueva socia
-  </button>
+
+  <div class="d-flex justify-content-end mt-3">
+    <button class="btn btn-primary" [routerLink]="['/formulario']">
+      <i class="bi bi-plus-lg"></i> Añadir nueva socia
+    </button>
+  </div>
 </div>
 
-
+<!-- Estilos externos -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
