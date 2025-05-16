@@ -2,7 +2,7 @@
 
   <div class="form-group">
     <label for="nombre_institucion">Nombre de la institución</label>
-    <input id="nombre_institucion" formControlName="nombre_institucion" class="form-control" placeholder="Nombre de la institución" />
+    <input id="nombre_institucion" formControlName="nombreInstitucion" class="form-control" placeholder="Nombre de la institución" />
     <div *ngIf="form.get('nombre_institucion')?.invalid && form.get('nombre_institucion')?.touched" class="text-danger">
       El nombre de la institución es obligatorio.
     </div>
@@ -10,7 +10,7 @@
 
   <div class="form-group">
     <label for="persona_contacto">Persona de contacto</label>
-    <input id="persona_contacto" formControlName="persona_contacto" class="form-control" placeholder="Persona de contacto" />
+    <input id="persona_contacto" formControlName="personaContacto" class="form-control" placeholder="Persona de contacto" />
     <div *ngIf="form.get('persona_contacto')?.invalid && form.get('persona_contacto')?.touched" class="text-danger">
       La persona de contacto es obligatoria.
     </div>
@@ -63,9 +63,9 @@
         {{ tipo.nombre }}
       </option>
     </select>
-    <div *ngIf="form.get('tipoInstitucionId')?.invalid && form.get('tipoInstitucionId')?.touched" class="text-danger">
+    <!--<div *ngIf="form.get('tipoInstitucionId')?.invalid && form.get('tipoInstitucionId')?.touched" class="text-danger">
       El tipo de institución es obligatorio.
-    </div>
+    </div>-->
   </div>
 
   <!--enviuar-->

@@ -19,14 +19,14 @@
     <tbody>
       <tr *ngFor="let institucion of instituciones$ | async; let i = index">
         <td>{{ i + 1 }}</td>
-        <td>{{ institucion.nombre_institucion }}</td>
-        <td>{{ institucion.persona_contacto }}</td>
+        <td>{{ institucion.nombreInstitucion }}</td>
+        <td>{{ institucion.personaContacto }}</td>
         <td>{{ institucion.cargo }}</td>
         <td>{{ institucion.telefono }}</td>
         <td>{{ institucion.email }}</td>
         <td>{{ institucion.web }}</td>
         <td>{{ institucion.observaciones }}</td>
-        <td>{{ institucion.tipo_institucion_id }}</td>
+        <td>{{ institucion.tipoInstitucionId }}</td>
         <td>
           
           <button class="btn btn-primary btn-sm" [routerLink]="['/institucion', institucion.id]">Editar</button>
