@@ -1,5 +1,20 @@
 package com.ropisport.gestion.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.ropisport.gestion.exception.ValidationException;
 import com.ropisport.gestion.model.dto.request.LoginRequest;
 import com.ropisport.gestion.model.dto.request.PasswordChangeRequest;
@@ -8,14 +23,6 @@ import com.ropisport.gestion.model.dto.response.JwtResponse;
 import com.ropisport.gestion.security.jwt.JwtUtils;
 import com.ropisport.gestion.security.jwt.UserDetailsImpl;
 import com.ropisport.gestion.service.UsuarioService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
@@ -26,16 +33,16 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class AuthController {
-    
+
     @Autowired
     private AuthenticationManager authenticationManager;
-    
+
     @Autowired
     private JwtUtils jwtUtils;
-    
+
     @Autowired
     private UsuarioService usuarioService;
-    
+
     /**
      * Autentica un usuario y genera un token JWT
      * @param loginRequest datos de inicio de sesión
@@ -47,12 +54,12 @@ public class AuthController {
             Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
             );
-            
+
             SecurityContextHolder.getContext().setAuthentication(authentication);
             String jwt = jwtUtils.generateJwtToken(authentication);
-            
+
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            
+
             return ResponseEntity.ok(new JwtResponse(
                 jwt,
                 userDetails.getId(),
@@ -64,7 +71,7 @@ public class AuthController {
             throw new ValidationException("Credenciales incorrectas");
         }
     }
-    
+
     /**
      * Cambia la contraseña del usuario autenticado
      * @param request datos de cambio de contraseña
@@ -74,11 +81,11 @@ public class AuthController {
     public ResponseEntity<?> changePassword(@Valid @RequestBody PasswordChangeRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        
-        ApiResponse response = usuarioService.changePassword(userDetails.getId(), request);
+
+        ApiResponse<Void> response = usuarioService.changePassword(userDetails.getId(), request);
         return ResponseEntity.ok(response);
     }
-    
+
     /**
      * Verifica si un token JWT es válido
      * @param token token JWT a verificar
@@ -88,12 +95,12 @@ public class AuthController {
     public ResponseEntity<?> validateToken(@RequestParam String token) {
         boolean isValid = jwtUtils.validateJwtToken(token);
         if (isValid) {
-            return ResponseEntity.ok(new ApiResponse(true, "Token válido"));
+            return ResponseEntity.ok(new ApiResponse<Void>(true, "Token válido"));
         } else {
-            return ResponseEntity.badRequest().body(new ApiResponse(false, "Token inválido o expirado"));
+            return ResponseEntity.badRequest().body(new ApiResponse<Void>(false, "Token inválido o expirado"));
         }
     }
-    
+
     /**
      * Obtiene información del usuario autenticado
      * @return información del usuario
@@ -102,7 +109,7 @@ public class AuthController {
     public ResponseEntity<?> getUserInfo() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        
+
         return ResponseEntity.ok(new JwtResponse(
             null, // No enviamos el token de nuevo
             userDetails.getId(),

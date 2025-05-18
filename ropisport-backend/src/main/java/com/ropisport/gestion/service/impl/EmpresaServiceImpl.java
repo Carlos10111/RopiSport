@@ -1,5 +1,15 @@
 package com.ropisport.gestion.service.impl;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ropisport.gestion.exception.EntityNotFoundException;
 import com.ropisport.gestion.model.dto.request.EmpresaRequest;
 import com.ropisport.gestion.model.dto.response.EmpresaResponse;
@@ -10,25 +20,16 @@ import com.ropisport.gestion.repository.CategoriaNegocioRepository;
 import com.ropisport.gestion.repository.EmpresaRepository;
 import com.ropisport.gestion.repository.SociaRepository;
 import com.ropisport.gestion.service.EmpresaService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class EmpresaServiceImpl implements EmpresaService {
 
     @Autowired
     private EmpresaRepository empresaRepository;
-    
+
     @Autowired
     private SociaRepository sociaRepository;
-    
+
     @Autowired
     private CategoriaNegocioRepository categoriaNegocioRepository;
 
@@ -60,22 +61,22 @@ public class EmpresaServiceImpl implements EmpresaService {
     public EmpresaResponse createEmpresa(EmpresaRequest empresaRequest) {
         Socia socia = sociaRepository.findById(empresaRequest.getSociaId())
                 .orElseThrow(() -> new EntityNotFoundException("Socia no encontrada con ID: " + empresaRequest.getSociaId()));
-        
+
         // Verificar si la socia ya tiene una empresa
         Optional<Empresa> existingEmpresa = empresaRepository.findBySociaId(socia.getId());
         if (existingEmpresa.isPresent()) {
             throw new IllegalStateException("La socia ya tiene una empresa asociada");
         }
-        
+
         CategoriaNegocio categoria = null;
         if (empresaRequest.getCategoriaId() != null) {
             categoria = categoriaNegocioRepository.findById(empresaRequest.getCategoriaId())
                     .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con ID: " + empresaRequest.getCategoriaId()));
         }
-        
+
         Empresa empresa = new Empresa();
         mapRequestToEntity(empresaRequest, empresa, socia, categoria);
-        
+
         Empresa savedEmpresa = empresaRepository.save(empresa);
         return mapToResponse(savedEmpresa);
     }
@@ -85,20 +86,20 @@ public class EmpresaServiceImpl implements EmpresaService {
     public EmpresaResponse updateEmpresa(Integer id, EmpresaRequest empresaRequest) {
         Empresa empresa = empresaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Empresa no encontrada con ID: " + id));
-        
+
         // Solo verificamos que exista la socia, pero no cambiamos la asociación
         if (!empresa.getSocia().getId().equals(empresaRequest.getSociaId())) {
             throw new IllegalStateException("No se puede cambiar la socia asociada a una empresa");
         }
-        
+
         CategoriaNegocio categoria = null;
         if (empresaRequest.getCategoriaId() != null) {
             categoria = categoriaNegocioRepository.findById(empresaRequest.getCategoriaId())
                     .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con ID: " + empresaRequest.getCategoriaId()));
         }
-        
+
         mapRequestToEntity(empresaRequest, empresa, empresa.getSocia(), categoria);
-        
+
         Empresa updatedEmpresa = empresaRepository.save(empresa);
         return mapToResponse(updatedEmpresa);
     }
@@ -127,7 +128,7 @@ public class EmpresaServiceImpl implements EmpresaService {
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
-    
+
     private void mapRequestToEntity(EmpresaRequest request, Empresa empresa, Socia socia, CategoriaNegocio categoria) {
         empresa.setSocia(socia);
         empresa.setNombreNegocio(request.getNombreNegocio());
@@ -144,7 +145,7 @@ public class EmpresaServiceImpl implements EmpresaService {
         empresa.setLinkedin(request.getLinkedin());
         empresa.setOtrasRedes(request.getOtrasRedes());
     }
-    
+
     private EmpresaResponse mapToResponse(Empresa empresa) {
         return EmpresaResponse.builder()
                 .id(empresa.getId())

@@ -1,7 +1,7 @@
 package com.ropisport.gestion.config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -9,7 +9,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
  * Configuración web de la aplicación
@@ -17,7 +18,7 @@ import java.util.List;
 @Configuration
 @EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
-    
+
     /**
      * Configura el ObjectMapper para manejar fechas
      * @return ObjectMapper configurado
@@ -28,7 +29,7 @@ public class WebConfig implements WebMvcConfigurer {
         objectMapper.registerModule(new JavaTimeModule());
         return objectMapper;
     }
-    
+
     /**
      * Configura los convertidores de mensajes HTTP
      * @param converters lista de convertidores

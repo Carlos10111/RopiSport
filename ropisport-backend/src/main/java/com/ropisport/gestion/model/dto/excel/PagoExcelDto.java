@@ -1,10 +1,11 @@
 package com.ropisport.gestion.model.dto.excel;
 
-import com.ropisport.gestion.model.enums.MetodoPago;
-import lombok.Data;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
+import com.ropisport.gestion.model.enums.MetodoPago;
+
+import lombok.Data;
 
 @Data
 public class PagoExcelDto {

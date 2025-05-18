@@ -1,7 +1,7 @@
 package com.ropisport.gestion.security.jwt;
 
-import com.ropisport.gestion.security.service.UserDetailsServiceImpl;
-import com.ropisport.gestion.util.Constants;
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,17 +12,19 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.ropisport.gestion.security.service.UserDetailsServiceImpl;
+import com.ropisport.gestion.util.Constants;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * Filtro para validar el token JWT en cada petición
  */
 public class AuthTokenFilter extends OncePerRequestFilter {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
     @Autowired

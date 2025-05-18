@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "categoria_negocio")
 @Data
-@EqualsAndHashCode(callSuper = true) 
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -29,16 +29,16 @@ public class CategoriaNegocio extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
+
     @Column(nullable = false)
     private String nombre;
-    
+
     private String descripcion;
-    
+
     @OneToMany(mappedBy = "categoria")
     @JsonManagedReference
     private List<Empresa> empresas;
-    
+
     @OneToMany(mappedBy = "categoria")
     @JsonManagedReference
     private List<Socia> socias;

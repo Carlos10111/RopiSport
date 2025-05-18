@@ -1,6 +1,6 @@
 package com.ropisport.gestion.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ropisport.gestion.model.audit.Auditable;
 
 import jakarta.persistence.Column;
@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "instituciones")
 @Data
-@EqualsAndHashCode(callSuper = true) 
+@EqualsAndHashCode(callSuper = true)
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,27 +29,27 @@ public class Institucion extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
+
 
     @Column(name = "nombre_institucion")
     private String nombreInstitucion;
-    
+
     @Column(name = "persona_contacto")
     private String personaContacto;
-    
-    
+
+
     private String cargo;
-    
+
     private String telefono;
-    
+
     private String email;
-    
+
     private String web;
-    
+
     @ManyToOne
     @JoinColumn(name = "tipo_institucion_id")
-    @JsonBackReference
+    @JsonIgnoreProperties("instituciones")
     private TipoInstitucion tipoInstitucion;
-    
+
     private String observaciones;
 }

@@ -1,5 +1,12 @@
 package com.ropisport.gestion.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ropisport.gestion.exception.EntityNotFoundException;
 import com.ropisport.gestion.exception.ResourceAlreadyExistsException;
 import com.ropisport.gestion.model.dto.request.RolRequest;
@@ -7,12 +14,6 @@ import com.ropisport.gestion.model.dto.response.RolResponse;
 import com.ropisport.gestion.model.entity.Rol;
 import com.ropisport.gestion.repository.RolRepository;
 import com.ropisport.gestion.service.RolService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class RolServiceImpl implements RolService {
@@ -42,11 +43,11 @@ public class RolServiceImpl implements RolService {
         if (rolRepository.existsByNombre(rolRequest.getNombre())) {
             throw new ResourceAlreadyExistsException("Ya existe un rol con ese nombre");
         }
-        
+
         Rol rol = new Rol();
         rol.setNombre(rolRequest.getNombre());
         rol.setDescripcion(rolRequest.getDescripcion());
-        
+
         Rol savedRol = rolRepository.save(rol);
         return mapToResponse(savedRol);
     }
@@ -56,16 +57,16 @@ public class RolServiceImpl implements RolService {
     public RolResponse updateRol(Integer id, RolRequest rolRequest) {
         Rol rol = rolRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Rol no encontrado con ID: " + id));
-        
+
         // Verificar si el nombre ya existe en otro rol
-        if (!rol.getNombre().equals(rolRequest.getNombre()) && 
+        if (!rol.getNombre().equals(rolRequest.getNombre()) &&
                 rolRepository.existsByNombre(rolRequest.getNombre())) {
             throw new ResourceAlreadyExistsException("Ya existe otro rol con ese nombre");
         }
-        
+
         rol.setNombre(rolRequest.getNombre());
         rol.setDescripcion(rolRequest.getDescripcion());
-        
+
         Rol updatedRol = rolRepository.save(rol);
         return mapToResponse(updatedRol);
     }
@@ -75,15 +76,15 @@ public class RolServiceImpl implements RolService {
     public void deleteRol(Integer id) {
         Rol rol = rolRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Rol no encontrado con ID: " + id));
-        
+
         // Verificar si tiene usuarios asociados
         if (rol.getUsuarios() != null && !rol.getUsuarios().isEmpty()) {
             throw new IllegalStateException("No se puede eliminar el rol porque tiene usuarios asociados");
         }
-        
+
         rolRepository.delete(rol);
     }
-    
+
     private RolResponse mapToResponse(Rol rol) {
         return RolResponse.builder()
                 .id(rol.getId())

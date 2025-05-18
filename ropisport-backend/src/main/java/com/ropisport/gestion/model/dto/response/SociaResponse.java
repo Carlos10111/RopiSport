@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,12 +14,8 @@ public class SociaResponse {
     private String numeroSocia;
     private String nombre;
     private String apellidos;
-    private Integer usuarioId;
-    private String username;
     private String nombreNegocio;
     private String descripcionNegocio;
-    private Integer categoriaId;
-    private String nombreCategoria;
     private String direccion;
     private String telefonoPersonal;
     private String telefonoNegocio;
@@ -30,9 +24,16 @@ public class SociaResponse {
     private String numeroCuenta;
     private String epigrafe;
     private Boolean activa;
-    private LocalDateTime fechaInicio;
-    private LocalDateTime fechaBaja;
+    private String fechaInicio;
+    private String fechaBaja;
     private String observaciones;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private CategoriaDto categoria;
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CategoriaDto {
+        private Integer id;
+        private String nombre;
+    }
 }

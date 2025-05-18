@@ -1,12 +1,13 @@
 package com.ropisport.gestion.service;
 
-import com.ropisport.gestion.model.dto.request.PagoRequest;
-import com.ropisport.gestion.model.dto.response.PagoResponse;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.ropisport.gestion.model.dto.request.PagoRequest;
+import com.ropisport.gestion.model.dto.response.PagoResponse;
 
 public interface PagoService {
     Page<PagoResponse> getAllPagos(Pageable pageable);

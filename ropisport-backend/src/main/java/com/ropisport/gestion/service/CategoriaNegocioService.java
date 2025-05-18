@@ -1,9 +1,9 @@
 package com.ropisport.gestion.service;
 
+import java.util.List;
+
 import com.ropisport.gestion.model.dto.request.CategoriaRequest;
 import com.ropisport.gestion.model.dto.response.CategoriaResponse;
-
-import java.util.List;
 
 public interface CategoriaNegocioService {
     List<CategoriaResponse> getAllCategorias();

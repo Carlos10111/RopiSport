@@ -1,11 +1,12 @@
 package com.ropisport.gestion.service;
 
-import com.ropisport.gestion.model.dto.request.InstitucionRequest;
-import com.ropisport.gestion.model.dto.response.InstitucionResponse;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import com.ropisport.gestion.model.dto.request.InstitucionRequest;
+import com.ropisport.gestion.model.dto.response.InstitucionResponse;
 
 public interface InstitucionService {
     Page<InstitucionResponse> getAllInstituciones(Pageable pageable);

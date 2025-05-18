@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchRequest {
-    
+
     @NotBlank(message = "El término de búsqueda es obligatorio")
     private String searchTerm;
 }

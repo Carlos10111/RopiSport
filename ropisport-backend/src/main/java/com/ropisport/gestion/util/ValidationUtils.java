@@ -6,20 +6,20 @@ import java.util.regex.Pattern;
  * Utilidades para validación de datos
  */
 public final class ValidationUtils {
-    
+
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
             "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$");
-    
+
     private static final Pattern CIF_PATTERN = Pattern.compile(
             "^[a-zA-Z][0-9]{7}[a-zA-Z0-9]$");
-    
+
     private static final Pattern PHONE_PATTERN = Pattern.compile(
             "^\\+?[0-9\\s]{9,15}$");
-    
+
     private ValidationUtils() {
         // Constructor privado para evitar instanciación
     }
-    
+
     /**
      * Valida si un email tiene formato correcto
      * @param email email a validar
@@ -31,7 +31,7 @@ public final class ValidationUtils {
         }
         return EMAIL_PATTERN.matcher(email).matches();
     }
-    
+
     /**
      * Valida si un CIF tiene formato correcto
      * @param cif CIF a validar
@@ -43,7 +43,7 @@ public final class ValidationUtils {
         }
         return CIF_PATTERN.matcher(cif).matches();
     }
-    
+
     /**
      * Valida si un teléfono tiene formato correcto
      * @param phone teléfono a validar
@@ -55,7 +55,7 @@ public final class ValidationUtils {
         }
         return PHONE_PATTERN.matcher(phone).matches();
     }
-    
+
     /**
      * Verifica si un string es nulo o está vacío
      * @param str string a verificar

@@ -1,9 +1,9 @@
 package com.ropisport.gestion.service;
 
+import java.util.List;
+
 import com.ropisport.gestion.model.dto.request.RolRequest;
 import com.ropisport.gestion.model.dto.response.RolResponse;
-
-import java.util.List;
 
 public interface RolService {
     List<RolResponse> getAllRoles();

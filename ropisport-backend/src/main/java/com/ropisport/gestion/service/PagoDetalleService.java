@@ -1,9 +1,9 @@
 package com.ropisport.gestion.service;
 
+import java.util.List;
+
 import com.ropisport.gestion.model.dto.request.PagoDetalleRequest;
 import com.ropisport.gestion.model.dto.response.PagoDetalleResponse;
-
-import java.util.List;
 
 public interface PagoDetalleService {
     List<PagoDetalleResponse> getDetallesByPagoId(Integer pagoId);

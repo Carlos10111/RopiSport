@@ -1,5 +1,13 @@
 package com.ropisport.gestion.service.impl;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ropisport.gestion.exception.EntityNotFoundException;
 import com.ropisport.gestion.model.dto.request.PagoDetalleRequest;
 import com.ropisport.gestion.model.dto.response.PagoDetalleResponse;
@@ -8,20 +16,13 @@ import com.ropisport.gestion.model.entity.PagoDetalle;
 import com.ropisport.gestion.repository.PagoDetalleRepository;
 import com.ropisport.gestion.repository.PagoRepository;
 import com.ropisport.gestion.service.PagoDetalleService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class PagoDetalleServiceImpl implements PagoDetalleService {
 
     @Autowired
     private PagoDetalleRepository pagoDetalleRepository;
-    
+
     @Autowired
     private PagoRepository pagoRepository;
 
@@ -46,15 +47,15 @@ public class PagoDetalleServiceImpl implements PagoDetalleService {
     public PagoDetalleResponse createDetalle(PagoDetalleRequest detalleRequest) {
         Pago pago = pagoRepository.findById(detalleRequest.getPagoId())
                 .orElseThrow(() -> new EntityNotFoundException("Pago no encontrado con ID: " + detalleRequest.getPagoId()));
-        
+
         PagoDetalle detalle = new PagoDetalle();
         detalle.setPago(pago);
         detalle.setConcepto(detalleRequest.getConcepto());
         detalle.setMonto(detalleRequest.getMonto());
-        detalle.setFechaDetalle(detalleRequest.getFechaDetalle() != null ? 
+        detalle.setFechaDetalle(detalleRequest.getFechaDetalle() != null ?
                 detalleRequest.getFechaDetalle() : LocalDateTime.now());
         detalle.setNotas(detalleRequest.getNotas());
-        
+
         PagoDetalle savedDetalle = pagoDetalleRepository.save(detalle);
         return mapToResponse(savedDetalle);
     }
@@ -64,17 +65,17 @@ public class PagoDetalleServiceImpl implements PagoDetalleService {
     public PagoDetalleResponse updateDetalle(Integer id, PagoDetalleRequest detalleRequest) {
         PagoDetalle detalle = pagoDetalleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Detalle de pago no encontrado con ID: " + id));
-        
+
         // Verificar que el pago asociado no cambie
         if (!detalle.getPago().getId().equals(detalleRequest.getPagoId())) {
             throw new IllegalStateException("No se puede cambiar el pago asociado a un detalle");
         }
-        
+
         detalle.setConcepto(detalleRequest.getConcepto());
         detalle.setMonto(detalleRequest.getMonto());
         detalle.setFechaDetalle(detalleRequest.getFechaDetalle());
         detalle.setNotas(detalleRequest.getNotas());
-        
+
         PagoDetalle updatedDetalle = pagoDetalleRepository.save(detalle);
         return mapToResponse(updatedDetalle);
     }
@@ -87,7 +88,7 @@ public class PagoDetalleServiceImpl implements PagoDetalleService {
         }
         pagoDetalleRepository.deleteById(id);
     }
-    
+
     private PagoDetalleResponse mapToResponse(PagoDetalle detalle) {
         return PagoDetalleResponse.builder()
                 .id(detalle.getId())

@@ -1,5 +1,0 @@
-package com.ropisport.gestion.repository;
-
-public interface PagoDetalleRepository {
-
-}

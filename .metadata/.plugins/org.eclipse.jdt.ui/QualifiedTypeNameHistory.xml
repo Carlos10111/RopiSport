@@ -27,7 +27,6 @@
     <fullyQualifiedTypeName name="com.ropisport.gestion.model.dto.responde.PagoDetalleResponse"/>
     <fullyQualifiedTypeName name="com.ropisport.gestion.model.dto.responde.ApiResponse"/>
     <fullyQualifiedTypeName name="jakarta.validation.Valid"/>
-    <fullyQualifiedTypeName name="com.ropisport.gestion.service.SociaService"/>
     <fullyQualifiedTypeName name="lombok.RequiredArgsConstructor"/>
     <fullyQualifiedTypeName name="java.awt.print.Pageable"/>
     <fullyQualifiedTypeName name="com.sun.tools.javac.resources.compiler"/>
@@ -44,4 +43,6 @@
     <fullyQualifiedTypeName name="java.lang.String"/>
     <fullyQualifiedTypeName name="com.ropisport.gestion.security.service.UserDetailsServiceImpl"/>
     <fullyQualifiedTypeName name="com.ropisport.gestion.model.entity.Institucion"/>
+    <fullyQualifiedTypeName name="com.ropisport.gestion.service.SociaService"/>
+    <fullyQualifiedTypeName name="org.springframework.stereotype.Component"/>
 </qualifiedTypeNameHistroy>

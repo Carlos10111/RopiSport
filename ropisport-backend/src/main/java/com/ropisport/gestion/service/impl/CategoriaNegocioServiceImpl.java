@@ -1,5 +1,12 @@
 package com.ropisport.gestion.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.ropisport.gestion.exception.EntityNotFoundException;
 import com.ropisport.gestion.exception.ResourceAlreadyExistsException;
 import com.ropisport.gestion.model.dto.request.CategoriaRequest;
@@ -7,12 +14,6 @@ import com.ropisport.gestion.model.dto.response.CategoriaResponse;
 import com.ropisport.gestion.model.entity.CategoriaNegocio;
 import com.ropisport.gestion.repository.CategoriaNegocioRepository;
 import com.ropisport.gestion.service.CategoriaNegocioService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CategoriaNegocioServiceImpl implements CategoriaNegocioService {
@@ -42,11 +43,11 @@ public class CategoriaNegocioServiceImpl implements CategoriaNegocioService {
         if (categoriaNegocioRepository.existsByNombre(categoriaRequest.getNombre())) {
             throw new ResourceAlreadyExistsException("Ya existe una categoría con ese nombre");
         }
-        
+
         CategoriaNegocio categoria = new CategoriaNegocio();
         categoria.setNombre(categoriaRequest.getNombre());
         categoria.setDescripcion(categoriaRequest.getDescripcion());
-        
+
         CategoriaNegocio savedCategoria = categoriaNegocioRepository.save(categoria);
         return mapToResponse(savedCategoria);
     }
@@ -56,16 +57,16 @@ public class CategoriaNegocioServiceImpl implements CategoriaNegocioService {
     public CategoriaResponse updateCategoria(Integer id, CategoriaRequest categoriaRequest) {
         CategoriaNegocio categoria = categoriaNegocioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con ID: " + id));
-        
+
         // Verificar si el nombre ya existe en otra categoría
-        if (!categoria.getNombre().equals(categoriaRequest.getNombre()) && 
+        if (!categoria.getNombre().equals(categoriaRequest.getNombre()) &&
                 categoriaNegocioRepository.existsByNombre(categoriaRequest.getNombre())) {
             throw new ResourceAlreadyExistsException("Ya existe otra categoría con ese nombre");
         }
-        
+
         categoria.setNombre(categoriaRequest.getNombre());
         categoria.setDescripcion(categoriaRequest.getDescripcion());
-        
+
         CategoriaNegocio updatedCategoria = categoriaNegocioRepository.save(categoria);
         return mapToResponse(updatedCategoria);
     }
@@ -75,13 +76,13 @@ public class CategoriaNegocioServiceImpl implements CategoriaNegocioService {
     public void deleteCategoria(Integer id) {
         CategoriaNegocio categoria = categoriaNegocioRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con ID: " + id));
-        
+
         // Verificar si tiene empresas o socias asociadas
-        if ((categoria.getEmpresas() != null && !categoria.getEmpresas().isEmpty()) || 
+        if ((categoria.getEmpresas() != null && !categoria.getEmpresas().isEmpty()) ||
             (categoria.getSocias() != null && !categoria.getSocias().isEmpty())) {
             throw new IllegalStateException("No se puede eliminar la categoría porque tiene empresas o socias asociadas");
         }
-        
+
         categoriaNegocioRepository.delete(categoria);
     }
 
@@ -92,7 +93,7 @@ public class CategoriaNegocioServiceImpl implements CategoriaNegocioService {
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
-    
+
     private CategoriaResponse mapToResponse(CategoriaNegocio categoria) {
         return CategoriaResponse.builder()
                 .id(categoria.getId())

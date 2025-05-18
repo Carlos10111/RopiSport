@@ -1,12 +1,12 @@
 package com.ropisport.gestion.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -18,7 +18,7 @@ public class ApiError {
     private String message;
     private String path;
     private List<ValidationError> validationErrors = new ArrayList<>();
-    
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

@@ -1,16 +1,22 @@
 package com.ropisport.gestion.security.jwt;
 
-import com.ropisport.gestion.util.Constants;
-import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
+import java.security.Key;
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
-import java.util.Date;
+import com.ropisport.gestion.util.Constants;
+
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.Keys;
 
 /**
  * Utilidades para JWT (generación y validación de tokens)
@@ -32,7 +38,7 @@ public class JwtUtils {
      */
     public String generateJwtToken(Authentication authentication) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-        
+
         Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
 
         return Jwts.builder()
@@ -50,7 +56,7 @@ public class JwtUtils {
      */
     public String getUsernameFromJwtToken(String token) {
         Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-        
+
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
@@ -67,7 +73,7 @@ public class JwtUtils {
     public boolean validateJwtToken(String authToken) {
         try {
             Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-            
+
             Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
@@ -87,7 +93,7 @@ public class JwtUtils {
 
         return false;
     }
-    
+
     /**
      * Extrae el token JWT del header Authorization
      * @param authHeader valor del header Authorization

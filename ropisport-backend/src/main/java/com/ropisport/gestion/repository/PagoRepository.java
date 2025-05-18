@@ -1,11 +1,12 @@
 package com.ropisport.gestion.repository;
 
-import com.ropisport.gestion.model.entity.Pago;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.ropisport.gestion.model.entity.Pago;
 
 @Repository
 public interface PagoRepository extends JpaRepository<Pago, Integer> {
