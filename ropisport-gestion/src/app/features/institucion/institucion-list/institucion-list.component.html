@@ -1,39 +1,439 @@
-<div class="container mt-4">
-  <h2>Listado de Instituciones</h2>
-  
-  <table class="table table-bordered">
-    <thead>
+<!-- CONTENEDOR PRINCIPAL Y TABLA -->
+<div class="container">
+  <div class="main-panel">
+    <div class="header">
+      <h2>Instituciones</h2>
+      <div class="action-bar">
+        <div class="search-container">
+          <input type="text" class="search-input" placeholder="Busca institución....." (input)="onSearch($event)">
+        </div>
+        <div class="header-actions">
+          <button class="btn-edit" (click)="abrirModalBuscarParaModificar()"><i class="fas fa-edit"></i>
+            Modificar</button>
+          <button class="btn-delete" (click)="abrirModalBuscarParaEliminar()"><i class="fas fa-trash"></i>
+            Eliminar</button>
+        </div>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Persona Contacto</th>
+            <th>Cargo</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Web</th>
+            <th>Tipo</th>
+            <th>Observaciones</th>
+            <th>Creado</th>
+            <th>Actualizado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let institucion of instituciones">
+            <td>{{ institucion.nombreInstitucion }}</td>
+            <td>{{ institucion.personaContacto || '-' }}</td>
+            <td>{{ institucion.cargo || '-' }}</td>
+            <td>{{ institucion.telefono || '-' }}</td>
+            <td>{{ institucion.email || '-' }}</td>
+            <td><a *ngIf="institucion.web" [href]="institucion.web" target="_blank">{{ institucion.web }}</a><span
+                *ngIf="!institucion.web">-</span></td>
+            <td>{{ institucion.nombreTipoInstitucion || '-' }}</td>
+            <td>{{ institucion.observaciones || '-' }}</td>
+            <td>{{ institucion.createdAt | date: 'short' }}</td>
+            <td>{{ institucion.updatedAt | date: 'short' }}</td>
+            <td class="actions-column">
+              <button class="btn-edit" (click)="abrirModalEditar(institucion)"><i class="fas fa-edit"></i>
+                Modificar</button>
+              <button class="btn-delete" (click)="abrirModalEliminar(institucion)"><i class="fas fa-trash"></i>
+                Eliminar</button>
+            </td>
+          </tr>
+          <tr *ngIf="instituciones.length === 0 && !loading">
+            <td colspan="11" class="no-results">No se encontraron instituciones</td>
+          </tr>
+          <tr *ngIf="loading">
+            <td colspan="11" class="loading-cell">
+              <div class="spinner"></div><span>Cargando...</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination-container" *ngIf="totalPages > 1">
+      <button class="btn-page" [disabled]="currentPage === 0" (click)="onPageChange(currentPage - 1)"><i
+          class="fas fa-chevron-left"></i></button>
+      <span class="page-info">Página {{ currentPage + 1 }} de {{ totalPages }}</span>
+      <button class="btn-page" [disabled]="currentPage === totalPages - 1" (click)="onPageChange(currentPage + 1)"><i
+          class="fas fa-chevron-right"></i></button>
+    </div>
+    <div class="footer">
+      <button class="btn-primary" (click)="abrirModalNueva()"><i class="fas fa-plus"></i> AÑADIR INSTITUCIÓN</button>
+    </div>
+  </div>
+  <div class="alert alert-danger" *ngIf="error">{{ error }}<button class="btn-close" (click)="error = ''">×</button>
+  </div>
+</div>
+
+<!-- MODAL NUEVA -->
+<div class="modal-overlay" *ngIf="modalActivo === 'nueva'">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3>Nueva Institución</h3><button class="btn-close" (click)="cerrarModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form #nuevaInstitucionForm="ngForm" (ngSubmit)="guardarNuevaInstitucion()">
+        <div class="form-group"><label for="nombre">Nombre *</label><input type="text" id="nombre" name="nombre"
+            [(ngModel)]="institucionActual.nombreInstitucion" required class="form-control"></div>
+        <div class="form-group"><label for="personaContacto">Persona de Contacto</label><input type="text"
+            id="personaContacto" name="personaContacto" [(ngModel)]="institucionActual.personaContacto"
+            class="form-control"></div>
+        <div class="form-group"><label for="cargo">Cargo</label><input type="text" id="cargo" name="cargo"
+            [(ngModel)]="institucionActual.cargo" class="form-control"></div>
+        <div class="form-group"><label for="telefono">Teléfono</label><input type="tel" id="telefono" name="telefono"
+            [(ngModel)]="institucionActual.telefono" class="form-control"></div>
+        <div class="form-group"><label for="email">Email</label><input type="email" id="email" name="email"
+            [(ngModel)]="institucionActual.email" class="form-control"></div>
+        <div class="form-group"><label for="web">Web</label><input type="url" id="web" name="web"
+            [(ngModel)]="institucionActual.web" class="form-control"></div>
+        <div class="form-group"><label for="tipoInstitucionId">Tipo de Institución</label><select id="tipoInstitucionId"
+            name="tipoInstitucionId" [(ngModel)]="institucionActual.tipoInstitucionId" class="form-control">
+            <option *ngFor="let tipo of tiposInstitucion" [value]="tipo.id">{{ tipo.nombre }}</option>
+          </select></div>
+        <div class="form-group"><label for="observaciones">Observaciones</label><textarea id="observaciones"
+            name="observaciones" [(ngModel)]="institucionActual.observaciones" class="form-control"></textarea></div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="!nuevaInstitucionForm.valid || guardando">
+            <div class="spinner" *ngIf="guardando"></div>Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR -->
+<div class="modal-overlay" *ngIf="modalActivo === 'editar'">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3>Modificar Institución</h3><button class="btn-close" (click)="cerrarModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <form #editarInstitucionForm="ngForm" (ngSubmit)="guardarEdicionInstitucion()">
+        <div class="form-group"><label for="edit_nombre">Nombre *</label><input type="text" id="edit_nombre"
+            name="nombre" [(ngModel)]="institucionActual.nombreInstitucion" required class="form-control"></div>
+        <div class="form-group"><label for="edit_personaContacto">Persona de Contacto</label><input type="text"
+            id="edit_personaContacto" name="personaContacto" [(ngModel)]="institucionActual.personaContacto"
+            class="form-control"></div>
+        <div class="form-group"><label for="edit_cargo">Cargo</label><input type="text" id="edit_cargo" name="cargo"
+            [(ngModel)]="institucionActual.cargo" class="form-control"></div>
+        <div class="form-group"><label for="edit_telefono">Teléfono</label><input type="tel" id="edit_telefono"
+            name="telefono" [(ngModel)]="institucionActual.telefono" class="form-control"></div>
+        <div class="form-group"><label for="edit_email">Email</label><input type="email" id="edit_email" name="email"
+            [(ngModel)]="institucionActual.email" class="form-control"></div>
+        <div class="form-group"><label for="edit_web">Web</label><input type="url" id="edit_web" name="web"
+            [(ngModel)]="institucionActual.web" class="form-control"></div>
+        <div class="form-group"><label for="edit_tipoInstitucionId">Tipo de Institución</label><select
+            id="edit_tipoInstitucionId" name="tipoInstitucionId" [(ngModel)]="institucionActual.tipoInstitucionId"
+            class="form-control">
+            <option *ngFor="let tipo of tiposInstitucion" [value]="tipo.id">{{ tipo.nombre }}</option>
+          </select></div>
+        <div class="form-group"><label for="edit_observaciones">Observaciones</label><textarea id="edit_observaciones"
+            name="observaciones" [(ngModel)]="institucionActual.observaciones" class="form-control"></textarea></div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn-primary" [disabled]="!editarInstitucionForm.valid || guardando">
+            <div class="spinner" *ngIf="guardando"></div>Guardar Cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BUSCAR MODIFICAR -->
+<div class="modal-overlay" *ngIf="modalActivo === 'buscarModificar'">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3>Buscar Institución para Modificar</h3><button class="btn-close" (click)="cerrarModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label for="buscarInstitucion">Buscar por nombre o contacto</label><input type="text"
+          id="buscarInstitucion" class="form-control" [(ngModel)]="terminoBusqueda" (input)="buscarInstituciones()"
+          placeholder="Buscar..."></div>
+      <div class="results-container">
+        <div class="loading-indicator" *ngIf="buscando">
+          <div class="spinner"></div><span>Buscando...</span>
+        </div>
+        <table class="table results-table" *ngIf="resultadosBusqueda.length > 0">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Contacto</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let institucion of resultadosBusqueda">
+              <td>{{ institucion.nombreInstitucion }}</td>
+              <td>{{ institucion.personaContacto || '-' }}</td>
+              <td><button class="btn-edit" (click)="seleccionarInstitucionParaEditar(institucion)"><i
+                    class="fas fa-edit"></i> Modificar</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="no-results-message" *ngIf="resultadosBusqueda.length === 0 && terminoBusqueda && !buscando">No se
+          encontraron instituciones con ese criterio</div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BUSCAR ELIMINAR -->
+<div class="modal-overlay" *ngIf="modalActivo === 'buscarEliminar'">
+  <div class="modal-container">
+    <div class="modal-header">
+      <h3>Buscar Institución para Eliminar</h3><button class="btn-close" (click)="cerrarModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group"><label for="buscarInstitucionEliminar">Buscar por nombre o contacto</label><input
+          type="text" id="buscarInstitucionEliminar" class="form-control" [(ngModel)]="terminoBusqueda"
+          (input)="buscarInstituciones()" placeholder="Buscar..."></div>
+      <div class="results-container">
+        <div class="loading-indicator" *ngIf="buscando">
+          <div class="spinner"></div><span>Buscando...</span>
+        </div>
+        <table class="table results-table" *ngIf="resultadosBusqueda.length > 0">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Contacto</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let institucion of resultadosBusqueda">
+              <td>{{ institucion.nombreInstitucion }}</td>
+              <td>{{ institucion.personaContacto || '-' }}</td>
+              <td><button class="btn-delete" (click)="seleccionarInstitucionParaEliminar(institucion)"><i
+                    class="fas fa-trash"></i> Eliminar</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="no-results-message" *ngIf="resultadosBusqueda.length === 0 && terminoBusqueda && !buscando">No se
+          encontraron instituciones con ese criterio</div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAR ELIMINAR -->
+<div class="modal-overlay" *ngIf="modalActivo === 'eliminar'">
+  <div class="modal-container delete-modal">
+    <div class="modal-header">
+      <h3>Eliminar Institución</h3><button class="btn-close" (click)="cerrarModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <p class="confirm-message">¿Está seguro de que desea eliminar la institución <strong>{{ institucionActual?.nombreInstitucion
+          }}</strong>?</p>
+      <p class="warning-message">Esta acción no se puede deshacer.</p>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        <button type="button" class="btn-danger" (click)="confirmarEliminar()" [disabled]="guardando">
+          <div class="spinner" *ngIf="guardando"></div>Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<!--<div class="container mt-4">
+  <h2 class="mb-3">Listado de Instituciones</h2>
+
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <input
+      type="text"
+      class="form-control w-50"
+      placeholder="Buscar instituciones..."
+      [(ngModel)]="searchText"
+      (input)="onSearch($event)"
+    />
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-primary" (click)="abrirModalBuscarParaModificar()">Buscar para modificar</button>
+      <button class="btn btn-outline-danger" (click)="abrirModalBuscarParaEliminar()">Buscar para eliminar</button>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+  <div *ngIf="loading" class="text-center">Cargando instituciones...</div>
+
+  <table class="table table-hover table-bordered" *ngIf="!loading && instituciones.length > 0">
+    <thead class="table-light">
       <tr>
-        <th>#</th>
-        <th>Nombre de la institución</th>
-        <th>Persona de contacto</th>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Persona contacto</th>
         <th>Cargo</th>
         <th>Teléfono</th>
         <th>Email</th>
-        <th>Sitio Web</th>
-        <th>Observaciones</th>
-        <th>Tipo de Institución</th>
+        <th>Web</th>
+        <th>Tipo</th>
         <th>Acciones</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let institucion of instituciones$ | async; let i = index">
-        <td>{{ i + 1 }}</td>
-        <td>{{ institucion.nombreInstitucion }}</td>
-        <td>{{ institucion.personaContacto }}</td>
-        <td>{{ institucion.cargo }}</td>
-        <td>{{ institucion.telefono }}</td>
-        <td>{{ institucion.email }}</td>
-        <td>{{ institucion.web }}</td>
-        <td>{{ institucion.observaciones }}</td>
-        <td>{{ institucion.tipoInstitucionId }}</td>
+      <tr *ngFor="let inst of instituciones">
+        <td>{{ inst.id }}</td>
+        <td>{{ inst.nombreInstitucion }}</td>
+        <td>{{ inst.personaContacto }}</td>
+        <td>{{ inst.cargo }}</td>
+        <td>{{ inst.telefono }}</td>
+        <td>{{ inst.email }}</td>
+        <td>{{ inst.web }}</td>
+        <td>{{ inst.nombreTipoInstitucion }}</td>
         <td>
-          
-          <button class="btn btn-primary btn-sm" [routerLink]="['/institucion', institucion.id]">Editar</button>
-                    <!-- redirige a la página de edición con el id de la institución -->
-          <button class="btn btn-danger btn-sm" (click)="deleteInstitucion(institucion.id)">Eliminar</button>
+          <button class="btn btn-sm btn-warning me-2" (click)="abrirModalEditar(inst)">Editar</button>
+          <button class="btn btn-sm btn-danger" (click)="abrirModalEliminar(inst)">Eliminar</button>
         </td>
       </tr>
     </tbody>
   </table>
+
+  <nav *ngIf="totalPages > 1">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="currentPage === 0">
+        <button class="page-link" (click)="onPageChange(currentPage - 1)">Anterior</button>
+      </li>
+      <li class="page-item" *ngFor="let page of [].constructor(totalPages); let i = index"
+          [class.active]="i === currentPage">
+        <button class="page-link" (click)="onPageChange(i)">{{ i + 1 }}</button>
+      </li>
+      <li class="page-item" [class.disabled]="currentPage === totalPages - 1">
+        <button class="page-link" (click)="onPageChange(currentPage + 1)">Siguiente</button>
+      </li>
+    </ul>
+  </nav>
 </div>
+-->
+<!-- Modal buscar para editar o eliminar --><!--
+<div class="modal d-block" *ngIf="modalActivo === 'buscarModificar' || modalActivo === 'buscarEliminar'" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          Buscar institución para {{ modalActivo === 'buscarModificar' ? 'modificar' : 'eliminar' }}
+        </h5>
+        <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+      </div>
+      <div class="modal-body">
+        <input
+          type="text"
+          class="form-control mb-3"
+          placeholder="Buscar..."
+          [(ngModel)]="terminoBusqueda"
+          (input)="buscarInstituciones()"
+        />
+        <div *ngIf="buscando">Buscando...</div>
+        <div *ngIf="!buscando && resultadosBusqueda.length === 0">No se encontraron resultados.</div>
+        <ul class="list-group">
+          <li
+            *ngFor="let inst of resultadosBusqueda"
+            class="list-group-item d-flex justify-content-between align-items-center"
+          >
+            <div>
+              <strong>{{ inst.nombreInstitucion }}</strong>
+              <span class="text-muted">({{ inst.email }})</span>
+            </div>
+            <button
+              class="btn"
+              [ngClass]="modalActivo === 'buscarModificar' ? 'btn-warning' : 'btn-danger'"
+              (click)="modalActivo === 'buscarModificar' ? seleccionarInstitucionParaEditar(inst) : seleccionarInstitucionParaEliminar(inst)"
+            >
+              {{ modalActivo === 'buscarModificar' ? 'Editar' : 'Eliminar' }}
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal d-block" *ngIf="modalActivo === 'editar'" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar institución</h5>
+        <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="mb-2">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" [(ngModel)]="institucionActual.nombreInstitucion" name="nombre" />
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Persona de contacto</label>
+            <input type="text" class="form-control" [(ngModel)]="institucionActual.personaContacto" name="contacto" />
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Cargo</label>
+            <input type="text" class="form-control" [(ngModel)]="institucionActual.cargo" name="cargo" />
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Teléfono</label>
+            <input type="text" class="form-control" [(ngModel)]="institucionActual.telefono" name="telefono" />
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" [(ngModel)]="institucionActual.email" name="email" />
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Web</label>
+            <input type="text" class="form-control" [(ngModel)]="institucionActual.web" name="web" />
+          </div>
+          <div class="mb-2">
+            <label class="form-label">Observaciones</label>
+            <textarea class="form-control" [(ngModel)]="institucionActual.observaciones" name="observaciones"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn btn-primary" (click)="guardarEdicionInstitucion()" [disabled]="guardando">
+          Guardar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal d-block" *ngIf="modalActivo === 'eliminar'" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger">Confirmar eliminación</h5>
+        <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Estás seguro de que quieres eliminar la institución <strong>{{ institucionActual.nombreInstitucion }}</strong>?</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn btn-danger" (click)="confirmarEliminar()" [disabled]="guardando">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>-->

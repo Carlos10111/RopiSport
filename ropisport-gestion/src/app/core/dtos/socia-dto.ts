@@ -1,10 +1,9 @@
 export interface SociaDTO {
     numeroSocia: string;
-    nombreApellidos: string;
-    usuarioId: number;
+    nombre: string;
+    apellidos: string;
     nombreNegocio: string;
     descripcionNegocio: string;
-    categoriaId: number;
     direccion: string;
     telefonoPersonal: string;
     telefonoNegocio: string;
@@ -16,4 +15,5 @@ export interface SociaDTO {
     fechaInicio: Date;
     fechaBaja: Date | null;
     observaciones: string;
+    categoriaId: string;
 }

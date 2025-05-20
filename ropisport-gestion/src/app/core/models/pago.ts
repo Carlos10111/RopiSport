@@ -1,9 +1,15 @@
+import { MetodoPago } from "../enums/metodo-pago-enum";
+import { PagoDetalle } from "./pago-detalle";
+
 export interface Pago {
   id: number;
-  socia_id: number;
+  sociaId: number;
   monto: number;
-  fecha_pago: Date; // ISO 8601
+  fechaPago: string; // ISO string
   concepto: string;
-  metodo_pago: string;
+  metodoPago: MetodoPago;
   confirmado: boolean;
+  detalles: PagoDetalle;
+  createdAt: string; // ISO string, luego se puede convertir a Date;
+  updatedAt: string;
 }

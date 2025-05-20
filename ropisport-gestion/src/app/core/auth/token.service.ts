@@ -11,22 +11,22 @@ export class TokenService {
   private readonly REFRESH_TOKEN_KEY: string = 'hola_refresh_token';
 
   constructor(
-    private cookieService: CookieService,
+    private cookieService: CookieService, //se puede hacer el servicio con localStorage en vez de cookies
   ) {
   }
 
-  saveTokens(token: string, refreshToken: string) {
+  saveTokens(token: string/*, refreshToken: string*/) {
     this.cookieService.set(this.ACCESS_TOKEN_KEY, token, {
       path: "/",
       secure: environment.tokenSecure, // En producción esto tiene que ser true
       sameSite: "Strict"
     })
-
-    this.cookieService.set(this.REFRESH_TOKEN_KEY, refreshToken, {
+    // NO BORRAR POR SI SE IMPLEMENTA REFRESH TOKEN
+    /*this.cookieService.set(this.REFRESH_TOKEN_KEY, refreshToken, {
       path: "/",
       secure: environment.tokenSecure, // En producción esto tiene que ser true
       sameSite: "Strict"
-    })
+    })*/
   }
 
   getAccessToken() {

@@ -1,21 +1,30 @@
 export interface Socia {
-    id: number;
-    numero_socia: string;
-    nombre_apellidos: string;
-    usuario_id: number;
-    nombre_negocio: string;
-    descripcion_negocio: string;
-    categoria_id: number;
-    direccion: string;
-    telefono_personal: string;
-    telefono_negocio: string;
-    email: string;
-    cif: string;
-    numero_cuenta: string;
-    epigrafe: string;
-    activa: boolean;
-    fecha_inicio: Date;
-    fecha_baja: Date | null;
-    observaciones: string;
+    id?: number;
+    numeroSocia?: string;
+    nombre: string;
+    apellidos: string;
+    //usuarioId: number;
+    nombreNegocio: string;
+    descripcionNegocio?: string;
+    direccion?: string;
+    telefonoPersonal?: string;
+    telefonoNegocio?: string;
+    email?: string;
+    cif?: string;
+    numeroCuenta?: string;
+    epigrafe?: string;
+    activa?: boolean;
+    fechaInicio?: string; // ISO string, luego se puede convertir a Date;
+    fechaBaja?: string | null;
+    observaciones?: string;
+    //categoria?: CategoriaDTOAlterno;
+    categoria?: {
+      id: number;
+      nombre: string;
+    };
   }
-  
+
+  /*export interface CategoriaDTOAlterno {
+    id: number;
+    nombre: string;
+  }*/

@@ -21,6 +21,15 @@ export class UseStateService {
 
     return session.username;
   }
+  /*
+  getUsername(): string | null {
+  try {
+    const session = JSON.parse(sessionStorage.getItem(this.USER_KEY) || '');
+    return session?.username || null;
+  } catch {
+    return null;
+  }
+}*/
 
   getRole(): string | null {
     const session = JSON.parse(<string>sessionStorage.getItem(this.USER_KEY));

@@ -20,21 +20,22 @@ export const routes: Routes = [
     //canActivate: [authGuard],       // rutas privadas (protegidas por AuthGuard)
     children: [
       { path: '', component: HomeComponent },
-      //{ path: 'instituciones', component: InstitucionListComponent },
-    //]
-  //},
-  //{
-    //path: '',
-    //component: AuthLayoutComponent,
-    //canActivate: [publicGuard],
-    //children: [
+      { path: 'formulario', component: SociasFormComponent },
+      { path: 'listado', component: SociasListComponent },
       { path: 'institucion-list', component: InstitucionListComponent },
       { path: 'institucion-form', component: InstitucionFormComponent },
+    ///*
+    ]
+  },
+  {
+    path: '',
+    component: AuthLayoutComponent,
+    //canActivate: [publicGuard],
+    children: [
+    //*/
       { path: 'login', component: LoginComponent },
       { path: 'registro', component: RegistroComponent },
-      { path: 'cambiar-password', component: ChangePasswordComponent },
-      { path: 'formulario', component: SociasFormComponent },
-      { path: 'listado', component: SociasListComponent },  
+      { path: 'cambiar-password', component: ChangePasswordComponent },  
       // Más rutas públicas si lo necesitas
     ]
   },

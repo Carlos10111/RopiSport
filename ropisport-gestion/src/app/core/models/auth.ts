@@ -13,10 +13,17 @@ export interface LoginRequest {
   role_id: number;
 }*/
 
+/*export interface AuthResponse {
+  token: string;
+  refreshToken: string;
+  user: Usuario;
+}*/
 export interface AuthResponse {
   token: string;
-  refreshToken?: string;
-  user: Usuario;
+  id: number;
+  username: string;
+  email: string;
+  rol: string;
 }
 
 

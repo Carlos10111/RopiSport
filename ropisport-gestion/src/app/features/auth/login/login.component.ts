@@ -9,8 +9,8 @@ import { PopupService } from '../../../shared/utils/popup.service';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule],
   standalone: true,
+  imports: [ReactiveFormsModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -26,38 +26,43 @@ export class LoginComponent {
     private popupService: PopupService
   ) {
     this.loginForm = this.formBuilder.group({
-      username: ['', [Validators.required]],
-      password: ['', [Validators.required]],
+      username: ['', Validators.required],
+      password: ['', Validators.required],
     });
   }
 
   submit() {
-    if (this.loginForm.invalid) {
-      return;
-    }
+    if (this.loginForm.invalid) return;
+
+    const credentials: LoginRequest = this.loginForm.value;
+
+    console.log('Intentando login con:', credentials.username, credentials.password);
 
     this.popupService.loader("Cargando...", "Espere un momento");
 
-    this.credentialsService.login(this.loginForm.value as LoginRequest).subscribe({
+    this.credentialsService.login(credentials).subscribe({
       next: (data) => {
-        this.tokenService.saveTokens(data.token, '');
-        this.useStateService.save(data.user.username, data.user.role_id.toString());
+        // Guardamos token en cookies
+        this.tokenService.saveTokens(data.token/*, ''*/);
 
-        this.router.navigate(['/app/control-panel']).then(() => {
-          this.popupService.close();
-        });
+        // Guardamos el usuario en sesión
+        this.useStateService.save(data.username, data.rol);
+
+        // Redireccionamos al home (o donde sea)
+        this.router.navigate(['']).then(() => this.popupService.close());
       },
-      error: err => {
-        console.log("Error en login:", err);
-        let message = "Ha ocurrido un error.";
-        if (err.error === "Invalid password") {
-          message = "Contraseña incorrecta, inténtelo de nuevo.";
-        } else if (err.error === "User not found") {
-          message = "El usuario no existe. Compruebe los datos o regístrese en la plataforma.";
+      error: (err) => {
+        console.error("Error en login:", err);
+
+        let message = "Ha ocurrido un error al iniciar sesión.";
+        if (err.status === 401) {
+          message = "Credenciales incorrectas. Por favor, revísalas e inténtalo de nuevo.";
+        } else if (err.error?.message) {
+          message = err.error.message;
         }
 
         this.popupService.close();
-        this.popupService.showMessage('Error', message, 'error');
+        this.popupService.showMessage("Error", message, "error");
       }
     });
   }

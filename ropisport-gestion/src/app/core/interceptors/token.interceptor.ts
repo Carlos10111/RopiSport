@@ -20,7 +20,7 @@ export const tokenInterceptor: HttpInterceptorFn = (req, next) => {
   const cloneReq = req.clone({
     setHeaders: {
       'Content-Type': 'application/json',
-      ...(accessToken ? {'Authentication': 'Bearer ' + accessToken} : undefined)
+      ...(accessToken ? {/*'Authentication'*/Authorization: 'Bearer ' + accessToken} : undefined)
     }
   });
 
