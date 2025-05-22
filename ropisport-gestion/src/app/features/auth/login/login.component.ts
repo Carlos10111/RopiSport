@@ -31,7 +31,8 @@ export class LoginComponent {
 
   )
 
-  {
+  {  //this.tokenService.removeToken();
+
     this.loginForm = this.formBuilder.group ({
       username: ['', [Validators.required]],
       password: ['', [Validators.required]],
@@ -62,6 +63,9 @@ export class LoginComponent {
       },
 
       error: err => {
+        console.error('❌ Error completo:', err);
+        console.error('❌ Status:', err.status);
+        console.error('❌ Error body:', err.error);
         let message;
         if (err.error == "Invalid password") {
           message = "Contraseña incorrecta, inténtelo de nuevo."
