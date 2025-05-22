@@ -23,8 +23,6 @@ public class CorsConfig {
                 registry.addMapping("/**")
                 .allowedOrigins("http://localhost:4200")   // Angular en modo dev                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                        .allowCredentials(true)
                         .maxAge(3600);
             }
         };

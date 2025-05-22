@@ -119,16 +119,16 @@ public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Excepti
             auth.requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/error").permitAll()
-                    .requestMatchers("/api/instituciones/**").permitAll() //borrar, solo para prueba
-                    .requestMatchers("/api/socias/**").permitAll() //borrar, solo para prueba
-                    .requestMatchers("/api/tipo-instituciones/**").permitAll() //borrar, solo para prueba
 
-                    // Todas las rutas protegidas requieren rol de ADMIN
+                // Todas las rutas protegidas requieren rol de ADMIN
                 .requestMatchers("/api/admin/**").hasRole(Constants.ROLE_ADMIN)
                 .requestMatchers("/api/usuarios/**").hasRole(Constants.ROLE_ADMIN)
                 .requestMatchers("/api/roles/**").hasRole(Constants.ROLE_ADMIN)
                 .requestMatchers("/api/empresas/**").hasRole(Constants.ROLE_ADMIN)
+                .requestMatchers("/api/instituciones/**").hasRole(Constants.ROLE_ADMIN)
+                .requestMatchers("/api/tipo-instituciones/**").hasRole(Constants.ROLE_ADMIN)
                 .requestMatchers("/api/categorias/**").hasRole(Constants.ROLE_ADMIN)
+                .requestMatchers("/api/socias/**").hasRole(Constants.ROLE_ADMIN)
                 .requestMatchers("/api/pagos/**").hasRole(Constants.ROLE_ADMIN)
                 .requestMatchers("/api/pago-detalles/**").hasRole(Constants.ROLE_ADMIN)
 
