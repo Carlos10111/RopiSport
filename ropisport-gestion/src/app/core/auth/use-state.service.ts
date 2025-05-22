@@ -9,8 +9,8 @@ export class UseStateService {
 
   constructor() { }
 
-  save(username: string, role: string): void  {
-    sessionStorage.setItem(this.USER_KEY, JSON.stringify({username, role}));
+  save(username: string, rol: string): void  {
+    sessionStorage.setItem(this.USER_KEY, JSON.stringify({username, rol}));
   }
 
   getUsername(): string | null {
@@ -37,7 +37,7 @@ export class UseStateService {
       return null;
     }
 
-    return session.role;
+    return session.rol;
   }
 
   removeSession(): void {

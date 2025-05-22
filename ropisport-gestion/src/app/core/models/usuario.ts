@@ -11,4 +11,5 @@ export interface Usuario {
     ultimoAcceso: string; // ISO string
     createdAt: string; // ISO string
     updatedAt: string; // ISO string
+    password?: string;
   }

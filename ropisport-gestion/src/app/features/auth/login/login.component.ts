@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import { CredentialsService } from '../../../core/auth/credentials.service';
-import { LoginInterface, /*RegisterInterface,*/ UserInterface } from '../../../core/models/auth';
+import { LoginInterface, /*RegisterInterface,*/ } from '../../../core/models/auth';
+import { Usuario } from '../../../core/models/usuario';
 import { Router } from '@angular/router';
 import { PopupService } from '../../../shared/utils/popup.service';
 import { UseStateService } from '../../../core/auth/use-state.service';
@@ -52,7 +53,7 @@ export class LoginComponent {
           this.tokenService.saveTokens(data.token, "234325423423")
           //this.userStateService.save(data.username);
           this.userStateService.save(data.username, data.rol);
-          sessionStorage.setItem('username', data.username);
+          //sessionStorage.setItem('username', data.username);
           this.popupService.close();
           this.router.navigate(['/']);
           

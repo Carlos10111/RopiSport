@@ -1,14 +1,7 @@
-export interface UserInterface {
+import { Usuario } from "./usuario";
 
-  username: string;
-  password: string;
-  avatar: string | null;
-  email: string;
-  crowdcoin: number;
-}
+export type LoginInterface = Pick<Usuario, "username" | "password">
 
-
-export type LoginInterface = Pick<UserInterface, "username" | "password">
 //export type RegisterInterface = Omit<UserInterface,  "" >
 
 
