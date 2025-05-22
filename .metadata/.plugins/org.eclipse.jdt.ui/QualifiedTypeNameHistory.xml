@@ -36,7 +36,6 @@
     <fullyQualifiedTypeName name="org.springframework.data.domain.Page"/>
     <fullyQualifiedTypeName name="org.springframework.data.domain.Pageable"/>
     <fullyQualifiedTypeName name="com.ropisport.gestion.model.dto.request.InstitucionRequest"/>
-    <fullyQualifiedTypeName name="java.lang.Void"/>
     <fullyQualifiedTypeName name="java.lang.Integer"/>
     <fullyQualifiedTypeName name="java.util.List"/>
     <fullyQualifiedTypeName name="com.ropisport.gestion.model.dto.response.InstitucionResponse"/>
@@ -44,5 +43,8 @@
     <fullyQualifiedTypeName name="com.ropisport.gestion.security.service.UserDetailsServiceImpl"/>
     <fullyQualifiedTypeName name="com.ropisport.gestion.model.entity.Institucion"/>
     <fullyQualifiedTypeName name="com.ropisport.gestion.service.SociaService"/>
+    <fullyQualifiedTypeName name="java.lang.Thread"/>
+    <fullyQualifiedTypeName name="org.hibernate.validator.internal.constraintvalidators.bv.time.futureorpresent.FutureOrPresentValidatorForOffsetDateTime"/>
+    <fullyQualifiedTypeName name="java.lang.Void"/>
     <fullyQualifiedTypeName name="org.springframework.stereotype.Component"/>
 </qualifiedTypeNameHistroy>

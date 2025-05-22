@@ -12,11 +12,11 @@ import lombok.NoArgsConstructor;
 public class SociaExcelDto {
     private Integer id;
     private String numeroSocia;
-    private String nombre;             // No es username
+    private String nombre;           
     private String apellidos;
     private String nombreNegocio;
     private String descripcionNegocio;
-    private String categoria;          // No es nombreCategoria
+    private String categoria;         
     private String direccion;
     private String telefonoPersonal;
     private String telefonoNegocio;
@@ -24,7 +24,7 @@ public class SociaExcelDto {
     private String cif;
     private String numeroCuenta;
     private String epigrafe;
-    private String estado;             // No es activa (Boolean), es un String "Activa" o "Baja"
+    private String estado;             
     private String fechaInicio;
     private String fechaBaja;
     private String observaciones;
