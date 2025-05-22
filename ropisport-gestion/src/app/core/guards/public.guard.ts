@@ -7,7 +7,7 @@ export const publicGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   const accessToken = tokenService.getAccessToken();
-  const refreshToken = tokenService.getRefreshToken();
+  //const refreshToken = tokenService.getRefreshToken();
 
   if (accessToken) {
     router.navigate(['']);

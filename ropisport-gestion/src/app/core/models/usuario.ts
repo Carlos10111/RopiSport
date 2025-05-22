@@ -2,6 +2,7 @@ export interface Usuario {
     id: number;
     username: string;
     //passwordHash: string;
+    password?: string;
     email: string;
     nombreCompleto: string;
     rolId: number;
@@ -11,5 +12,4 @@ export interface Usuario {
     ultimoAcceso: string; // ISO string
     createdAt: string; // ISO string
     updatedAt: string; // ISO string
-    password?: string;
   }

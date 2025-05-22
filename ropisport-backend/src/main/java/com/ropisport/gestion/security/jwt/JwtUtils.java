@@ -71,6 +71,7 @@ public class JwtUtils {
      * @return true si el token es válido, false en caso contrario
      */
     public boolean validateJwtToken(String authToken) {
+        logger.info("Validando token: {}", authToken.substring(0, Math.min(50, authToken.length())) + "...");
         try {
             Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
 

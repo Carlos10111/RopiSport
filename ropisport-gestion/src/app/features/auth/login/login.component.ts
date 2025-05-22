@@ -46,11 +46,12 @@ export class LoginComponent {
     
     this.credentialsService.login(this.loginForm.value as LoginInterface).subscribe({
       next: (data) => {
-
+        console.log('Token recibido:', data.token);
+        console.log('Datos completos:', data);
         this.popupService.loader("Iniciado sesion...", "Espere un momento");
         setTimeout(() => {
 
-          this.tokenService.saveTokens(data.token, "234325423423")
+          this.tokenService.saveTokens(data.token, ""/*"234325423423"*/)
           //this.userStateService.save(data.username);
           this.userStateService.save(data.username, data.rol);
           //sessionStorage.setItem('username', data.username);

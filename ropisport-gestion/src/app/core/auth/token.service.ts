@@ -8,7 +8,7 @@ import {environment} from '../../../environments/environment';
 export class TokenService {
 
   private readonly ACCESS_TOKEN_KEY: string = 'hola_token';
-  private readonly REFRESH_TOKEN_KEY: string = 'hola_refresh_token';
+  //private readonly REFRESH_TOKEN_KEY: string = 'hola_refresh_token';
 
   constructor(
     private cookieService: CookieService,
@@ -22,24 +22,24 @@ export class TokenService {
       sameSite: "Strict"
     })
 
-    this.cookieService.set(this.REFRESH_TOKEN_KEY, refreshToken, {
+    /*this.cookieService.set(this.REFRESH_TOKEN_KEY, refreshToken, {
       path: "/",
       secure: environment.tokenSecure, // En producción esto tiene que ser true
       sameSite: "Strict"
-    })
+    })*/
   }
 
   getAccessToken() {
     return this.cookieService.get(this.ACCESS_TOKEN_KEY);
   }
 
-  getRefreshToken() {
+  /*getRefreshToken() {
     return this.cookieService.get(this.REFRESH_TOKEN_KEY);
-  }
+  }*/
 
   removeToken() {
     this.cookieService.delete(this.ACCESS_TOKEN_KEY, '/', '', environment.tokenSecure, 'Strict'); // En producción esto tiene que ser true
-    this.cookieService.delete(this.REFRESH_TOKEN_KEY, '/', '', environment.tokenSecure, 'Strict'); // En producción esto tiene que ser true
+    //this.cookieService.delete(this.REFRESH_TOKEN_KEY, '/', '', environment.tokenSecure, 'Strict'); // En producción esto tiene que ser true
   }
 
 }
