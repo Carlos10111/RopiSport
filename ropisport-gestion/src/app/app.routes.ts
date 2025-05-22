@@ -4,7 +4,7 @@ import { MainLayoutComponent } from './layout/main-layout/main-layout.component'
 import { AuthLayoutComponent } from './layout/auth-layout/auth-layout.component';
 import { HomeComponent } from './features/home/home.component';
 import { LoginComponent } from './features/auth/login/login.component';
-import { RegistroComponent } from './features/auth/registro/registro.component';
+//import { RegistroComponent } from './features/auth/registro/registro.component';
 import { ChangePasswordComponent } from './features/auth/change-password/change-password.component';
 import { authGuard } from './core/guards/auth.guard';
 import { publicGuard } from './core/guards/public.guard';
@@ -34,7 +34,7 @@ export const routes: Routes = [
     children: [
     //*/
       { path: 'login', component: LoginComponent },
-      { path: 'registro', component: RegistroComponent },
+    //  { path: 'registro', component: RegistroComponent },
       { path: 'cambiar-password', component: ChangePasswordComponent },  
       // Más rutas públicas si lo necesitas
     ]

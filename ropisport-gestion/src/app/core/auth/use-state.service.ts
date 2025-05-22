@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class UseStateService {
 
-  private readonly USER_KEY = "hola";
+  private readonly USER_KEY = "ropisport";
 
   constructor() { }
 
@@ -21,15 +21,15 @@ export class UseStateService {
 
     return session.username;
   }
-  /*
-  getUsername(): string | null {
-  try {
-    const session = JSON.parse(sessionStorage.getItem(this.USER_KEY) || '');
-    return session?.username || null;
-  } catch {
-    return null;
-  }
-}*/
+  
+  /*getUsername(): string | null {
+    try {
+      const session = JSON.parse(sessionStorage.getItem(this.USER_KEY) || '');
+      return session?.username || null;
+    } catch {
+      return null;
+    }
+  }*/
 
   getRole(): string | null {
     const session = JSON.parse(<string>sessionStorage.getItem(this.USER_KEY));

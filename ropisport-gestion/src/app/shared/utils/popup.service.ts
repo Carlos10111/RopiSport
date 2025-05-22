@@ -26,7 +26,7 @@ export class PopupService {
       title: title,
       text: message,
       allowEscapeKey: false,
-      allowOutsideClick: false,
+      allowOutsideClick: false, //
       didOpen() {
         Swal.showLoading();
       }
@@ -45,7 +45,7 @@ export class PopupService {
       title: title,
       text: message,
       icon: 'question',
-      showCancelButton: true, 
+      showCancelButton: true, //
       confirmButtonText: confirmButtonText,
       cancelButtonText: cancelButtonText
     });
