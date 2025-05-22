@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import { CredentialsService } from '../../../core/auth/credentials.service';
-import { LoginInterface, RegisterInterface, UserInterface } from '../../../core/models/auth';
+import { LoginInterface, /*RegisterInterface,*/ UserInterface } from '../../../core/models/auth';
 import { Router } from '@angular/router';
 import { PopupService } from '../../../shared/utils/popup.service';
 import { UseStateService } from '../../../core/auth/use-state.service';
