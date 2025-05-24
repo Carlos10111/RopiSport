@@ -1,20 +1,24 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
 import { PublicGuard } from './core/guards/public.guard';
+
 import { LoginComponent } from './features/auth/login/login.component';
+import { RegistroComponent } from './features/auth/registro/registro.component';
 import { AuthLayoutComponent } from './layout/auth-layout/auth-layout.component';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { HomeComponent } from './features/home/home.component';
+import { UsuarioListComponent } from './features/usuario/usuario-list/usuario-list.component';
+import { SociasListComponent } from './features/socias/socias-list/socias-list.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { InstitucionListComponent } from './features/institucion/institucion-list/institucion-list.component';
 
 export const routes: Routes = [
-  // Ruta por defecto - redirige al login
   {
     path: '',
     redirectTo: '/login',
     pathMatch: 'full'
   },
-  
-  // Rutas públicas (solo accesibles si NO está autenticado)
+
   {
     path: '',
     component: AuthLayoutComponent,
@@ -26,12 +30,11 @@ export const routes: Routes = [
       },
       {
         path: 'registro',
-        loadComponent: () => import('./features/auth/registro/registro.component').then(m => m.RegistroComponent)
+        component: RegistroComponent
       }
     ]
   },
 
-  // Panel de administración (requiere autenticación)
   {
     path: 'admin',
     component: MainLayoutComponent,
@@ -42,26 +45,15 @@ export const routes: Routes = [
         redirectTo: 'dashboard',
         pathMatch: 'full'
       },
-      {
-        path: 'dashboard',
-        component: HomeComponent
-      },
-      // Aquí puedes agregar más rutas del panel de admin
-      {
-        path: 'usuarios',
-        loadComponent: () => import('./features/usuario/usuario-list/usuario-list.component').then(m => m.UsuarioListComponent)
-      },
-      {
-        path: 'socias',
-        loadComponent: () => import('./features/socias/socias-list/socias-list.component').then(m => m.SociasListComponent)
-      }
-      // ... más rutas según necesites
+      { path: 'dashboard', component: HomeComponent },
+      { path: 'usuarios', component: UsuarioListComponent },
+      { path: 'socias', component: SociasListComponent },
+      { path: 'instituciones', component: InstitucionListComponent }
     ]
   },
 
-  // Ruta para páginas no encontradas
   {
     path: '**',
-    loadComponent: () => import('./page-not-found/page-not-found.component').then(m => m.PageNotFoundComponent)
+    component: PageNotFoundComponent
   }
 ];

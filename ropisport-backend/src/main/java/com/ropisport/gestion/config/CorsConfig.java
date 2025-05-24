@@ -12,9 +12,44 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class CorsConfig {
 
     /**
-     * Configura CORS para permitir peticiones desde cualquier origen
+     * Configura CORS para permitir peticiones desde cualquier origen especificado
      * @return configuración de CORS
      */
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:4200")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowCredentials(true)
+                        .maxAge(3600);
+            }
+        };
+    }
+}
+
+
+
+
+
+/*package com.ropisport.gestion.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+ // Configuración de CORS para la aplicación
+
+@Configuration
+public class CorsConfig {
+
+     // Configura CORS para permitir peticiones desde cualquier origen
+     // @return configuración de CORS
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -27,4 +62,4 @@ public class CorsConfig {
             }
         };
     }
-}
+}*/

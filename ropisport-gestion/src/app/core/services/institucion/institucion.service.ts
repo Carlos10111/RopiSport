@@ -1,33 +1,92 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { Institucion } from '../../models/institucion';
 import { InstitucionDTO } from '../../dtos/institucion-dto';
-import { environment } from '../../../../environments/environment';
+import { PaginatedResponse } from '../../dtos/paginated-response';
+import { ApiResponse } from '../../models/api-response';
+import { SearchRequest } from '../../dtos/search-request';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class InstitucionService {
   private apiUrl = `${environment.apiUrl}/instituciones`;
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<Institucion[]> {
-    return this.http.get<Institucion[]>(this.apiUrl);
+  /**
+   * Obtiene headers con autenticación si está disponible
+   */
+  private getAuthHeaders(): HttpHeaders {
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    // Si tienes un token de autenticación, agrégalo aquí
+    const token = localStorage.getItem('authToken') || sessionStorage.getItem('authToken');
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+
+    return headers;
   }
 
-  getById(id: number): Observable<Institucion> {
-    return this.http.get<Institucion>(`${this.apiUrl}/${id}`);
+  getAllInstituciones(page: number = 0, size: number = 10, sortBy: string = 'id'): Observable<PaginatedResponse<Institucion>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('sortBy', sortBy); // Cambiado de 'sort' a 'sortBy'
+
+    return this.http.get<PaginatedResponse<Institucion>>(this.apiUrl, { 
+      params,
+      headers: this.getAuthHeaders()
+    });
   }
 
-  create(institucionDTO: InstitucionDTO): Observable<Institucion> {
-    return this.http.post<Institucion>(this.apiUrl, institucionDTO);
+  searchInstituciones(searchTerm: string): Observable<Institucion[]> {
+    const searchRequest: SearchRequest = { searchTerm };
+    
+    return this.http.post<Institucion[]>(`${this.apiUrl}/search`, searchRequest, {
+      headers: this.getAuthHeaders()
+    });
   }
 
-  update(id: number, institucionDTO: InstitucionDTO): Observable<Institucion> {
-    return this.http.put<Institucion>(`${this.apiUrl}/${id}`, institucionDTO);
+  getInstitucionById(id: number): Observable<Institucion> {
+    return this.http.get<Institucion>(`${this.apiUrl}/${id}`, {
+      headers: this.getAuthHeaders()
+    });
   }
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  getInstitucionesByTipoId(tipoId: number): Observable<Institucion[]> {
+    return this.http.get<Institucion[]>(`${this.apiUrl}/tipo/${tipoId}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  createInstitucion(institucionDTO: InstitucionDTO): Observable<Institucion> {
+    return this.http.post<Institucion>(this.apiUrl, institucionDTO, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  updateInstitucion(id: number, institucionDTO: InstitucionDTO): Observable<Institucion> {
+    return this.http.put<Institucion>(`${this.apiUrl}/${id}`, institucionDTO, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  deleteInstitucion(id: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${id}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
+  exportToExcel(): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/excel`, {
+      responseType: 'blob',
+      headers: this.getAuthHeaders()
+    });
   }
 }

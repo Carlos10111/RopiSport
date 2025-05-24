@@ -76,7 +76,9 @@ public class SecurityConfig {
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
+                            .anyRequest().permitAll() // PERMITIR TODAS LAS RUTAS TEMPORALMENTE
+
+                    /*.requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/error").permitAll()
 
@@ -92,7 +94,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/pagos/**").hasRole(Constants.ROLE_ADMIN)
                 .requestMatchers("/api/pago-detalles/**").hasRole(Constants.ROLE_ADMIN)
 
-                .anyRequest().authenticated()
+                .anyRequest().authenticated()*/
             );
 
         http.authenticationProvider(authenticationProvider());

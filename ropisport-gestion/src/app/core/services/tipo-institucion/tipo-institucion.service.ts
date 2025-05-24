@@ -1,33 +1,41 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TipoInstitucion } from '../../models/tipo-institucion';
 import { TipoInstitucionDTO } from '../../dtos/tipo-institucion-dto';
 import { environment } from '../../../../environments/environment';
+import { ApiResponse } from '../../models/api-response';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class TipoInstitucionService {
   private apiUrl = `${environment.apiUrl}/tipos-institucion`;
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<TipoInstitucion[]> {
+  getAllTiposInstitucion(): Observable<TipoInstitucion[]> {
     return this.http.get<TipoInstitucion[]>(this.apiUrl);
   }
 
-  getById(id: number): Observable<TipoInstitucion> {
+  getTipoInstitucionById(id: number): Observable<TipoInstitucion> {
     return this.http.get<TipoInstitucion>(`${this.apiUrl}/${id}`);
   }
 
-  create(tipoDTO: TipoInstitucionDTO): Observable<TipoInstitucion> {
-    return this.http.post<TipoInstitucion>(this.apiUrl, tipoDTO);
+  createTipoInstitucion(tipoRequest: TipoInstitucionDTO): Observable<TipoInstitucion> {
+    return this.http.post<TipoInstitucion>(this.apiUrl, tipoRequest);
   }
 
-  update(id: number, tipoDTO: TipoInstitucionDTO): Observable<TipoInstitucion> {
-    return this.http.put<TipoInstitucion>(`${this.apiUrl}/${id}`, tipoDTO);
+  updateTipoInstitucion(id: number, tipoRequest: TipoInstitucionDTO): Observable<TipoInstitucion> {
+    return this.http.put<TipoInstitucion>(`${this.apiUrl}/${id}`, tipoRequest);
   }
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  deleteTipoInstitucion(id: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/${id}`);
+  }
+
+  searchTiposInstitucion(nombre: string): Observable<TipoInstitucion[]> {
+    const params = new HttpParams().set('nombre', nombre);
+    return this.http.get<TipoInstitucion[]>(`${this.apiUrl}/search`, { params });
   }
 }

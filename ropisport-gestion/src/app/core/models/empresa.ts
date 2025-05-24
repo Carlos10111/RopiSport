@@ -1,18 +1,21 @@
 export interface Empresa {
     id: number;
-    socia_id: number;
-    nombre_negocio: string;
-    descripcion_negocio: string;
-    categoria_id: number;
+    sociaId: number;
+    nombreNegocio: string;
+    descripcionNegocio: string;
+    categoriaId: number;
+    nombreCategoria: string;
     direccion: string;
-    telefono_negocio: string;
-    email_negocio: string;
+    telefonoNegocio: string;
+    emailNegocio: string;
     cif: string;
     epigrafe: string;
     web: string;
     instagram: string;
     facebook: string;
     linkedin: string;
-    otras_redes: string;
+    otrasRedes: string;
+    createdAt: string;
+    updatedAt: string;
   }
   

@@ -1,12 +1,15 @@
 export interface Usuario {
     id: number;
     username: string;
-    password_hash: string;
+    //password_hash: string;
     email: string;
-    nombre_completo: string;
-    role_id: number;
+    nombreCompleto: string;
+    rolId: number;
+    nombreRol: string;
     activo: boolean;
-    fecha_creacion: Date;
-    ultimo_acceso: Date;
+    fechaCreacion: string;
+    ultimoAcceso: string;
+    createdAt: string;
+    updatedAt: string;
   }
   
