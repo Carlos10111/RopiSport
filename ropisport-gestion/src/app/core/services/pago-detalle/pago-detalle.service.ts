@@ -1,33 +1,40 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { PagoDetalle } from '../../models/pago-detalle';
 import { PagoDetalleDTO } from '../../dtos/pago-detalle-dto';
-import { environment } from '../../../../environments/environment';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root'
+})
 export class PagoDetalleService {
-  private apiUrl = `${environment.apiUrl}/pago-detalles`;
+  private apiUrl = `${environment.apiUrl}/pagos-detalle`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getAll(): Observable<PagoDetalle[]> {
-    return this.http.get<PagoDetalle[]>(this.apiUrl);
+  // Obtener detalles por ID de pago
+  getDetallesByPagoId(pagoId: number): Observable<PagoDetalle[]> {
+    return this.http.get<PagoDetalle[]>(`${this.apiUrl}/pago/${pagoId}`);
   }
 
-  getById(id: number): Observable<PagoDetalle> {
+  // Obtener detalle por ID
+  getDetalleById(id: number): Observable<PagoDetalle> {
     return this.http.get<PagoDetalle>(`${this.apiUrl}/${id}`);
   }
 
-  create(pagoDetalleDTO: PagoDetalleDTO): Observable<PagoDetalle> {
-    return this.http.post<PagoDetalle>(this.apiUrl, pagoDetalleDTO);
+  // Crear nuevo detalle
+  createDetalle(detalleDTO: PagoDetalleDTO): Observable<PagoDetalle> {
+    return this.http.post<PagoDetalle>(this.apiUrl, detalleDTO);
   }
 
-  update(id: number, pagoDetalleDTO: PagoDetalleDTO): Observable<PagoDetalle> {
-    return this.http.put<PagoDetalle>(`${this.apiUrl}/${id}`, pagoDetalleDTO);
+  // Actualizar detalle existente
+  updateDetalle(id: number, detalleDTO: PagoDetalleDTO): Observable<PagoDetalle> {
+    return this.http.put<PagoDetalle>(`${this.apiUrl}/${id}`, detalleDTO);
   }
 
-  delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  // Eliminar detalle
+  deleteDetalle(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
   }
 }

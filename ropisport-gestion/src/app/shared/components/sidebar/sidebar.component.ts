@@ -1,9 +1,9 @@
-import {Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { SidebarStatusService } from '../../status/sidebar-status.service';
 import { UseStateService } from '../../../core/auth/use-state.service';
 import { PopupService } from '../../utils/popup.service';
-import { TokenService } from '../../../core/auth/token.service';
-import {Router, RouterModule, RouterLink, RouterLinkActive} from '@angular/router';
+import { TokenInterceptor } from '../../../core/interceptors/token.interceptor';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -13,51 +13,35 @@ import {Router, RouterModule, RouterLink, RouterLinkActive} from '@angular/route
   styleUrl: './sidebar.component.scss'
 })
 export class SidebarComponent implements OnInit {
-
+  isActive: boolean = false;
+  isAuthenticated: boolean = false;
+  currentUser: any = null;
   isActiveMenuHeader: boolean = true;
+
   constructor(
     private sidebarStatusService: SidebarStatusService,
-    private tokenService: TokenService,
+    private tokenInterceptor: TokenInterceptor,
     private popupService: PopupService,
     private userStateService: UseStateService,
     private router: Router,
-  )
-  {}
+  ) {}
 
   ngOnInit(): void {
     this.sidebarStatusService.status$.subscribe(status => {
       this.isActiveMenuHeader = status;
-    })
+    });
   }
 
-  closeSession(): void {
-    this.popupService.loader(
-      "Cerrando sesión",
-      "Vuelva pronto"
-    );
-
-    this.tokenService.removeToken();
-    this.userStateService.removeSession()
-    setTimeout(() => {
-      this.popupService.close()
-      this.router.navigate(['/login']);
-    }, 1500)
-  }
-goToInicio() {
-  this.router.navigate(['/']);
-}
-
-  irASocias() {
-    this.router.navigate(['/socias']);
+  logout(): void {
+    this.tokenInterceptor.clearTokens();
+    this.userStateService.clear();
+    this.isAuthenticated = false;
+    this.currentUser = null;
+    this.router.navigate(['/login']);
   }
 
-  irAProveedores() {
-    this.router.navigate(['/proveedores']);
-  }
-  irAInstituciones() {
-    this.router.navigate(['/institucion-list']);
+  closeSidebar(): void {
+    // Lógica para cerrar sidebar si es necesario
+    console.log('Cerrando sidebar');
   }
 }
-
-
-

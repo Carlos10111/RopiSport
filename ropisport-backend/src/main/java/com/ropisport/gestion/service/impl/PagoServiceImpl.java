@@ -185,4 +185,6 @@ public class PagoServiceImpl implements PagoService {
                 .updatedAt(detalle.getUpdatedAt())
                 .build();
     }
+
+
 }

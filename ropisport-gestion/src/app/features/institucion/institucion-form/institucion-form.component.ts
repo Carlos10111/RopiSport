@@ -49,13 +49,13 @@ export class InstitucionFormComponent implements OnInit {
       this.loadInstitucion(this.institucionId);
     }
 
-    this.tipoInstitucionService.getAll().subscribe(data => {
+    this.tipoInstitucionService.getAllTiposInstitucion().subscribe(data => {
       this.tiposInstitucion$.next(data);
     });
   }
 
   loadInstitucion(id: number): void {
-    this.institucionService.getById(id).subscribe({
+    this.institucionService.getInstitucionById(id).subscribe({
       next: (institucion: Institucion) => {
         this.form.patchValue(institucion); // Llenar el formulario con los datos
       },
@@ -81,12 +81,15 @@ export class InstitucionFormComponent implements OnInit {
       email: raw.email!,
       web: raw.web!,
       tipoInstitucionId: raw.tipo_institucion_id!,
-      observaciones: raw.observaciones || ''
+      observaciones: raw.observaciones || '',
+      nombreTipoInstitucion: raw.nombreTipoInstitucion!,
+      createdAt: raw.createdAt,
+      updatedAt: raw.updatedAt
     };
 
     if (institucion.id) {
       // Si tiene id, es una actualización
-      this.institucionService.update(institucion.id, institucion).subscribe({
+      this.institucionService.updateInstitucion(institucion.id, institucion).subscribe({
         next: () => {
           this.router.navigate(['/instituciones']); // Redirigir después
         },
@@ -96,7 +99,7 @@ export class InstitucionFormComponent implements OnInit {
       });
     } else {
       // Si no tiene id, es una creación
-      this.institucionService.create(institucion).subscribe({
+      this.institucionService.createInstitucion(institucion).subscribe({
         next: () => {
           this.router.navigate(['/instituciones']);
         },

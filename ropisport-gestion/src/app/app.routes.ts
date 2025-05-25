@@ -11,6 +11,9 @@ import { UsuarioListComponent } from './features/usuario/usuario-list/usuario-li
 import { SociasListComponent } from './features/socias/socias-list/socias-list.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { InstitucionListComponent } from './features/institucion/institucion-list/institucion-list.component';
+import { PagoListComponent } from './features/pago/pago-list/pago-list.component';
+import { InstitucionFormComponent } from './features/institucion/institucion-form/institucion-form.component';
+import { SociasFormComponent } from './features/socias/socias-form/socias-form.component';
 
 export const routes: Routes = [
   {
@@ -47,8 +50,13 @@ export const routes: Routes = [
       },
       { path: 'dashboard', component: HomeComponent },
       { path: 'usuarios', component: UsuarioListComponent },
+
       { path: 'socias', component: SociasListComponent },
-      { path: 'instituciones', component: InstitucionListComponent }
+      { path: 'socias-form', component: SociasFormComponent},
+
+      { path: 'instituciones', component: InstitucionListComponent },
+      { path: 'instituciones-form', component: InstitucionFormComponent },
+      { path: 'pagos', component: PagoListComponent}
     ]
   },
 

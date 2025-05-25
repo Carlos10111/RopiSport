@@ -1,17 +1,20 @@
-<div class="container text-center mt-5">
-  <h1 class="mb-4">Bienvenido/a a RopiSport</h1>
-  <p class="lead mb-5">
-    Accede fácilmente a la información de nuestras socias y proveedores.
+<div class="home-container">
+  <h1 class="welcome-title">Bienvenido/a a RopiSport</h1>
+  <p class="welcome-subtitle">
+    Accede fácilmente a la información de nuestras socias, instituciones y pagos.
   </p>
 
-  <div class="d-flex justify-content-center gap-4">
-    <button class="btn btn-rojovino btn-lg px-4" (click)="irASocias()">
-      VER SOCIAS
-    </button>
+  <div class="button-grid">
+    <a routerLink="/admin/socias" class="admin-card">
+      <span class="card-title">VER SOCIAS</span>
+    </a>
 
-    <button class="btn btn-rojovino btn-lg px-4" (click)="irAInstituciones()">
-      VER INSTITUCIONES
-    </button>
+    <a routerLink="/admin/instituciones" class="admin-card">
+      <span class="card-title">VER INSTITUCIONES</span>
+    </a>
+
+    <a routerLink="/admin/pagos" class="admin-card">
+      <span class="card-title">VER PAGOS</span>
+    </a>
   </div>
 </div>
-<br><br><br>

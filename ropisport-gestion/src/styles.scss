@@ -1,1 +1,31 @@
 /* You can add global styles to this file, and also import other style files */
+// CSS Global para Bootstrap Icons - forzar visibilidad
+.bi {
+    display: inline-block !important;
+    font-family: "bootstrap-icons" !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+    font-variant: normal !important;
+    text-transform: none !important;
+    line-height: 1 !important;
+    vertical-align: -.125em !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  
+  // Específicamente para los iconos del sidebar
+  app-sidebar .nav-icon i {
+    display: inline-block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    font-size: inherit !important;
+  }
+  
+  // Asegurar que los iconos de Bootstrap Icons se muestren
+  .nav-icon .bi::before {
+    display: inline-block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }

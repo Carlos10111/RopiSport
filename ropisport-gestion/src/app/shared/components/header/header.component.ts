@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SidebarStatusService } from '../../status/sidebar-status.service';
 import { Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
-import { TokenService } from '../../../core/interceptors/token.interceptor';
+import { TokenInterceptor } from '../../../core/interceptors/token.interceptor';
 import { UseStateService } from '../../../core/auth/use-state.service';
 import { CommonModule } from '@angular/common';
 
@@ -28,7 +28,7 @@ export class HeaderComponent implements OnInit {
   constructor(
     private sidebarStatusService: SidebarStatusService,
     private router: Router,
-    private tokenService: TokenService,
+    private tokenInterceptor: TokenInterceptor,
     private useStateService: UseStateService
   ) {}
 
@@ -38,7 +38,7 @@ export class HeaderComponent implements OnInit {
   }
 
   checkAuthStatus(): void {
-    this.isAuthenticated = this.tokenService.isAuthenticated();
+    this.isAuthenticated = this.tokenInterceptor.isAuthenticated();
     if (this.isAuthenticated) {
       // Obtener datos del usuario si está autenticado
       this.currentUser = this.useStateService.getCurrentUser(); // Asumiendo que tienes este método
@@ -62,7 +62,7 @@ export class HeaderComponent implements OnInit {
   }
 
   logout(): void {
-    this.tokenService.clearTokens();
+    this.tokenInterceptor.clearTokens();
     this.useStateService.clear(); // Si tienes este método
     this.isAuthenticated = false;
     this.currentUser = null;
