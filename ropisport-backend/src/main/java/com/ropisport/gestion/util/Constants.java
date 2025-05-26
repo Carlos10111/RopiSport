@@ -4,14 +4,14 @@ package com.ropisport.gestion.util;
  * Constantes utilizadas en la aplicación
  */
 public final class Constants {
-
     // Roles del sistema
     public static final String ROLE_ADMIN = "ADMIN";
+    public static final String ROLE_ADMIN_SOCIAS = "ADMIN_SOCIAS"; // ← Nuevo rol específico
     public static final String ROLE_USER = "USER";
     public static final String ROLE_SOCIA = "SOCIA";
 
-    // Prefijos para autorización
-    public static final String ROLE_PREFIX = "ROLE_";
+    // Prefijo estándar de Spring Security
+    public static final String ROLE_PREFIX = "ROLE_"; // ← Corregir esto
 
     // JWT
     public static final String JWT_HEADER = "Authorization";

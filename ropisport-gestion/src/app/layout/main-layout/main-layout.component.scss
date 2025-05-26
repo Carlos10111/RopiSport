@@ -1,0 +1,59 @@
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  .layout-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    margin-top: 56px; // Compensar altura del header
+  }
+
+  app-sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    // El sidebar ahora es fixed, no necesita border aquí
+  }
+
+  .layout-content {
+    flex: 1;
+    margin-left: 280px; // Compensar ancho del sidebar
+    padding: 2rem;
+    overflow-y: auto;
+    background: #f8f9fa;
+    
+    // Agregar transición suave
+    transition: margin-left 0.3s ease;
+  }
+}
+
+// Para el main-content en tu HTML actual
+.main-content {
+  margin-left: 280px; // Compensar ancho del sidebar
+  padding: 2rem;
+  background: #f8f9fa;
+  min-height: calc(100vh - 56px); // Altura completa menos header
+  transition: margin-left 0.3s ease;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .main-layout {
+    .layout-content {
+      margin-left: 0;
+    }
+  }
+  
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+// Si necesitas una clase para cuando el sidebar esté oculto
+.sidebar-hidden {
+  .layout-content,
+  .main-content {
+    margin-left: 0;
+  }
+}

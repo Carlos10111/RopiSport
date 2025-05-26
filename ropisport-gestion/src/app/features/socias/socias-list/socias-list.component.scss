@@ -1,0 +1,609 @@
+// Variables
+$primary-color: #3f51b5;
+$primary-dark: #303f9f;
+$primary-light: #c5cae9;
+$accent-color: #ff4081;
+$text-primary: #212121;
+$text-secondary: #757575;
+$border-color: #e0e0e0;
+$background-light: #f5f5f5;
+$success-color: #4caf50;
+$warning-color: #ff9800;
+$danger-color: #f44336;
+$transition-speed: 0.3s;
+
+// Estilos generales
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: $text-primary;
+}
+
+// Panel principal
+.main-panel {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  
+  .header {
+    padding: 16px 20px;
+    background: $primary-color;
+    color: white;
+    
+    h2 {
+      margin: 0 0 10px 0;
+      font-size: 1.5rem;
+      font-weight: 500;
+    }
+    
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .search-container {
+      width: 300px;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      background-color: rgba(255, 255, 255, 0.9);
+      transition: background-color 0.3s;
+      
+      &:focus {
+        outline: none;
+        background-color: white;
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+      }
+    }
+    
+    .btn-edit, .btn-delete {
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: none;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    
+    .btn-edit {
+      background-color: white;
+      color: $primary-dark;
+      
+      &:hover {
+        background-color: $primary-light;
+      }
+    }
+    
+    .btn-delete {
+      background-color: white;
+      color: $danger-color;
+      
+      &:hover {
+        background-color: rgba(244, 67, 54, 0.1);
+      }
+    }
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+    
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      
+      th {
+        background-color: $background-light;
+        color: $text-secondary;
+        font-weight: 600;
+        text-align: left;
+        padding: 12px 16px;
+        border-bottom: 2px solid $border-color;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+      
+      td {
+        padding: 12px 16px;
+        border-bottom: 1px solid $border-color;
+        vertical-align: middle;
+      }
+      
+      tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+      }
+      
+      .activa {
+        color: $success-color;
+        font-weight: 500;
+      }
+      
+      .baja {
+        color: $danger-color;
+        font-weight: 500;
+      }
+      
+      .actions-column {
+        white-space: nowrap;
+        display: flex;
+        gap: 8px;
+      }
+      
+      .btn-edit, .btn-delete {
+        padding: 6px 12px;
+        border-radius: 4px;
+        border: none;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s;
+      }
+      
+      .btn-edit {
+        background-color: $primary-light;
+        color: $primary-dark;
+        
+        &:hover {
+          background-color: $primary-color;
+          color: white;
+        }
+      }
+      
+      .btn-delete {
+        background-color: rgba(244, 67, 54, 0.1);
+        color: $danger-color;
+        
+        &:hover {
+          background-color: $danger-color;
+          color: white;
+        }
+      }
+      
+      .no-results {
+        text-align: center;
+        padding: 24px;
+        color: $text-secondary;
+        font-style: italic;
+      }
+      
+      .loading-cell {
+        text-align: center;
+        padding: 24px;
+        color: $text-secondary;
+        
+        .spinner {
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+          border: 2px solid rgba(0, 0, 0, 0.1);
+          border-left-color: $primary-color;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin-right: 8px;
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+  
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 16px;
+    background: $background-light;
+    border-top: 1px solid $border-color;
+    
+    .btn-page {
+      padding: 6px 10px;
+      background: white;
+      border: 1px solid $border-color;
+      border-radius: 4px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s;
+      
+      &:hover:not(:disabled) {
+        background: $primary-light;
+        border-color: $primary-color;
+      }
+      
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+    
+    .page-info {
+      margin: 0 16px;
+      color: $text-secondary;
+      font-size: 14px;
+    }
+  }
+  
+  .footer {
+    padding: 16px 20px;
+    background: $background-light;
+    border-top: 1px solid $border-color;
+    display: flex;
+    justify-content: flex-end;
+    
+    .btn-primary {
+      background-color: $primary-color;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 0.2s;
+      
+      &:hover {
+        background-color: $primary-dark;
+      }
+    }
+  }
+}
+
+// Modal
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: fade-in 0.2s ease;
+}
+
+.modal-container {
+  background: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  animation: zoom-in 0.3s ease-out;
+  
+  &.delete-modal {
+    max-width: 450px;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: $primary-color;
+  color: white;
+  
+  h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+  
+  .btn-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    color: white;
+    opacity: 0.8;
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+.modal-body {
+  padding: 20px;
+  
+  .form-group {
+    margin-bottom: 16px;
+    
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+      color: $text-secondary;
+      font-size: 14px;
+    }
+    
+    .form-control {
+      display: block;
+      width: 100%;
+      padding: 8px 12px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: $text-primary;
+      background-color: white;
+      border: 1px solid $border-color;
+      border-radius: 4px;
+      transition: border-color 0.15s ease-in-out;
+      
+      &:focus {
+        outline: none;
+        border-color: $primary-color;
+        box-shadow: 0 0 0 3px rgba(63, 81, 181, 0.1);
+      }
+      
+      &.ng-invalid.ng-touched {
+        border-color: $danger-color;
+      }
+    }
+  }
+  
+  .form-group-checkbox {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+    
+    input {
+      margin-right: 8px;
+      width: 16px;
+      height: 16px;
+    }
+    
+    label {
+      margin-bottom: 0;
+      color: $text-primary;
+    }
+  }
+  
+  .confirm-message {
+    font-size: 16px;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+  
+  .warning-message {
+    color: $danger-color;
+    font-size: 14px;
+    margin-top: 8px;
+  }
+}
+
+.results-container {
+  margin: 16px 0;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+  
+  .loading-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: $text-secondary;
+    
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      border-left-color: $primary-color;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+    }
+  }
+  
+  .results-table {
+    margin: 0;
+    
+    th, td {
+      padding: 10px;
+    }
+  }
+  
+  .no-results-message {
+    padding: 20px;
+    text-align: center;
+    color: $text-secondary;
+    font-style: italic;
+  }
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 20px;
+  border-top: 1px solid $border-color;
+  
+  .btn-secondary {
+    background-color: #f5f5f5;
+    color: $text-secondary;
+    border: 1px solid $border-color;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    
+    &:hover {
+      background-color: #e0e0e0;
+    }
+  }
+  
+  .btn-primary {
+    background-color: $primary-color;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    
+    &:hover {
+      background-color: $primary-dark;
+    }
+    
+    &:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+  }
+  
+  .btn-danger {
+    background-color: $danger-color;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    
+    &:hover {
+      background-color: darken($danger-color, 10%);
+    }
+    
+    &:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Alerta de error
+// Alerta de error
+.alert {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  min-width: 300px;
+  padding: 12px 16px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: fade-in 0.3s ease;
+  
+  &.alert-danger {
+    background-color: rgba(244, 67, 54, 0.95);
+    color: white;
+  }
+  
+  .btn-close {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.7;
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+// Animaciones
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoom-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+// Media queries para responsive
+@media (max-width: 768px) {
+  .header {
+    .action-bar {
+      flex-direction: column;
+      align-items: stretch !important;
+    }
+    
+    .search-container {
+      width: 100% !important;
+      margin-bottom: 10px;
+    }
+    
+    .header-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+  
+  .table-responsive {
+    .actions-column {
+      flex-direction: column;
+      
+      button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+  
+  .modal-container {
+    width: 95%;
+    margin: 10px;
+  }
+}
+@media (max-width: 768px) {
+  .container .header .action-bar {
+    .search-container input {
+      max-width: 100%; // ← Ancho completo en móviles
+    }
+    
+    .header-actions {
+      flex-direction: column; // ← Botones en columna en móviles
+      width: 100%;
+      
+      button {
+        width: 100%; // ← Botones de ancho completo
+      }
+    }
+  }
+}

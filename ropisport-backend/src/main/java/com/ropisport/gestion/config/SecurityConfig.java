@@ -80,17 +80,19 @@ public class SecurityConfig {
                 .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/error").permitAll()
 
-                // Zonas administrativas (requieren rol ADMIN)
+                // Solo ADMIN general ( admin general )
                 .requestMatchers("/api/admin/**").hasRole(Constants.ROLE_ADMIN)
                 .requestMatchers("/api/usuarios/**").hasRole(Constants.ROLE_ADMIN)
                 .requestMatchers("/api/roles/**").hasRole(Constants.ROLE_ADMIN)
-                .requestMatchers("/api/empresas/**").hasRole(Constants.ROLE_ADMIN)
-                .requestMatchers("/api/instituciones/**").hasRole(Constants.ROLE_ADMIN)
-                .requestMatchers("/api/tipo-instituciones/**").hasRole(Constants.ROLE_ADMIN)
-                .requestMatchers("/api/categorias/**").hasRole(Constants.ROLE_ADMIN)
-                .requestMatchers("/api/socias/**").hasRole(Constants.ROLE_ADMIN)
-                .requestMatchers("/api/pagos/**").hasRole(Constants.ROLE_ADMIN)
-                .requestMatchers("/api/pago-detalles/**").hasRole(Constants.ROLE_ADMIN)
+                
+                // ADMIN general O ADMIN_SOCIAS
+                .requestMatchers("/api/empresas/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS) // ← Corregir typo
+                .requestMatchers("/api/instituciones/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS) // ← Corregir hasanyRole
+                .requestMatchers("/api/tipo-instituciones/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
+                .requestMatchers("/api/categorias/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
+                .requestMatchers("/api/socias/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS) // ← Corregir hasanyRole
+                .requestMatchers("/api/pagos/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
+                .requestMatchers("/api/pago-detalles/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
 
                 .anyRequest().authenticated()
             );
