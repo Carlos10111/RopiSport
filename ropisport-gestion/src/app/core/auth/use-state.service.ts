@@ -16,14 +16,9 @@ export class UseStateService {
     return userData ? JSON.parse(userData) : null;
   }
 
-  clear(): void {
-    localStorage.removeItem(this.USER_STATE_KEY);
-  }
-
-  // Agregar este método que falta
   removeSession(): void {
-    this.clear(); // Hace lo mismo que clear()
-  }
+    this.clear();
+  }               clear(): void { localStorage.removeItem(this.USER_STATE_KEY); }
 
   // Métodos adicionales útiles
   getUsername(): string | null {

@@ -34,10 +34,15 @@ export class SidebarComponent implements OnInit {
 
   logout(): void {
     this.tokenInterceptor.clearTokens();
-    this.userStateService.clear();
     this.isAuthenticated = false;
     this.currentUser = null;
-    this.router.navigate(['/login']);
+    this.popupService.loader('Cerrando sesión...', 'Por favor, espera');
+    setTimeout(() => {
+      this.userStateService.removeSession();
+      this.popupService.close();
+      this.router.navigate(['/login']);
+
+    }, 800)
   }
 
   closeSidebar(): void {

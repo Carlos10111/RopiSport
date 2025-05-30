@@ -144,7 +144,7 @@ export class PagoListComponent implements OnInit, OnDestroy {
         this.pagoService.searchPagos(this.searchText).subscribe({
           next: (results: Pago[]) => {
             console.log('Respuesta de búsqueda:', results);
-            this.pagos = results;
+            this.pagos = this.procesarPagos(results);
             this.totalElements = results.length;
             this.totalPages = 1;
             this.currentPage = 0;
@@ -161,10 +161,20 @@ export class PagoListComponent implements OnInit, OnDestroy {
         this.pagoService.getAllPagos(this.currentPage, this.pageSize, 'fechaPago').subscribe({
           next: (response: PaginatedResponse<Pago>) => {
             console.log('Respuesta del backend completa:', response);
-            this.pagos = response.content;
-            console.log('Pagos cargados:', this.pagos);
-            this.totalElements = response.totalElements;
-            this.totalPages = response.totalPages;
+            
+            // CORRECCIÓN PROBLEMA 1: Procesar correctamente la respuesta paginada
+            if (response && response.content && Array.isArray(response.content)) {
+              this.pagos = this.procesarPagos(response.content);
+              this.totalElements = response.totalElements || 0;
+              this.totalPages = response.totalPages || 0;
+            } else {
+              console.warn('Respuesta inesperada del backend:', response);
+              this.pagos = [];
+              this.totalElements = 0;
+              this.totalPages = 0;
+            }
+            
+            console.log('Pagos procesados:', this.pagos);
             this.loading = false;
           },
           error: (err) => {
@@ -172,6 +182,73 @@ export class PagoListComponent implements OnInit, OnDestroy {
           }
         })
       );
+    }
+  }
+
+  // CORRECCIÓN PROBLEMA 3: Función para procesar fechas del backend
+  private procesarPagos(pagos: Pago[]): Pago[] {
+    return pagos.map(pago => ({
+      ...pago,
+      fechaPago: this.procesarFechaDelBackend(pago.fechaPago),
+      detalles: pago.detalles ? pago.detalles.map(detalle => ({
+        ...detalle,
+        fechaDetalle: this.procesarFechaDelBackend(detalle.fechaDetalle)
+      })) : []
+    }));
+  }
+
+  // CORRECCIÓN PROBLEMA 3: Procesar fecha que viene del backend
+  private procesarFechaDelBackend(fecha: string): string {
+    if (!fecha) return '';
+    
+    try {
+      // Si viene como array [2025,5,30,23,27], convertirlo
+      if (fecha.includes(',')) {
+        const parts = fecha.replace(/[\[\]]/g, '').split(',').map(n => parseInt(n.trim()));
+        if (parts.length >= 5) {
+          // Los meses en JavaScript van de 0-11, pero LocalDateTime va de 1-12
+          const date = new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5] || 0);
+          return date.toISOString();
+        }
+      }
+      
+      // Si es una fecha ISO válida, devolverla como está
+      if (fecha.includes('T') || fecha.includes('-')) {
+        return new Date(fecha).toISOString();
+      }
+      
+      return fecha;
+    } catch (error) {
+      console.error('Error procesando fecha:', fecha, error);
+      return '';
+    }
+  }
+
+  // CORRECCIÓN PROBLEMA 3: Convertir fecha para enviar al backend (formato LocalDateTime)
+  private convertirFechaParaBackend(fechaHtml: string): string {
+    if (!fechaHtml) return '';
+    
+    try {
+      const date = new Date(fechaHtml);
+      // Formato: YYYY-MM-DDTHH:MM:SS (sin la Z del final para LocalDateTime)
+      return date.toISOString().slice(0, 19);
+    } catch (error) {
+      console.error('Error convirtiendo fecha para backend:', fechaHtml, error);
+      return fechaHtml;
+    }
+  }
+
+  // CORRECCIÓN PROBLEMA 3: Convertir fecha del backend para el input datetime-local
+  private convertirFechaParaInput(fecha: string): string {
+    if (!fecha) return '';
+    
+    try {
+      const date = new Date(fecha);
+      // Formato para datetime-local: YYYY-MM-DDTHH:MM
+      return date.toISOString().slice(0, 16);
+    } catch (error) {
+      console.error('Error convirtiendo fecha para input:', fecha, error);
+      return '';
     }
   }
   
@@ -227,9 +304,9 @@ export class PagoListComponent implements OnInit, OnDestroy {
   // FUNCIONES PARA MODALES
   abrirModalNuevo(): void {
     this.pagoActual = this.inicializarPago();
-    // Establecer fecha actual por defecto
+    // Establecer fecha actual por defecto en formato datetime-local
     const now = new Date();
-    this.pagoActual.fechaPago = now.toISOString().slice(0, 16); // formato datetime-local
+    this.pagoActual.fechaPago = now.toISOString().slice(0, 16);
     this.modalActivo = 'nuevo';
   }
   
@@ -250,10 +327,18 @@ export class PagoListComponent implements OnInit, OnDestroy {
       ...pago,
       detalles: pago.detalles ? [...pago.detalles] : []
     };
-    // Convertir fecha ISO a formato datetime-local si es necesario
-    if (this.pagoActual.fechaPago && !this.pagoActual.fechaPago.includes('T')) {
-      this.pagoActual.fechaPago = this.pagoActual.fechaPago + 'T00:00';
+    
+    // CORRECCIÓN PROBLEMA 3: Convertir fecha para el input
+    this.pagoActual.fechaPago = this.convertirFechaParaInput(pago.fechaPago);
+    
+    // Convertir fechas de detalles también
+    if (this.pagoActual.detalles) {
+      this.pagoActual.detalles = this.pagoActual.detalles.map(detalle => ({
+        ...detalle,
+        fechaDetalle: this.convertirFechaParaInput(detalle.fechaDetalle)
+      }));
     }
+    
     this.modalActivo = 'editar';
   }
   
@@ -304,14 +389,14 @@ export class PagoListComponent implements OnInit, OnDestroy {
       pagoId: pago.id,
       concepto: detalle.concepto || '',
       monto: detalle.monto || 0,
-      fechaDetalle: detalle.fechaDetalle || '',
+      fechaDetalle: this.convertirFechaParaBackend(detalle.fechaDetalle), // CORRECCIÓN PROBLEMA 3
       notas: detalle.notas || ''
     })) : [];
     
     return {
       sociaId: pago.sociaId,
       monto: pago.monto,
-      fechaPago: pago.fechaPago,
+      fechaPago: this.convertirFechaParaBackend(pago.fechaPago), // CORRECCIÓN PROBLEMA 3
       concepto: pago.concepto || '',
       metodoPago: pago.metodoPago.toString(),
       confirmado: pago.confirmado,

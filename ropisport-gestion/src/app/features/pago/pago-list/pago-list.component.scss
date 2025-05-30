@@ -1,241 +1,4 @@
-.container {
-    padding: 2rem;
-    background-color: #f8f9fa;
-  
-    .main-panel {
-      background-color: #ffffff;
-      border-radius: 6px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-      padding: 1.5rem;
-    }
-  
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #dee2e6;
-      padding-bottom: 1rem;
-      margin-bottom: 1rem;
-  
-      h2 {
-        font-size: 1.5rem;
-        margin: 0;
-        color: #343a40;
-      }
-  
-      .action-bar {
-        display: flex;
-        gap: 1rem;
-  
-        .search-container {
-          input {
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            border: 1px solid #ced4da;
-            font-size: 0.95rem;
-            background-color: #f1f3f5;
-            color: #495057;
-  
-            &::placeholder {
-              color: #adb5bd;
-            }
-          }
-        }
-  
-        .header-actions {
-          display: flex;
-          gap: 0.5rem;
-  
-          button {
-            font-size: 0.9rem;
-            padding: 0.4rem 0.8rem;
-            border-radius: 4px;
-            border: 1px solid transparent;
-            transition: background-color 0.2s ease;
-  
-            &.btn-edit {
-              background-color: #e9ecef;
-              color: #343a40;
-  
-              &:hover {
-                background-color: #dee2e6;
-              }
-            }
-  
-            &.btn-delete {
-              background-color: #f8d7da;
-              color: #721c24;
-  
-              &:hover {
-                background-color: #f5c6cb;
-              }
-            }
-          }
-        }
-      }
-    }
-  
-    .table-responsive {
-      overflow-x: auto;
-  
-      .table {
-        width: 100%;
-        border-collapse: collapse;
-  
-        th, td {
-          padding: 0.75rem;
-          border-bottom: 1px solid #e9ecef;
-          text-align: left;
-          font-size: 0.95rem;
-        }
-  
-        .amount {
-          font-weight: 500;
-        }
-  
-        .badge {
-          padding: 0.3rem 0.6rem;
-          border-radius: 3px;
-          font-size: 0.8rem;
-  
-          &-confirmed {
-            background-color: #d4edda;
-            color: #155724;
-          }
-  
-          &-pending {
-            background-color: #fff3cd;
-            color: #856404;
-          }
-  
-          &-metodo {
-            &.badge-efectivo {
-              background-color: #e2e3e5;
-              color: #343a40;
-            }
-  
-            &.badge-transferencia {
-              background-color: #d1ecf1;
-              color: #0c5460;
-            }
-  
-            &.badge-tarjeta {
-              background-color: #fefefe;
-              color: #6c757d;
-            }
-          }
-        }
-  
-        .btn-details {
-          font-size: 0.8rem;
-          padding: 0.3rem 0.6rem;
-          border: none;
-          background-color: #dee2e6;
-          border-radius: 4px;
-          color: #343a40;
-  
-          &:hover {
-            background-color: #ced4da;
-          }
-  
-          i {
-            margin-right: 0.3rem;
-          }
-        }
-  
-        .no-results, .loading-cell {
-          text-align: center;
-          color: #6c757d;
-          font-style: italic;
-          padding: 1rem;
-        }
-  
-        .spinner {
-          width: 20px;
-          height: 20px;
-          border: 2px solid #adb5bd;
-          border-top: 2px solid transparent;
-          border-radius: 50%;
-          animation: spin 1s linear infinite;
-          margin: 0 auto;
-        }
-  
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      }
-    }
-  
-    .pagination-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      margin: 1rem 0;
-      gap: 1rem;
-  
-      .btn-page {
-        border: none;
-        background-color: #f1f3f5;
-        padding: 0.5rem 1rem;
-        border-radius: 4px;
-  
-        &:disabled {
-          opacity: 0.5;
-        }
-  
-        i {
-          font-size: 1rem;
-        }
-      }
-  
-      .page-info {
-        font-size: 0.9rem;
-        color: #495057;
-      }
-    }
-  
-    .footer {
-      text-align: right;
-      margin-top: 1.5rem;
-  
-      .btn-primary {
-        background-color: #495057;
-        color: white;
-        border: none;
-        padding: 0.6rem 1rem;
-        border-radius: 4px;
-  
-        i {
-          margin-right: 0.3rem;
-        }
-  
-        &:hover {
-          background-color: #343a40;
-        }
-      }
-    }
-  
-    .alert {
-      margin-top: 1rem;
-      padding: 1rem;
-      border-radius: 4px;
-      color: #721c24;
-      background-color: #f8d7da;
-  
-      .btn-close {
-        background: none;
-        border: none;
-        float: right;
-        font-size: 1.2rem;
-        color: #721c24;
-        cursor: pointer;
-      }
-    }
-  }
-  
-/*// Variables
+// Variables - Colores más suaves y elegantes
 $primary-color: #2563eb;
 $primary-dark: #1d4ed8;
 $secondary-color: #64748b;
@@ -251,6 +14,12 @@ $shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.
 $border-radius: 6px;
 $border-radius-lg: 12px;
 $transition: all 0.2s ease-in-out;
+
+// Nuevos colores suaves para botones
+$btn-modificar: #f1f5f9;    // Gris muy claro para modificar
+$btn-eliminar: #fef2f2;     // Rosa muy claro para eliminar
+$btn-crear: #374151;        // Gris oscuro para crear
+$text-black: #1f2937;       // Negro para texto en badges
 
 // Mixins
 @mixin button-base {
@@ -349,36 +118,40 @@ $transition: all 0.2s ease-in-out;
   gap: 8px;
 }
 
-// Botones
+// Botones - Colores suaves según las imágenes
 .btn-edit {
   @include button-base;
-  background-color: $warning-color;
-  color: $white;
+  background-color: $btn-modificar;
+  color: $secondary-color;
+  border: 1px solid #d1d5db;
   
   &:hover:not(:disabled) {
-    background-color: darken($warning-color, 10%);
+    background-color: #e2e8f0;
+    color: $dark-gray;
     transform: translateY(-1px);
   }
 }
 
 .btn-delete {
   @include button-base;
-  background-color: $danger-color;
-  color: $white;
+  background-color: $btn-eliminar;
+  color: #dc2626;
+  border: 1px solid #fecaca;
   
   &:hover:not(:disabled) {
-    background-color: darken($danger-color, 10%);
+    background-color: #fee2e2;
+    color: #b91c1c;
     transform: translateY(-1px);
   }
 }
 
 .btn-primary {
   @include button-base;
-  background-color: $primary-color;
+  background-color: $btn-crear;
   color: $white;
   
   &:hover:not(:disabled) {
-    background-color: $primary-dark;
+    background-color: #111827;
     transform: translateY(-1px);
   }
 }
@@ -429,13 +202,15 @@ $transition: all 0.2s ease-in-out;
 
 .btn-remove {
   @include button-base;
-  background-color: $danger-color;
-  color: $white;
+  background-color: $btn-eliminar;
+  color: #dc2626;
+  border: 1px solid #fecaca;
   padding: 4px 8px;
   font-size: 12px;
   
   &:hover {
-    background-color: darken($danger-color, 10%);
+    background-color: #fee2e2;
+    color: #b91c1c;
   }
 }
 
@@ -475,7 +250,7 @@ $transition: all 0.2s ease-in-out;
   color: $success-color;
 }
 
-// Badges
+// Badges - Fondos suaves con texto negro
 .badge {
   padding: 4px 8px;
   border-radius: 12px;
@@ -483,33 +258,33 @@ $transition: all 0.2s ease-in-out;
   font-weight: 500;
   
   &.badge-confirmed {
-    background-color: rgba(5, 150, 105, 0.1);
-    color: $success-color;
+    background-color: rgba(16, 185, 129, 0.1);
+    color: $text-black;
   }
   
   &.badge-pending {
-    background-color: rgba(217, 119, 6, 0.1);
-    color: $warning-color;
+    background-color: rgba(245, 158, 11, 0.1);
+    color: $text-black;
   }
   
   &.badge-metodo {
-    background-color: rgba(37, 99, 235, 0.1);
-    color: $primary-color;
+    background-color: rgba(59, 130, 246, 0.1);
+    color: $text-black;
   }
   
   &.badge-efectivo {
-    background-color: rgba(5, 150, 105, 0.1);
-    color: $success-color;
+    background-color: rgba(16, 185, 129, 0.1);
+    color: $text-black;
   }
   
   &.badge-transferencia {
-    background-color: rgba(37, 99, 235, 0.1);
-    color: $primary-color;
+    background-color: rgba(59, 130, 246, 0.1);
+    color: $text-black;
   }
   
   &.badge-tarjeta {
-    background-color: rgba(217, 119, 6, 0.1);
-    color: $warning-color;
+    background-color: rgba(245, 158, 11, 0.1);
+    color: $text-black;
   }
 }
 
@@ -885,11 +660,13 @@ $transition: all 0.2s ease-in-out;
 
 .btn-danger {
   @include button-base;
-  background-color: $danger-color;
-  color: $white;
+  background-color: $btn-eliminar;
+  color: #dc2626;
+  border: 1px solid #fecaca;
   
   &:hover:not(:disabled) {
-    background-color: darken($danger-color, 10%);
+    background-color: #fee2e2;
+    color: #b91c1c;
   }
 }
 
@@ -1014,4 +791,4 @@ $transition: all 0.2s ease-in-out;
   .footer {
     padding: 16px;
   }
-}*/
+}
