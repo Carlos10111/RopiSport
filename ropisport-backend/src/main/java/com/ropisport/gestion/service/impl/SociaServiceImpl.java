@@ -40,7 +40,6 @@ public class SociaServiceImpl implements SociaService {
 
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    // Métodos CRUD existentes
     @Override
     public SociaResponse getSociaById(Integer id) {
         Socia socia = sociaRepository.findById(id)
@@ -139,17 +138,14 @@ public class SociaServiceImpl implements SociaService {
 
         socia.setActiva(activa);
 
-        // Si se está dando de baja, registrar fecha
         if (!activa && socia.getFechaBaja() == null) {
             socia.setFechaBaja(LocalDateTime.now());
         }
 
-        // Si se está reactivando, eliminar fecha de baja
         if (activa && socia.getFechaBaja() != null) {
             socia.setFechaBaja(null);
         }
 
-        // Actualizar observaciones si se proporcionan
         if (observaciones != null && !observaciones.isEmpty()) {
             String currentObservaciones = socia.getObservaciones();
             String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
@@ -165,7 +161,6 @@ public class SociaServiceImpl implements SociaService {
         return mapToResponse(socia);
     }
 
-    // Exportación a Excel
     @Override
     public byte[] exportToExcel(Map<String, String> parametros) {
         // Extracción de parámetros
@@ -193,13 +188,11 @@ public class SociaServiceImpl implements SociaService {
             try {
                 categoriaId = Integer.parseInt(categoriaStr);
             } catch (NumberFormatException e) {
-                // Ignorar si no es un número válido
             }
         }
 
         List<Socia> socias;
 
-        // Selección del tipo de búsqueda según los parámetros proporcionados
         if (texto != null && !texto.isEmpty()) {
             // Búsqueda general
             socias = sociaRepository.busquedaGeneral(texto, activa, Pageable.unpaged()).getContent();

@@ -1,5 +1,7 @@
 package com.ropisport.gestion.repository;
 
+import java.time.LocalDateTime;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -72,4 +74,14 @@ public interface SociaRepository extends JpaRepository<Socia, Integer>, JpaSpeci
             @Param("categoriaId") Integer categoriaId,
             @Param("activa") Boolean activa,
             Pageable pageable);
+ // Agregar al final de SociaRepository.java
+    @Query("SELECT COUNT(s) FROM Socia s WHERE s.activa = true")
+    Long countActiveSocias();
+
+    @Query("SELECT COUNT(s) FROM Socia s WHERE s.createdAt >= :fechaInicio")
+    Long countNuevasSociasMes(@Param("fechaInicio") LocalDateTime fechaInicio);
+
+    @Query("SELECT COUNT(s) FROM Socia s WHERE s.activa = true AND " +
+           "NOT EXISTS (SELECT p FROM Pago p WHERE p.socia = s AND p.fechaPago >= :fechaInicio)")
+    Long countSociasMorosas(@Param("fechaInicio") LocalDateTime fechaInicio);
 }

@@ -107,4 +107,40 @@ public class EmpresaController {
 
         excelExportService.exportEmpresasToExcel(response.getOutputStream());
     }
-}
+
+ // Búsqueda general
+ @GetMapping("/buscar")
+ public ResponseEntity<PaginatedResponse<EmpresaResponse>> busquedaGeneral(
+         @RequestParam(required = false) String texto,
+         @RequestParam(required = false) Boolean activa,
+         @RequestParam(defaultValue = "0") int page,
+         @RequestParam(defaultValue = "10") int size,
+         @RequestParam(defaultValue = "id,desc") String sort) {
+
+     PaginatedResponse<EmpresaResponse> response = empresaService.busquedaGeneral(
+             texto, activa, page, size, sort);
+
+     return ResponseEntity.ok(response);
+ }
+
+ // Búsqueda avanzada
+ @GetMapping("/busqueda-avanzada")
+ public ResponseEntity<PaginatedResponse<EmpresaResponse>> busquedaAvanzada(
+         @RequestParam(required = false) String nombreNegocio,
+         @RequestParam(required = false) String cif,
+         @RequestParam(required = false) String email,
+         @RequestParam(required = false) String telefono,
+         @RequestParam(required = false) String direccion,
+         @RequestParam(required = false) Integer categoriaId,
+         @RequestParam(required = false) Boolean activa,
+         @RequestParam(defaultValue = "0") int page,
+         @RequestParam(defaultValue = "10") int size,
+         @RequestParam(defaultValue = "id,desc") String sort) {
+
+     PaginatedResponse<EmpresaResponse> response = empresaService.busquedaAvanzada(
+             nombreNegocio, cif, email, telefono, direccion, categoriaId, activa, page, size, sort);
+
+     return ResponseEntity.ok(response);
+ }
+
+} 

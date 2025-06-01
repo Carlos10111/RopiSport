@@ -1,5 +1,9 @@
 package com.ropisport.gestion.controller;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.RequestParam;
+import com.ropisport.gestion.model.dto.response.PaginatedResponse;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +31,13 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/usuarios")
-@PreAuthorize("hasRole('ADMIN')")  // Solo el administrador general puede acceder a este controlador
+@PreAuthorize("hasRole('ADMIN')")  // el administrador general puede acceder a este controlador
 public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
 
-    @GetMapping
-    public ResponseEntity<Page<UsuarioResponse>> getAllUsuarios(Pageable pageable) {
-        return ResponseEntity.ok(usuarioService.getAllUsuarios(pageable));
-    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponse> getUsuarioById(@PathVariable Integer id) {
@@ -80,7 +81,7 @@ public class UsuarioController {
     }
 
 
-    // Endpoints específicos para crear administradores
+    // Endpoints  para crear administradores
 
     @PostMapping("/admin-general")
     public ResponseEntity<ApiResponse<UsuarioResponse>> crearAdministradorGeneral(@Valid @RequestBody UsuarioRequest request) {
@@ -94,5 +95,58 @@ public class UsuarioController {
         UsuarioResponse usuario = usuarioService.crearAdministradorSocias(request);
         ApiResponse<UsuarioResponse> response = new ApiResponse<>(true, "Administrador de socias creado exitosamente", usuario);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+    @GetMapping("/buscar")
+    public ResponseEntity<PaginatedResponse<UsuarioResponse>> busquedaGeneral(
+            @RequestParam(required = false) String texto,
+            @RequestParam(required = false) Boolean activo,
+            @RequestParam(required = false) Integer rolId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id,desc") String sort) {
+
+        PaginatedResponse<UsuarioResponse> response = usuarioService.busquedaGeneral(
+                texto, activo, rolId, page, size, sort);
+
+        return ResponseEntity.ok(response);
+    }
+
+    // Búsqueda avanzada
+    @GetMapping("/busqueda-avanzada")
+    public ResponseEntity<PaginatedResponse<UsuarioResponse>> busquedaAvanzada(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String nombreCompleto,
+            @RequestParam(required = false) Integer rolId,
+            @RequestParam(required = false) Boolean activo,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id,desc") String sort) {
+
+        PaginatedResponse<UsuarioResponse> response = usuarioService.busquedaAvanzada(
+                username, email, nombreCompleto, rolId, activo, page, size, sort);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<PaginatedResponse<UsuarioResponse>> getAllUsuarios(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        Page<UsuarioResponse> usuarios = usuarioService.getAllUsuarios(pageable);
+
+        PaginatedResponse<UsuarioResponse> response = new PaginatedResponse<>(
+            usuarios.getContent(),
+            usuarios.getNumber(),
+            usuarios.getSize(),
+            usuarios.getTotalElements(),
+            usuarios.getTotalPages(),
+            usuarios.isLast()
+        );
+
+        return ResponseEntity.ok(response);
     }
 }
