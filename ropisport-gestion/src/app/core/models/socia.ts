@@ -16,10 +16,14 @@
       fechaInicio?: string;
       fechaBaja?: string;
       observaciones?: string;
+        expandido?: boolean;
+       expandidoNegocio?: boolean;
+       
       categoria?: {
         id: number;
         nombre: string;
       };
+
     }
 
     export interface PaginatedResponse<T> {

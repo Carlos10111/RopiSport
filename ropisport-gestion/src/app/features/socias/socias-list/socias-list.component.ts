@@ -18,7 +18,8 @@ export class SociaListComponent implements OnInit, OnDestroy {
   socias: Socia[] = [];
   loading = false;
   error = '';
-  
+  ultimoNumeroSociaAsignado = 0;
+
   // Paginación
   currentPage = 0;
   pageSize = 10;
@@ -44,6 +45,10 @@ export class SociaListComponent implements OnInit, OnDestroy {
   constructor(private sociaService: SociaService) { }
   
   ngOnInit(): void {
+  this.socias = this.socias.map(socia => ({
+  ...socia,
+  expandido: false
+}));
     // Configurar búsqueda principal con debounce
     this.subscription.add(
       this.searchTerms.pipe(
@@ -54,6 +59,7 @@ export class SociaListComponent implements OnInit, OnDestroy {
         this.currentPage = 0;
         this.loadSocias();
       })
+      
     );
     
     // Configurar búsqueda en modal con debounce
@@ -113,7 +119,14 @@ export class SociaListComponent implements OnInit, OnDestroy {
           this.totalElements = response.totalElements;
           this.totalPages = response.totalPages;
           this.loading = false;
-        },
+          // Calcular el último número asignado
+            const max = this.socias.reduce((acc, s) => {
+          const numero = Number(s.numeroSocia); // asegura que sea un número
+          return !isNaN(numero) && numero > acc ? numero : acc;
+}, 0);
+
+        this.ultimoNumeroSociaAsignado = max;
+      },
         error: (err) => {
           this.error = 'Error al cargar las socias: ' + (err.error?.message || 'Ocurrió un problema en el servidor');
           this.loading = false;
@@ -145,6 +158,15 @@ export class SociaListComponent implements OnInit, OnDestroy {
   
   abrirModalNueva(): void {
     this.sociaActual = this.inicializarSocia();
+
+      // Calcular el número más alto actual
+  const maxNumero = this.socias.reduce((max, s) => {
+    const num = Number(s.numeroSocia);
+    return !isNaN(num) && num > max ? num : max;
+  }, 0);
+
+  // Asignar el siguiente número como string
+  this.sociaActual.numeroSocia = String(maxNumero + 1);
     this.modalActivo = 'nueva';
   }
   
@@ -192,14 +214,15 @@ export class SociaListComponent implements OnInit, OnDestroy {
     
     this.guardando = true;
     this.error = '';
-    
+
     this.subscription.add(
-      this.sociaService.createSocia(this.sociaActual).subscribe({
-        next: (response) => {
-          this.loadSocias();
-          this.cerrarModal();
-          this.guardando = false;
-        },
+    this.sociaService.createSocia(this.sociaActual).subscribe({
+      next: (response) => {
+        // Agregar nueva socia al final
+        this.socias.push(response);
+        this.cerrarModal();
+        this.guardando = false;
+      },
         error: (err) => {
           this.guardando = false;
           this.error = 'Error al crear la socia: ' + (err.error?.message || 'Ocurrió un problema en el servidor');
