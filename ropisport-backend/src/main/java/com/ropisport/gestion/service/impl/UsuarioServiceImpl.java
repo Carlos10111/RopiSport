@@ -1,5 +1,8 @@
 package com.ropisport.gestion.service.impl;
 
+import com.ropisport.gestion.model.dto.response.PaginatedResponse;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -166,7 +169,6 @@ public class UsuarioServiceImpl implements UsuarioService {
 
         return new ApiResponse <>(true, "Contraseña actualizada correctamente");
     }
- // En UsuarioServiceImpl.java, añadir:
     @Override
     @Transactional
     public UsuarioResponse crearAdministradorSocias(UsuarioRequest usuarioRequest) {
@@ -240,4 +242,61 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
 
+@Override
+public PaginatedResponse<UsuarioResponse> busquedaGeneral(
+        String texto, Boolean activo, Integer rolId, int page, int size, String sort) {
+    
+    Pageable pageable = createPageable(page, size, sort);
+    Page<Usuario> usuarios = usuarioRepository.busquedaGeneral(texto, activo, rolId, pageable);
+    
+    List<UsuarioResponse> content = usuarios.getContent().stream()
+            .map(this::mapToResponse)
+            .collect(Collectors.toList());
+    
+    return createPaginatedResponse(content, usuarios);
+}
+
+@Override
+public PaginatedResponse<UsuarioResponse> busquedaAvanzada(
+        String username,
+        String email,
+        String nombreCompleto,
+        Integer rolId,
+        Boolean activo,
+        int page,
+        int size,
+        String sort) {
+    
+    Pageable pageable = createPageable(page, size, sort);
+    Page<Usuario> usuarios = usuarioRepository.busquedaAvanzada(
+            username, email, nombreCompleto, rolId, activo, pageable);
+    
+    List<UsuarioResponse> content = usuarios.getContent().stream()
+            .map(this::mapToResponse)
+            .collect(Collectors.toList());
+    
+    return createPaginatedResponse(content, usuarios);
+}
+
+// Métodos auxiliares
+private Pageable createPageable(int page, int size, String sort) {
+    String[] sortParams = sort.split(",");
+    String sortField = sortParams[0];
+    Sort.Direction direction = sortParams.length > 1 && sortParams[1].equalsIgnoreCase("desc")
+            ? Sort.Direction.DESC : Sort.Direction.ASC;
+    
+    return PageRequest.of(page, size, Sort.by(direction, sortField));
+}
+
+private PaginatedResponse<UsuarioResponse> createPaginatedResponse(
+        List<UsuarioResponse> content, Page<Usuario> page) {
+    return new PaginatedResponse<>(
+        content,
+        page.getNumber(),
+        page.getSize(),
+        page.getTotalElements(),
+        page.getTotalPages(),
+        page.isLast()
+    );
+}
 }

@@ -167,31 +167,6 @@
     }
   }
 
-  // Estilo especial para el botón Home cuando está activo
-  &[routerLink="/"].active {
-    background: #f8e4e4 !important;
-    color: var(--primary-black) !important;
-    font-weight: 700 !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
-    border: none !important; // Sin borde para Home
-
-    &::before {
-      transform: scaleY(1) !important;
-      background: var(--soft-red) !important;
-      width: 4px !important;
-    }
-
-    .nav-text {
-      font-weight: 700 !important;
-      letter-spacing: 0.8px !important;
-      color: var(--primary-black) !important;
-    }
-
-    .nav-icon {
-      color: var(--soft-red) !important;
-    }
-  }
-
   &:focus {
     outline: none;
     box-shadow: 0 0 0 2px rgba(139, 0, 0, 0.5);
@@ -222,16 +197,6 @@
   border-top: 1px solid var(--light-gray);
   background: rgba(0, 0, 0, 0.2);
   flex-shrink: 0;
-}
-
-.tools-button {
-  background: var(--light-gray);
-  border: 1px solid var(--hover-gray);
-
-  &:hover {
-    background: var(--hover-gray);
-    border-color: var(--soft-red);
-  }
 }
 
 .logout-button {
@@ -291,3 +256,4 @@
     height: calc(100vh - 70px);
   }
 }
+

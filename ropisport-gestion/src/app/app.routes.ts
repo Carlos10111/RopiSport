@@ -14,6 +14,7 @@ import { InstitucionListComponent } from './features/institucion/institucion-lis
 import { PagoListComponent } from './features/pago/pago-list/pago-list.component';
 import { InstitucionFormComponent } from './features/institucion/institucion-form/institucion-form.component';
 import { SociasFormComponent } from './features/socias/socias-form/socias-form.component';
+import { AdminsComponent } from './features/admins/admins.component';
 
 export const routes: Routes = [
   {
@@ -56,7 +57,8 @@ export const routes: Routes = [
 
       { path: 'instituciones', component: InstitucionListComponent },
       { path: 'instituciones-form', component: InstitucionFormComponent },
-      { path: 'pagos', component: PagoListComponent}
+      { path: 'pagos', component: PagoListComponent},
+      { path: 'admins', component: AdminsComponent },
     ]
   },
 

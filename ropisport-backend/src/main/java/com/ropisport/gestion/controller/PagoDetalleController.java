@@ -1,5 +1,11 @@
 package com.ropisport.gestion.controller;
 
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.RequestParam;
+import com.ropisport.gestion.model.dto.response.PaginatedResponse;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,4 +65,81 @@ public class PagoDetalleController {
         pagoDetalleService.deleteDetalle(id);
         return ResponseEntity.ok(new ApiResponse<Void>(true, "Detalle de pago eliminado correctamente"));
     }
+
+
+ // Búsqueda general
+ @GetMapping("/buscar")
+ public ResponseEntity<PaginatedResponse<PagoDetalleResponse>> busquedaGeneral(
+         @RequestParam(required = false) String texto,
+         @RequestParam(required = false) Integer pagoId,
+         @RequestParam(defaultValue = "0") int page,
+         @RequestParam(defaultValue = "10") int size,
+         @RequestParam(defaultValue = "fechaDetalle,desc") String sort) {
+
+     PaginatedResponse<PagoDetalleResponse> response = pagoDetalleService.busquedaGeneral(
+             texto, pagoId, page, size, sort);
+
+     return ResponseEntity.ok(response);
+ }
+
+ // Búsqueda avanzada
+ @GetMapping("/busqueda-avanzada")
+ public ResponseEntity<PaginatedResponse<PagoDetalleResponse>> busquedaAvanzada(
+         @RequestParam(required = false) String concepto,
+         @RequestParam(required = false) Integer pagoId,
+         @RequestParam(required = false) Integer sociaId,
+         @RequestParam(required = false) BigDecimal montoMin,
+         @RequestParam(required = false) BigDecimal montoMax,
+         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
+         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin,
+         @RequestParam(defaultValue = "0") int page,
+         @RequestParam(defaultValue = "10") int size,
+         @RequestParam(defaultValue = "fechaDetalle,desc") String sort) {
+
+     PaginatedResponse<PagoDetalleResponse> response = pagoDetalleService.busquedaAvanzada(
+             concepto, pagoId, sociaId, montoMin, montoMax, fechaInicio, fechaFin, page, size, sort);
+
+     return ResponseEntity.ok(response);
+ }
+
+ // Búsquedas específicas útiles
+ @GetMapping("/concepto")
+ public ResponseEntity<PaginatedResponse<PagoDetalleResponse>> buscarPorConcepto(
+         @RequestParam String concepto,
+         @RequestParam(defaultValue = "0") int page,
+         @RequestParam(defaultValue = "10") int size,
+         @RequestParam(defaultValue = "fechaDetalle,desc") String sort) {
+
+     PaginatedResponse<PagoDetalleResponse> response = pagoDetalleService.buscarPorConcepto(
+             concepto, page, size, sort);
+
+     return ResponseEntity.ok(response);
+ }
+
+ @GetMapping("/socia/{sociaId}")
+ public ResponseEntity<PaginatedResponse<PagoDetalleResponse>> buscarPorSocia(
+         @PathVariable Integer sociaId,
+         @RequestParam(defaultValue = "0") int page,
+         @RequestParam(defaultValue = "10") int size,
+         @RequestParam(defaultValue = "fechaDetalle,desc") String sort) {
+
+     PaginatedResponse<PagoDetalleResponse> response = pagoDetalleService.buscarPorSocia(
+             sociaId, page, size, sort);
+
+     return ResponseEntity.ok(response);
+ }
+
+ @GetMapping("/rango-fechas")
+ public ResponseEntity<PaginatedResponse<PagoDetalleResponse>> buscarPorRangoFechas(
+         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
+         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin,
+         @RequestParam(defaultValue = "0") int page,
+         @RequestParam(defaultValue = "10") int size,
+         @RequestParam(defaultValue = "fechaDetalle,desc") String sort) {
+
+     PaginatedResponse<PagoDetalleResponse> response = pagoDetalleService.buscarPorRangoFechas(
+             fechaInicio, fechaFin, page, size, sort);
+
+     return ResponseEntity.ok(response);
+ }
 }

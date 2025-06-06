@@ -1,5 +1,6 @@
 package com.ropisport.gestion.service.impl;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,13 +8,16 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ropisport.gestion.exception.EntityNotFoundException;
 import com.ropisport.gestion.model.dto.request.PagoDetalleRequest;
 import com.ropisport.gestion.model.dto.request.PagoRequest;
+import com.ropisport.gestion.model.dto.response.PaginatedResponse;
 import com.ropisport.gestion.model.dto.response.PagoDetalleResponse;
 import com.ropisport.gestion.model.dto.response.PagoResponse;
 import com.ropisport.gestion.model.entity.Pago;
@@ -85,7 +89,6 @@ public class PagoServiceImpl implements PagoService {
         pago.setMetodoPago(pagoRequest.getMetodoPago());
         pago.setConfirmado(pagoRequest.getConfirmado() != null ? pagoRequest.getConfirmado() : false);
 
-        // Agregar detalles si existen
         if (pagoRequest.getDetalles() != null && !pagoRequest.getDetalles().isEmpty()) {
             for (PagoDetalleRequest detalleRequest : pagoRequest.getDetalles()) {
                 PagoDetalle detalle = new PagoDetalle();
@@ -108,7 +111,6 @@ public class PagoServiceImpl implements PagoService {
         Pago pago = pagoRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Pago no encontrado con ID: " + id));
 
-        // No permitimos cambiar la socia asociada
         if (!pago.getSocia().getId().equals(pagoRequest.getSociaId())) {
             throw new IllegalStateException("No se puede cambiar la socia asociada a un pago");
         }
@@ -119,9 +121,7 @@ public class PagoServiceImpl implements PagoService {
         pago.setMetodoPago(pagoRequest.getMetodoPago());
         pago.setConfirmado(pagoRequest.getConfirmado() != null ? pagoRequest.getConfirmado() : pago.getConfirmado());
 
-        // Eliminar los detalles existentes y agregar los nuevos
-        // Nota: Este enfoque simplifica la actualización, pero podrías implementar
-        // una estrategia más sofisticada para actualizar solo los detalles que cambiaron
+    
         pago.getDetalles().clear();
 
         if (pagoRequest.getDetalles() != null && !pagoRequest.getDetalles().isEmpty()) {
@@ -186,5 +186,62 @@ public class PagoServiceImpl implements PagoService {
                 .build();
     }
 
+    @Override
+    public PaginatedResponse<PagoResponse> busquedaGeneral(
+            String texto, Boolean confirmado, int page, int size, String sort) {
+        
+        Pageable pageable = createPageable(page, size, sort);
+        Page<Pago> pagos = pagoRepository.busquedaGeneral(texto, confirmado, pageable);
+        
+        List<PagoResponse> content = pagos.getContent().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+        
+        return createPaginatedResponse(content, pagos);
+    }
 
+    @Override
+    public PaginatedResponse<PagoResponse> busquedaAvanzada(
+            String concepto, 
+            String referencia,  
+            Integer sociaId, 
+            BigDecimal importeMin, 
+            BigDecimal importeMax, 
+            Boolean confirmado,
+            LocalDateTime fechaInicio, 
+            LocalDateTime fechaFin,
+            int page, int size, String sort) {
+        
+        Pageable pageable = createPageable(page, size, sort);
+        Page<Pago> pagos = pagoRepository.busquedaAvanzada(
+                concepto, sociaId, importeMin, importeMax, confirmado, 
+                fechaInicio, fechaFin, pageable);
+        
+        List<PagoResponse> content = pagos.getContent().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+        
+        return createPaginatedResponse(content, pagos);
+    }
+
+    private Pageable createPageable(int page, int size, String sort) {
+        String[] sortParams = sort.split(",");
+        String sortField = sortParams[0];
+        Sort.Direction direction = sortParams.length > 1 && sortParams[1].equalsIgnoreCase("desc")
+                ? Sort.Direction.DESC : Sort.Direction.ASC;
+        
+        return PageRequest.of(page, size, Sort.by(direction, sortField));
+    }
+
+    private PaginatedResponse<PagoResponse> createPaginatedResponse(
+            List<PagoResponse> content, Page<Pago> page) {
+        return new PaginatedResponse<>(
+            content,
+            page.getNumber(),
+            page.getSize(),
+            page.getTotalElements(),
+            page.getTotalPages(),
+            page.isLast()
+        );
+    }
 }

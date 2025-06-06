@@ -1,5 +1,7 @@
 package com.ropisport.gestion.service.impl;
-
+import com.ropisport.gestion.model.dto.response.PaginatedResponse;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -121,5 +123,63 @@ public class InstitucionServiceImpl implements InstitucionService {
                 .createdAt(institucion.getCreatedAt())
                 .updatedAt(institucion.getUpdatedAt())
                 .build();
+    }
+    @Override
+    public PaginatedResponse<InstitucionResponse> busquedaGeneral(
+            String texto, Integer tipoInstitucionId, int page, int size, String sort) {
+        
+        Pageable pageable = createPageable(page, size, sort);
+        Page<Institucion> instituciones = institucionRepository.busquedaGeneral(texto, tipoInstitucionId, pageable);
+        
+        List<InstitucionResponse> content = instituciones.getContent().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+        
+        return createPaginatedResponse(content, instituciones);
+    }
+
+    @Override
+    public PaginatedResponse<InstitucionResponse> busquedaAvanzada(
+            String nombreInstitucion,
+            String personaContacto,
+            String email,
+            String telefono,
+            String cargo,
+            Integer tipoInstitucionId,
+            int page,
+            int size,
+            String sort) {
+        
+        Pageable pageable = createPageable(page, size, sort);
+        Page<Institucion> instituciones = institucionRepository.busquedaAvanzada(
+                nombreInstitucion, personaContacto, email, telefono, cargo, tipoInstitucionId, pageable);
+        
+        List<InstitucionResponse> content = instituciones.getContent().stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+        
+        return createPaginatedResponse(content, instituciones);
+    }
+
+    // Métodos auxiliares
+    private Pageable createPageable(int page, int size, String sort) {
+        String[] sortParams = sort.split(",");
+        String sortField = sortParams[0];
+        Sort.Direction direction = sortParams.length > 1 && sortParams[1].equalsIgnoreCase("desc")
+                ? Sort.Direction.DESC : Sort.Direction.ASC;
+        
+        return PageRequest.of(page, size, Sort.by(direction, sortField));
+    }
+
+    private PaginatedResponse<InstitucionResponse> createPaginatedResponse(
+            List<InstitucionResponse> content, Page<Institucion> page) {
+        return new PaginatedResponse<>(
+            content,
+            page.getNumber(),
+            page.getSize(),
+            page.getTotalElements(),
+            page.getTotalPages(),
+            page.isLast()
+        );
     }
 }

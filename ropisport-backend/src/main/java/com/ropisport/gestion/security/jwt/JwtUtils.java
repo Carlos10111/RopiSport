@@ -2,11 +2,14 @@ package com.ropisport.gestion.security.jwt;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import com.ropisport.gestion.util.Constants;
@@ -38,11 +41,16 @@ public class JwtUtils {
      */
     public String generateJwtToken(Authentication authentication) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-
         Key key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
-
+        
+        // Obtener roles del usuario
+        List<String> roles = userPrincipal.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+        
         return Jwts.builder()
                 .setSubject(userPrincipal.getUsername())
+                .claim("authorities", roles) // ← AÑADIR ESTA LÍNEA
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(key, SignatureAlgorithm.HS512)

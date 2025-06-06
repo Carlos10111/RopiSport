@@ -6,13 +6,17 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ropisport.gestion.exception.EntityNotFoundException;
+import com.ropisport.gestion.model.dto.excel.EmpresaExcelDto;
 import com.ropisport.gestion.model.dto.request.EmpresaRequest;
 import com.ropisport.gestion.model.dto.response.EmpresaResponse;
+import com.ropisport.gestion.model.dto.response.PaginatedResponse;
 import com.ropisport.gestion.model.entity.CategoriaNegocio;
 import com.ropisport.gestion.model.entity.Empresa;
 import com.ropisport.gestion.model.entity.Socia;
@@ -169,4 +173,69 @@ public class EmpresaServiceImpl implements EmpresaService {
                 .updatedAt(empresa.getUpdatedAt())
                 .build();
     }
+    
+
+
+
+@Override
+public PaginatedResponse<EmpresaResponse> busquedaGeneral(
+        String texto, Boolean activa, int page, int size, String sort) {
+    
+    Pageable pageable = createPageable(page, size, sort);
+    Page<Empresa> empresas = empresaRepository.busquedaGeneral(texto, activa, pageable);
+    
+    List<EmpresaResponse> content = empresas.getContent().stream()
+            .map(this::mapToResponse)
+            .collect(Collectors.toList());
+    
+    return createPaginatedResponse(content, empresas);
+}
+
+@Override
+public PaginatedResponse<EmpresaResponse> busquedaAvanzada(
+        String nombreNegocio,
+        String cif,
+        String email,
+        String telefono,
+        String direccion,
+        Integer categoriaId,
+        Boolean activa,
+        int page,
+        int size,
+        String sort) {
+    
+    Pageable pageable = createPageable(page, size, sort);
+    Page<Empresa> empresas = empresaRepository.busquedaAvanzada(
+            nombreNegocio, cif, email, telefono, direccion, categoriaId, activa, pageable);
+    
+    List<EmpresaResponse> content = empresas.getContent().stream()
+            .map(this::mapToResponse)
+            .collect(Collectors.toList());
+    
+    return createPaginatedResponse(content, empresas);
+}
+
+
+// Métodos auxiliares
+private Pageable createPageable(int page, int size, String sort) {
+    String[] sortParams = sort.split(",");
+    String sortField = sortParams[0];
+    Sort.Direction direction = sortParams.length > 1 && sortParams[1].equalsIgnoreCase("desc")
+            ? Sort.Direction.DESC : Sort.Direction.ASC;
+    
+    return PageRequest.of(page, size, Sort.by(direction, sortField));
+}
+
+private PaginatedResponse<EmpresaResponse> createPaginatedResponse(
+        List<EmpresaResponse> content, Page<Empresa> page) {
+    return new PaginatedResponse<>(
+        content,
+        page.getNumber(),
+        page.getSize(),
+        page.getTotalElements(),
+        page.getTotalPages(),
+        page.isLast()
+    );
+}
+
 }

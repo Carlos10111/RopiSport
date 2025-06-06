@@ -94,11 +94,41 @@ public class InstitucionController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Institución eliminada correctamente"));
     }
 
-    @PostMapping("/search")
-    public ResponseEntity<List<InstitucionResponse>> searchInstituciones(@RequestBody SearchRequest searchRequest) {
-        List<InstitucionResponse> instituciones = institucionService.searchInstituciones(searchRequest.getSearchTerm());
-        return ResponseEntity.ok(instituciones);
-    }
+ // AGREGAR AL FINAL DE InstitucionController.java (antes del método excel)
+
+ // Búsqueda general
+ @GetMapping("/buscar")
+ public ResponseEntity<PaginatedResponse<InstitucionResponse>> busquedaGeneral(
+         @RequestParam(required = false) String texto,
+         @RequestParam(required = false) Integer tipoInstitucionId,
+         @RequestParam(defaultValue = "0") int page,
+         @RequestParam(defaultValue = "10") int size,
+         @RequestParam(defaultValue = "id,desc") String sort) {
+
+     PaginatedResponse<InstitucionResponse> response = institucionService.busquedaGeneral(
+             texto, tipoInstitucionId, page, size, sort);
+
+     return ResponseEntity.ok(response);
+ }
+
+ // Búsqueda avanzada
+ @GetMapping("/busqueda-avanzada")
+ public ResponseEntity<PaginatedResponse<InstitucionResponse>> busquedaAvanzada(
+         @RequestParam(required = false) String nombreInstitucion,
+         @RequestParam(required = false) String personaContacto,
+         @RequestParam(required = false) String email,
+         @RequestParam(required = false) String telefono,
+         @RequestParam(required = false) String cargo,
+         @RequestParam(required = false) Integer tipoInstitucionId,
+         @RequestParam(defaultValue = "0") int page,
+         @RequestParam(defaultValue = "10") int size,
+         @RequestParam(defaultValue = "id,desc") String sort) {
+
+     PaginatedResponse<InstitucionResponse> response = institucionService.busquedaAvanzada(
+             nombreInstitucion, personaContacto, email, telefono, cargo, tipoInstitucionId, page, size, sort);
+
+     return ResponseEntity.ok(response);
+ }
 
     @GetMapping("/excel")
     public void exportToExcel(HttpServletResponse response) throws IOException {

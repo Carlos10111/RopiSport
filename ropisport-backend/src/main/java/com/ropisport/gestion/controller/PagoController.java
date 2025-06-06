@@ -1,6 +1,7 @@
 package com.ropisport.gestion.controller;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -117,5 +118,40 @@ public class PagoController {
         excelExportService.exportPagosToExcel(response.getOutputStream());
     }
 
+ // Búsqueda general
+ @GetMapping("/buscar")
+ public ResponseEntity<PaginatedResponse<PagoResponse>> busquedaGeneral(
+         @RequestParam(required = false) String texto,
+         @RequestParam(required = false) Boolean confirmado,
+         @RequestParam(defaultValue = "0") int page,
+         @RequestParam(defaultValue = "10") int size,
+         @RequestParam(defaultValue = "fechaPago,desc") String sort) {
 
+     PaginatedResponse<PagoResponse> response = pagoService.busquedaGeneral(
+             texto, confirmado, page, size, sort);
+
+     return ResponseEntity.ok(response);
+ }
+
+ // Búsqueda avanzada
+ @GetMapping("/busqueda-avanzada")
+ public ResponseEntity<PaginatedResponse<PagoResponse>> busquedaAvanzada(
+         @RequestParam(required = false) String concepto,
+         @RequestParam(required = false) String referencia,
+         @RequestParam(required = false) Integer sociaId,
+         @RequestParam(required = false) BigDecimal importeMin,
+         @RequestParam(required = false) BigDecimal importeMax,
+         @RequestParam(required = false) Boolean confirmado,
+         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
+         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin,
+         @RequestParam(defaultValue = "0") int page,
+         @RequestParam(defaultValue = "10") int size,
+         @RequestParam(defaultValue = "fechaPago,desc") String sort) {
+
+     PaginatedResponse<PagoResponse> response = pagoService.busquedaAvanzada(
+             concepto, referencia, sociaId, importeMin, importeMax, confirmado, 
+             fechaInicio, fechaFin, page, size, sort);
+
+     return ResponseEntity.ok(response);
+ }
 }
