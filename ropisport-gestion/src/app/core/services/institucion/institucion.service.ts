@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { Institucion } from '../../models/institucion';
 import { InstitucionDTO } from '../../dtos/institucion-dto';
-import { PaginatedResponse } from '../../dtos/paginated-response';
+import { PaginatedResponse } from '../../models/paginated-response';
 import { ApiResponse } from '../../models/api-response';
 import { SearchRequest } from '../../dtos/search-request';
 

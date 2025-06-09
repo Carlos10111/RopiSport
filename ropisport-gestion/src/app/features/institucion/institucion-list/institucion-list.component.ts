@@ -8,7 +8,7 @@ import { InstitucionService } from '../../../core/services/institucion/instituci
 import { TipoInstitucionService } from '../../../core/services/tipo-institucion/tipo-institucion.service';
 import { Institucion } from '../../../core/models/institucion';
 import { InstitucionDTO } from '../../../core/dtos/institucion-dto';
-import { PaginatedResponse } from '../../../core/dtos/paginated-response';
+import { PaginatedResponse } from '../../../core/models/paginated-response';
 import { TipoInstitucion } from '../../../core/models/tipo-institucion';
 
 @Component({

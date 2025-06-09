@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { Socia } from '../../models/socia';
 import { SociaDTO } from '../../dtos/socia-dto';
-import { PaginatedResponse } from '../../dtos/paginated-response';
+import { PaginatedResponse } from '../../models/paginated-response';
 
 @Injectable({
   providedIn: 'root'

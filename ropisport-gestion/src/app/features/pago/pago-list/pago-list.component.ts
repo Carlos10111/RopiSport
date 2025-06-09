@@ -10,7 +10,7 @@ import { Pago } from '../../../core/models/pago';
 import { PagoDTO } from '../../../core/dtos/pago-dto';
 import { PagoDetalle } from '../../../core/models/pago-detalle';
 import { PagoDetalleDTO } from '../../../core/dtos/pago-detalle-dto';
-import { PaginatedResponse } from '../../../core/dtos/paginated-response';
+import { PaginatedResponse } from '../../../core/models/paginated-response';
 import { Socia } from '../../../core/models/socia';
 import { MetodoPago } from '../../../core/enums/metodo-pago';
 

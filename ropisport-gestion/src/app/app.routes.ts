@@ -7,14 +7,13 @@ import { RegistroComponent } from './features/auth/registro/registro.component';
 import { AuthLayoutComponent } from './layout/auth-layout/auth-layout.component';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { HomeComponent } from './features/home/home.component';
-import { UsuarioListComponent } from './features/usuario/usuario-list/usuario-list.component';
+import { UsuariosComponent } from './features/usuario/usuarios/usuarios.component';
 import { SociasListComponent } from './features/socias/socias-list/socias-list.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { InstitucionListComponent } from './features/institucion/institucion-list/institucion-list.component';
 import { PagoListComponent } from './features/pago/pago-list/pago-list.component';
 import { InstitucionFormComponent } from './features/institucion/institucion-form/institucion-form.component';
 import { SociasFormComponent } from './features/socias/socias-form/socias-form.component';
-import { AdminsComponent } from './features/admins/admins.component';
 
 export const routes: Routes = [
   {
@@ -50,7 +49,6 @@ export const routes: Routes = [
         pathMatch: 'full'
       },
       { path: 'dashboard', component: HomeComponent },
-      { path: 'usuarios', component: UsuarioListComponent },
 
       { path: 'socias', component: SociasListComponent },
       { path: 'socias-form', component: SociasFormComponent},
@@ -58,7 +56,7 @@ export const routes: Routes = [
       { path: 'instituciones', component: InstitucionListComponent },
       { path: 'instituciones-form', component: InstitucionFormComponent },
       { path: 'pagos', component: PagoListComponent},
-      { path: 'admins', component: AdminsComponent },
+      { path: 'usuarios', component: UsuariosComponent },
     ]
   },
 

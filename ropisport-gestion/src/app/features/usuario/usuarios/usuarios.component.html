@@ -1,0 +1,482 @@
+<!--export interface Usuario {
+    id: number;
+    username: string;
+    //password_hash: string;
+    email: string;
+    nombreCompleto: string;
+    rolId: number;
+    nombreRol: string;
+    activo: boolean;
+    fechaCreacion: string;
+    ultimoAcceso: string;
+    createdAt: string;
+    updatedAt: string;
+  }-->
+  
+
+
+  <div class="container">
+    <div class="main-panel">
+      <!-- Pestañas -->
+      <div class="tabs-container">
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab === 'usuarios'"
+          (click)="setActiveTab('usuarios')">
+          <i class="fas fa-users"></i> Gestionar Usuarios
+        </button>
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab === 'crear'"
+          (click)="setActiveTab('crear')">
+          <i class="fas fa-user-plus"></i> Crear Usuario
+        </button>
+      </div>
+  
+      <!-- Pestaña Gestionar Usuarios -->
+      <div class="tab-content" *ngIf="activeTab === 'usuarios'">
+        <div class="header">
+          <h2>Usuarios</h2>
+          <div class="action-bar">
+            <div class="search-container">
+              <input 
+                type="text" 
+                class="search-input" 
+                placeholder="Buscar usuario....." 
+                (input)="onSearch($event)">
+            </div>
+            <div class="header-actions">
+              <button class="btn-edit" (click)="abrirModalBuscarParaModificar()">
+                <i class="fas fa-edit"></i> Modificar
+              </button>
+              <button class="btn-delete" (click)="abrirModalBuscarParaEliminar()">
+                <i class="fas fa-trash"></i> Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Nombre Completo</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Fecha Creación</th>
+                <th>Último Acceso</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let usuario of usuarios">
+                <td>{{ usuario.username }}</td>
+                <td>{{ usuario.nombreCompleto }}</td>
+                <td>{{ usuario.email }}</td>
+                <td>{{ usuario.nombreRol || '-' }}</td>
+                <td>
+                  <span class="status-badge" [class.active]="usuario.activo" [class.inactive]="!usuario.activo">
+                    {{ usuario.activo ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </td>
+                <td>{{ usuario.fechaCreacion ? usuario.fechaCreacion : '-' }}</td>
+                <!--<td>{{ usuario.fechaCreacion ? (usuario.fechaCreacion | date:'dd/MM/yyyy') : '-' }}</td>-->
+                <td>{{ usuario.ultimoAcceso ? usuario.ultimoAcceso : '-' }}</td>
+                <!--<td>{{ usuario.ultimoAcceso ? (usuario.ultimoAcceso | date:'dd/MM/yyyy HH:mm') : '-' }}</td>-->
+              </tr>
+              
+              <!-- Mostrar mensaje si no hay resultados -->
+              <tr *ngIf="usuarios.length === 0 && !loading">
+                <td colspan="7" class="no-results">No se encontraron usuarios</td>
+              </tr>
+              
+              <!-- Loader mientras se cargan los datos -->
+              <tr *ngIf="loading">
+                <td colspan="7" class="loading-cell">
+                  <div class="spinner"></div>
+                  <span>Cargando...</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <!-- Paginación -->
+        <div class="pagination-container" *ngIf="totalPages > 1">
+          <button 
+            class="btn-page" 
+            [disabled]="currentPage === 0"
+            (click)="onPageChange(currentPage - 1)">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          
+          <span class="page-info">
+            Página {{ currentPage + 1 }} de {{ totalPages }}
+          </span>
+          
+          <button 
+            class="btn-page" 
+            [disabled]="currentPage === totalPages - 1"
+            (click)="onPageChange(currentPage + 1)">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+  
+      <!-- Pestaña Crear Usuario -->
+      <div class="tab-content" *ngIf="activeTab === 'crear'">
+        <div class="header">
+          <h2>Crear Nuevo Usuario</h2>
+        </div>
+        
+        <div class="form-container">
+          <form #crearUsuarioForm="ngForm" (ngSubmit)="crearUsuario()">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="username">Nombre de Usuario *</label>
+                <input 
+                  type="text" 
+                  id="username" 
+                  name="username" 
+                  [(ngModel)]="nuevoUsuario.username" 
+                  required 
+                  class="form-control"
+                  [class.is-invalid]="crearUsuarioForm.submitted && !nuevoUsuario.username">
+                <div class="invalid-feedback" *ngIf="crearUsuarioForm.submitted && !nuevoUsuario.username">
+                  El nombre de usuario es requerido
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="email">Email *</label>
+                <input 
+                  type="email" 
+                  id="email" 
+                  name="email" 
+                  [(ngModel)]="nuevoUsuario.email" 
+                  required 
+                  email
+                  class="form-control"
+                  [class.is-invalid]="crearUsuarioForm.submitted && (!nuevoUsuario.email || emailInvalido)">
+                <div class="invalid-feedback" *ngIf="crearUsuarioForm.submitted && !nuevoUsuario.email">
+                  El email es requerido
+                </div>
+                <div class="invalid-feedback" *ngIf="crearUsuarioForm.submitted && nuevoUsuario.email && emailInvalido">
+                  El formato del email no es válido
+                </div>
+              </div>
+            </div>
+  
+            <div class="form-row">
+              <div class="form-group">
+                <label for="password">Contraseña *</label>
+                <input 
+                  type="password" 
+                  id="password" 
+                  name="password" 
+                  [(ngModel)]="nuevoUsuario.password" 
+                  required 
+                  minlength="6"
+                  class="form-control"
+                  [class.is-invalid]="crearUsuarioForm.submitted && (!nuevoUsuario.password || nuevoUsuario.password.length < 6)">
+                <div class="invalid-feedback" *ngIf="crearUsuarioForm.submitted && !nuevoUsuario.password">
+                  La contraseña es requerida
+                </div>
+                <div class="invalid-feedback" *ngIf="crearUsuarioForm.submitted && nuevoUsuario.password && nuevoUsuario.password.length < 6">
+                  La contraseña debe tener al menos 6 caracteres
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="confirmPassword">Confirmar Contraseña *</label>
+                <input 
+                  type="password" 
+                  id="confirmPassword" 
+                  name="confirmPassword" 
+                  [(ngModel)]="confirmPassword" 
+                  required 
+                  class="form-control"
+                  [class.is-invalid]="crearUsuarioForm.submitted && (!confirmPassword || confirmPassword !== nuevoUsuario.password)">
+                <div class="invalid-feedback" *ngIf="crearUsuarioForm.submitted && !confirmPassword">
+                  Debe confirmar la contraseña
+                </div>
+                <div class="invalid-feedback" *ngIf="crearUsuarioForm.submitted && confirmPassword && confirmPassword !== nuevoUsuario.password">
+                  Las contraseñas no coinciden
+                </div>
+              </div>
+            </div>
+  
+            <div class="form-group">
+              <label for="nombreCompleto">Nombre Completo *</label>
+              <input 
+                type="text" 
+                id="nombreCompleto" 
+                name="nombreCompleto" 
+                [(ngModel)]="nuevoUsuario.nombreCompleto" 
+                required 
+                class="form-control"
+                [class.is-invalid]="crearUsuarioForm.submitted && !nuevoUsuario.nombreCompleto">
+              <div class="invalid-feedback" *ngIf="crearUsuarioForm.submitted && !nuevoUsuario.nombreCompleto">
+                El nombre completo es requerido
+              </div>
+            </div>
+  
+            <div class="form-row">
+              <div class="form-group">
+                <label for="rolId">Rol *</label>
+                <select 
+                  id="rolId" 
+                  name="rolId" 
+                  [(ngModel)]="nuevoUsuario.rolId" 
+                  required 
+                  class="form-control"
+                  [class.is-invalid]="crearUsuarioForm.submitted && !nuevoUsuario.rolId">
+                  <option value="">Seleccione un rol</option>
+                  <option *ngFor="let rol of roles" [value]="rol.id">{{ rol.nombre }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="crearUsuarioForm.submitted && !nuevoUsuario.rolId">
+                  Debe seleccionar un rol
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label class="checkbox-label">
+                  <input 
+                    type="checkbox" 
+                    name="activo" 
+                    [(ngModel)]="nuevoUsuario.activo" 
+                    class="checkbox-input">
+                  <span class="checkbox-text">Usuario activo</span>
+                </label>
+              </div>
+            </div>
+  
+            <div class="form-actions">
+              <button type="button" class="btn-secondary" (click)="limpiarFormulario()">
+                <i class="fas fa-times"></i> Limpiar
+              </button>
+              <button type="submit" class="btn-primary" [disabled]="guardando">
+                <div class="spinner" *ngIf="guardando"></div>
+                <i class="fas fa-save" *ngIf="!guardando"></i>
+                {{ guardando ? 'Creando...' : 'Crear Usuario' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Alerta de error -->
+    <div class="alert alert-danger" *ngIf="error">
+      {{ error }}
+      <button class="btn-close" (click)="error = ''">×</button>
+    </div>
+  
+    <!-- Alerta de éxito -->
+    <div class="alert alert-success" *ngIf="success">
+      {{ success }}
+      <button class="btn-close" (click)="success = ''">×</button>
+    </div>
+  </div>
+  
+  <!-- MODALES -->
+  
+  <!-- Modal Buscar para Modificar -->
+  <div class="modal-overlay" *ngIf="modalActivo === 'buscarModificar'">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>Buscar Usuario para Modificar</h3>
+        <button class="btn-close" (click)="cerrarModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="buscarUsuario">Ingrese nombre de usuario, email o nombre completo</label>
+          <input 
+            type="text" 
+            id="buscarUsuario" 
+            class="form-control" 
+            [(ngModel)]="terminoBusqueda" 
+            (input)="buscarUsuarios()"
+            placeholder="Buscar...">
+        </div>
+        
+        <div class="results-container">
+          <div class="loading-indicator" *ngIf="buscando">
+            <div class="spinner"></div>
+            <span>Buscando...</span>
+          </div>
+          
+          <table class="table results-table" *ngIf="resultadosBusqueda.length > 0">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Nombre Completo</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let usuario of resultadosBusqueda">
+                <td>{{ usuario.username }}</td>
+                <td>{{ usuario.nombreCompleto }}</td>
+                <td>{{ usuario.email }}</td>
+                <td>{{ usuario.nombreRol }}</td>
+                <td>
+                  <button class="btn-edit" (click)="seleccionarUsuarioParaEditar(usuario)">
+                    <i class="fas fa-edit"></i> Modificar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <div class="no-results-message" *ngIf="resultadosBusqueda.length === 0 && terminoBusqueda && !buscando">
+            No se encontraron usuarios con ese criterio de búsqueda
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Buscar para Eliminar -->
+  <div class="modal-overlay" *ngIf="modalActivo === 'buscarEliminar'">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>Buscar Usuario para Eliminar</h3>
+        <button class="btn-close" (click)="cerrarModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="buscarUsuarioEliminar">Ingrese nombre de usuario, email o nombre completo</label>
+          <input 
+            type="text" 
+            id="buscarUsuarioEliminar" 
+            class="form-control" 
+            [(ngModel)]="terminoBusqueda" 
+            (input)="buscarUsuarios()"
+            placeholder="Buscar...">
+        </div>
+        
+        <div class="results-container">
+          <div class="loading-indicator" *ngIf="buscando">
+            <div class="spinner"></div>
+            <span>Buscando...</span>
+          </div>
+          
+          <table class="table results-table" *ngIf="resultadosBusqueda.length > 0">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Nombre Completo</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let usuario of resultadosBusqueda">
+                <td>{{ usuario.username }}</td>
+                <td>{{ usuario.nombreCompleto }}</td>
+                <td>{{ usuario.email }}</td>
+                <td>{{ usuario.nombreRol }}</td>
+                <td>
+                  <button class="btn-delete" (click)="seleccionarUsuarioParaEliminar(usuario)">
+                    <i class="fas fa-trash"></i> Eliminar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <div class="no-results-message" *ngIf="resultadosBusqueda.length === 0 && terminoBusqueda && !buscando">
+            No se encontraron usuarios con ese criterio de búsqueda
+          </div>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Editar Usuario -->
+  <div class="modal-overlay" *ngIf="modalActivo === 'editar'">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>Modificar Usuario</h3>
+        <button class="btn-close" (click)="cerrarModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form #editarUsuarioForm="ngForm" (ngSubmit)="guardarEdicionUsuario()">
+          <div class="form-group">
+            <label for="edit_username">Nombre de Usuario *</label>
+            <input type="text" id="edit_username" name="username" [(ngModel)]="usuarioActual.username" required class="form-control">
+          </div>
+          
+          <div class="form-group">
+            <label for="edit_email">Email *</label>
+            <input type="email" id="edit_email" name="email" [(ngModel)]="usuarioActual.email" required class="form-control">
+          </div>
+          
+          <div class="form-group">
+            <label for="edit_nombreCompleto">Nombre Completo *</label>
+            <input type="text" id="edit_nombreCompleto" name="nombreCompleto" [(ngModel)]="usuarioActual.nombreCompleto" required class="form-control">
+          </div>
+          
+          <div class="form-group">
+            <label for="edit_rolId">Rol *</label>
+            <select id="edit_rolId" name="rolId" [(ngModel)]="usuarioActual.rolId" required class="form-control">
+              <option value="">Seleccione un rol</option>
+              <option *ngFor="let rol of roles" [value]="rol.id">{{ rol.nombre }}</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="checkbox-label">
+              <input type="checkbox" name="activo" [(ngModel)]="usuarioActual.activo" class="checkbox-input">
+              <span class="checkbox-text">Usuario activo</span>
+            </label>
+          </div>
+          
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+            <button type="submit" class="btn-primary" [disabled]="!editarUsuarioForm.valid || guardando">
+              <div class="spinner" *ngIf="guardando"></div>
+              Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Eliminar Usuario -->
+  <div class="modal-overlay" *ngIf="modalActivo === 'eliminar'">
+    <div class="modal-container delete-modal">
+      <div class="modal-header">
+        <h3>Eliminar Usuario</h3>
+        <button class="btn-close" (click)="cerrarModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-message">
+          ¿Está seguro de que desea eliminar el usuario <strong>{{ usuarioActual?.username }}</strong>?
+        </p>
+        <p class="warning-message">Esta acción no se puede deshacer.</p>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="button" class="btn-danger" (click)="confirmarEliminar()" [disabled]="guardando">
+            <div class="spinner" *ngIf="guardando"></div>
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

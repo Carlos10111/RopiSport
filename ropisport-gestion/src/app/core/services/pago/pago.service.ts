@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { Pago } from '../../models/pago';
 import { PagoDTO } from '../../dtos/pago-dto';
-import { PaginatedResponse } from '../../dtos/paginated-response';
+import { PaginatedResponse } from '../../models/paginated-response';
 
 @Injectable({
   providedIn: 'root'
