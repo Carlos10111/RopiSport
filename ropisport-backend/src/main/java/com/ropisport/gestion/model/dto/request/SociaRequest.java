@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -40,6 +42,7 @@ public class SociaRequest {
     private Boolean activa = true;
 
     private String fechaInicio;
+
     private String observaciones;
 
     private Integer categoriaId;

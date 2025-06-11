@@ -17,6 +17,12 @@ import com.ropisport.gestion.repository.PagoDetalleRepository;
 import com.ropisport.gestion.repository.PagoRepository;
 import com.ropisport.gestion.service.PagoDetalleService;
 
+import com.ropisport.gestion.model.dto.response.PaginatedResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import java.math.BigDecimal;
 @Service
 public class PagoDetalleServiceImpl implements PagoDetalleService {
 
@@ -101,4 +107,100 @@ public class PagoDetalleServiceImpl implements PagoDetalleService {
                 .updatedAt(detalle.getUpdatedAt())
                 .build();
     }
+
+@Override
+public PaginatedResponse<PagoDetalleResponse> busquedaGeneral(
+        String texto, Integer pagoId, int page, int size, String sort) {
+    
+    Pageable pageable = createPageable(page, size, sort);
+    Page<PagoDetalle> detalles = pagoDetalleRepository.busquedaGeneral(texto, pagoId, pageable);
+    
+    List<PagoDetalleResponse> content = detalles.getContent().stream()
+            .map(this::mapToResponse)
+            .collect(Collectors.toList());
+    
+    return createPaginatedResponse(content, detalles);
+}
+
+@Override
+public PaginatedResponse<PagoDetalleResponse> busquedaAvanzada(
+        String concepto,
+        Integer pagoId,
+        Integer sociaId,
+        BigDecimal montoMin,
+        BigDecimal montoMax,
+        LocalDateTime fechaInicio,
+        LocalDateTime fechaFin,
+        int page,
+        int size,
+        String sort) {
+    
+    Pageable pageable = createPageable(page, size, sort);
+    Page<PagoDetalle> detalles = pagoDetalleRepository.busquedaAvanzada(
+            concepto, pagoId, sociaId, montoMin, montoMax, fechaInicio, fechaFin, pageable);
+    
+    List<PagoDetalleResponse> content = detalles.getContent().stream()
+            .map(this::mapToResponse)
+            .collect(Collectors.toList());
+    
+    return createPaginatedResponse(content, detalles);
+}
+
+@Override
+public PaginatedResponse<PagoDetalleResponse> buscarPorConcepto(String concepto, int page, int size, String sort) {
+    Pageable pageable = createPageable(page, size, sort);
+    Page<PagoDetalle> detalles = pagoDetalleRepository.findByConceptoContaining(concepto, pageable);
+    
+    List<PagoDetalleResponse> content = detalles.getContent().stream()
+            .map(this::mapToResponse)
+            .collect(Collectors.toList());
+    
+    return createPaginatedResponse(content, detalles);
+}
+
+@Override
+public PaginatedResponse<PagoDetalleResponse> buscarPorSocia(Integer sociaId, int page, int size, String sort) {
+    Pageable pageable = createPageable(page, size, sort);
+    Page<PagoDetalle> detalles = pagoDetalleRepository.findBySociaId(sociaId, pageable);
+    
+    List<PagoDetalleResponse> content = detalles.getContent().stream()
+            .map(this::mapToResponse)
+            .collect(Collectors.toList());
+    
+    return createPaginatedResponse(content, detalles);
+}
+
+@Override
+public PaginatedResponse<PagoDetalleResponse> buscarPorRangoFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin, int page, int size, String sort) {
+    Pageable pageable = createPageable(page, size, sort);
+    Page<PagoDetalle> detalles = pagoDetalleRepository.findByFechaDetalleBetween(fechaInicio, fechaFin, pageable);
+    
+    List<PagoDetalleResponse> content = detalles.getContent().stream()
+            .map(this::mapToResponse)
+            .collect(Collectors.toList());
+    
+    return createPaginatedResponse(content, detalles);
+}
+
+// Métodos auxiliares
+private Pageable createPageable(int page, int size, String sort) {
+    String[] sortParams = sort.split(",");
+    String sortField = sortParams[0];
+    Sort.Direction direction = sortParams.length > 1 && sortParams[1].equalsIgnoreCase("desc")
+            ? Sort.Direction.DESC : Sort.Direction.ASC;
+    
+    return PageRequest.of(page, size, Sort.by(direction, sortField));
+}
+
+private PaginatedResponse<PagoDetalleResponse> createPaginatedResponse(
+        List<PagoDetalleResponse> content, Page<PagoDetalle> page) {
+    return new PaginatedResponse<>(
+        content,
+        page.getNumber(),
+        page.getSize(),
+        page.getTotalElements(),
+        page.getTotalPages(),
+        page.isLast()
+    );
+}
 }

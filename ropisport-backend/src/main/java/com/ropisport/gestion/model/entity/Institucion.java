@@ -1,4 +1,4 @@
-package com.ropisport.gestion.model.entity;
+ package com.ropisport.gestion.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ropisport.gestion.model.audit.Auditable;
