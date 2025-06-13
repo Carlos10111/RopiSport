@@ -21,56 +21,113 @@
       </div>
     </div>
     
-    <div class="table-responsive">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Nº Socia</th>
-            <th>Nombre</th>
-            <th>Apellidos</th>
-            <th>Negocio</th>
-            <th>Email</th>
-            <th>Teléfono</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let socia of socias">
-            <td>{{ socia.numeroSocia || '-' }}</td>
-            <td>{{ socia.nombre }}</td>
-            <td>{{ socia.apellidos }}</td>
-            <td>{{ socia.nombreNegocio }}</td>
-            <td>{{ socia.email || '-' }}</td>
-            <td>{{ socia.telefonoPersonal || '-' }}</td>
-            <td [ngClass]="socia.activa ? 'activa' : 'baja'">
-              {{ socia.activa ? 'Activa' : 'Baja' }}
-            </td>
-            <td class="actions-column">
-              <button class="btn-edit" (click)="abrirModalEditar(socia)">
+<div class="table-responsive">
+  <table class="table table-bordered table-sm excel-style-table">
+    <thead class="thead-light">
+      <tr>
+        <th>id</th>
+        <th>Estado</th>
+        <th>Nombre</th>
+        <th>Apellidos</th>
+        <th>Fecha de Inicio</th>
+        <th>Fecha de Baja</th>
+        
+        <th>Teléfono</th>
+        <th>Email</th>
+        <th>Negocio</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let socia of socias;let i=index">
+        <!-- Fila principal -->
+        <tr>
+          <td>{{ socia.id}}</td>
+  <td>
+    <span [ngClass]="socia.activa ? 'text-success' : 'text-danger'">
+      {{ socia.activa ? 'Activa' : 'Baja' }}
+    </span>
+          </td>
+          <td>{{ socia.nombre }} </td>
+          <td>{{ socia.apellidos }}</td>
+          <td>{{ socia.fechaInicio | date:'dd/MM/yyyy' }}</td>
+<td>{{(socia.fechaBaja | date:'dd/MM/yyyy') || '-'}}</td>
+          <td>{{ socia.telefonoPersonal || '-' }}</td>
+          <td>{{ socia.email || '-' }}</td>
+          <td>
+            <button class="btn btn-link btn-sm" (click)="socia.expandido = !socia.expandido">
+              {{ socia.expandido ? 'Ocultar' : 'Ver más' }}
+            </button>
+            
+          </td>
+          <td>
+            <button class="btn btn-sm mb-1" 
+                (click)="abrirModalEditar(socia)" 
+                style="background-color: #e0e0e0; border-color: #b7b9c2; color: #000;">
                 <i class="fas fa-edit"></i> Modificar
-              </button>
-              <button class="btn-delete" (click)="abrirModalEliminar(socia)">
-                <i class="fas fa-trash"></i> Eliminar
-              </button>
-            </td>
-          </tr>
-          
-          <!-- Mostrar mensaje si no hay resultados -->
-          <tr *ngIf="socias.length === 0 && !loading">
-            <td colspan="8" class="no-results">No se encontraron socias</td>
-          </tr>
-          
-          <!-- Loader mientras se cargan los datos -->
-          <tr *ngIf="loading">
-            <td colspan="8" class="loading-cell">
-              <div class="spinner"></div>
-              <span>Cargando...</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+            </button>
+
+
+          <button class="btn btn-sm mb-1" 
+              (click)="abrirModalEliminar(socia)" 
+              style="background-color: #ebc3c7; border-color: #b7b9c2; color: #000;">
+              <i class="fas fa-trash-alt"></i> Eliminar
+            </button>
+            
+          </td>
+        </tr>
+
+
+        
+        <tr *ngIf="socia.expandido">
+          <td colspan="8" class="bg-light p-0">
+            <div class="p-4 border-top" style="font-size: 0.95rem;">
+              <h6 class="text-primary mb-3">Detalles del Negocio</h6>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div><strong>Nombre del Negocio:</strong></div>
+                  <div class="text-muted">{{ socia.nombreNegocio || '-' }}</div>
+                </div>
+                <div class="col-md-6">
+                  <div><strong>Descripción:</strong></div>
+                  <div class="text-muted">{{ socia.descripcionNegocio || '-' }}</div>
+                </div>
+                <div class="col-md-6">
+                  <div><strong>Dirección:</strong></div>
+                  <div class="text-muted">{{ socia.direccion || '-' }}</div>
+                </div>
+                <div class="col-md-6">
+                  <div><strong>Teléfono Negocio:</strong></div>
+                  <div class="text-muted">{{ socia.telefonoNegocio || '-' }}</div>
+                </div>
+                <div class="col-md-6">
+                  <div><strong>CIF:</strong></div>
+                  <div class="text-muted">{{ socia.cif || '-' }}</div>
+                </div>
+                <div class="col-md-6">
+                  <div><strong>Número Cuenta:</strong></div>
+                  <div class="text-muted">{{ socia.numeroCuenta || '-' }}</div>
+                </div>
+                <div class="col-md-6">
+                  <div><strong>Epígrafe:</strong></div>
+                  <div class="text-muted">{{ socia.epigrafe || '-' }}</div>
+                </div>
+                <div class="col-md-6">
+                  <div><strong>Observaciones:</strong></div>
+                  <div class="text-muted">{{ socia.observaciones || '-' }}</div>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+
+
+
+      </ng-container>
+    </tbody>
+  </table>
+</div>
+
     
     <!-- Paginación -->
     <div class="pagination-container" *ngIf="totalPages > 1">
@@ -117,43 +174,96 @@
       <h3>Nueva Socia</h3>
       <button class="btn-close" (click)="cerrarModal()">×</button>
     </div>
+
     <div class="modal-body">
       <form #nuevaSociaForm="ngForm" (ngSubmit)="guardarNuevaSocia()">
-        <div class="form-group">
-          <label for="numeroSocia">Número de Socia</label>
-          <input type="text" id="numeroSocia" name="numeroSocia" [(ngModel)]="sociaActual.numeroSocia" class="form-control">
-        </div>
-        
-        <div class="form-group">
-          <label for="nombre">Nombre *</label>
-          <input type="text" id="nombre" name="nombre" [(ngModel)]="sociaActual.nombre" required class="form-control">
-        </div>
-        
-        <div class="form-group">
-          <label for="apellidos">Apellidos *</label>
-          <input type="text" id="apellidos" name="apellidos" [(ngModel)]="sociaActual.apellidos" required class="form-control">
-        </div>
-        
-        <div class="form-group">
-          <label for="nombreNegocio">Nombre del Negocio *</label>
-          <input type="text" id="nombreNegocio" name="nombreNegocio" [(ngModel)]="sociaActual.nombreNegocio" required class="form-control">
-        </div>
-        
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" [(ngModel)]="sociaActual.email" class="form-control">
-        </div>
-        
-        <div class="form-group">
-          <label for="telefonoPersonal">Teléfono</label>
-          <input type="tel" id="telefonoPersonal" name="telefonoPersonal" [(ngModel)]="sociaActual.telefonoPersonal" class="form-control">
-        </div>
-        
-        <div class="form-group-checkbox">
-          <input type="checkbox" id="activa" name="activa" [(ngModel)]="sociaActual.activa">
-          <label for="activa">Activa</label>
-        </div>
-        
+
+        <!-- Datos Personales -->
+        <fieldset>
+          <legend>Datos Personales</legend>
+
+          <div class="form-group">
+            <label for="nombre">Nombre *</label>
+            <input type="text" id="nombre" name="nombre" [(ngModel)]="sociaActual.nombre" required class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="apellidos">Apellidos *</label>
+            <input type="text" id="apellidos" name="apellidos" [(ngModel)]="sociaActual.apellidos" required class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="fechaInicio">Fecha de alta</label>
+            <input type="date" id="fechaInicio" name="fechaInicio" [(ngModel)]="sociaActual.fechaInicio" required class="form-control">
+          </div>
+            
+
+          <div class="form-group">
+            <label for="telefonoPersonal">Teléfono</label>
+            <input type="tel" id="telefonoPersonal" name="telefonoPersonal" [(ngModel)]="sociaActual.telefonoPersonal" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" [(ngModel)]="sociaActual.email" class="form-control">
+          </div>
+
+
+          <div class="form-group-checkbox">
+            <input type="checkbox" id="activa" name="activa" [(ngModel)]="sociaActual.activa">
+            <label for="activa">Activa</label>
+          </div>
+
+          
+        </fieldset>
+
+        <!-- Información del Negocio -->
+        <fieldset>
+          <legend>Información del Negocio</legend>
+
+          <div class="form-group">
+            <label for="nombreNegocio">Nombre del Negocio *</label>
+            <input type="text" id="nombreNegocio" name="nombreNegocio" [(ngModel)]="sociaActual.nombreNegocio" required class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="descripcionNegocio">Descripción</label>
+            <textarea id="descripcionNegocio" name="descripcionNegocio" [(ngModel)]="sociaActual.descripcionNegocio" class="form-control"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="direccion">Dirección</label>
+            <input type="text" id="direccion" name="direccion" [(ngModel)]="sociaActual.direccion" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="telefonoNegocio">Teléfono del Negocio</label>
+            <input type="tel" id="telefonoNegocio" name="telefonoNegocio" [(ngModel)]="sociaActual.telefonoNegocio" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="cif">CIF</label>
+            <input type="text" id="cif" name="cif" [(ngModel)]="sociaActual.cif" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="numeroCuenta">Número de Cuenta</label>
+            <input type="text" id="numeroCuenta" name="numeroCuenta" [(ngModel)]="sociaActual.numeroCuenta" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="epigrafe">Epígrafe</label>
+            <input type="text" id="epigrafe" name="epigrafe" [(ngModel)]="sociaActual.epigrafe" class="form-control">
+          </div>
+
+          <div class="form-group">
+            <label for="observaciones">Observaciones</label>
+            <textarea id="observaciones" name="observaciones" [(ngModel)]="sociaActual.observaciones" class="form-control"></textarea>
+          </div>
+        </fieldset>
+
+
+        <!-- Botones -->
         <div class="modal-footer">
           <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
           <button type="submit" class="btn-primary" [disabled]="!nuevaSociaForm.valid || guardando">
@@ -165,6 +275,7 @@
     </div>
   </div>
 </div>
+
 
 <!-- Modal Buscar para Modificar -->
 <div class="modal-overlay" *ngIf="modalActivo === 'buscarModificar'">
@@ -202,6 +313,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let socia of resultadosBusqueda">
+
               <td>{{ socia.nombre }}</td>
               <td>{{ socia.apellidos }}</td>
               <td>{{ socia.nombreNegocio }}</td>
@@ -265,6 +377,7 @@
               <td>{{ socia.nombre }}</td>
               <td>{{ socia.apellidos }}</td>
               <td>{{ socia.nombreNegocio }}</td>
+              
               <td>
                 <button class="btn-delete" (click)="seleccionarSociaParaEliminar(socia)">
                   <i class="fas fa-trash"></i> Eliminar
@@ -295,43 +408,95 @@
     </div>
     <div class="modal-body">
       <form #editarSociaForm="ngForm" (ngSubmit)="guardarEdicionSocia()">
+
+        <div *ngIf="error" class="error-message">{{ error }}</div>
+
         <div class="form-group">
           <label for="edit_numeroSocia">Número de Socia</label>
-          <input type="text" id="edit_numeroSocia" name="numeroSocia" [(ngModel)]="sociaActual.numeroSocia" class="form-control">
+          <input type="text" id="edit_numeroSocia" name="numeroSocia" [(ngModel)]="sociaActual.numeroSocia" class="form-control" [disabled]="guardando">
         </div>
-        
+
         <div class="form-group">
           <label for="edit_nombre">Nombre *</label>
-          <input type="text" id="edit_nombre" name="nombre" [(ngModel)]="sociaActual.nombre" required class="form-control">
+          <input type="text" id="edit_nombre" name="nombre" [(ngModel)]="sociaActual.nombre" required class="form-control" #nombre="ngModel" [disabled]="guardando">
+          <div *ngIf="nombre.invalid && nombre.touched" class="error-message">El nombre es obligatorio.</div>
         </div>
-        
+
         <div class="form-group">
           <label for="edit_apellidos">Apellidos *</label>
-          <input type="text" id="edit_apellidos" name="apellidos" [(ngModel)]="sociaActual.apellidos" required class="form-control">
+          <input type="text" id="edit_apellidos" name="apellidos" [(ngModel)]="sociaActual.apellidos" required class="form-control" #apellidos="ngModel" [disabled]="guardando">
+          <div *ngIf="apellidos.invalid && apellidos.touched" class="error-message">Los apellidos son obligatorios.</div>
         </div>
-        
+
+        <div class="form-group">
+          <label for="edit_fechaInicio">Fecha de Alta</label>
+          <input type="date" [(ngModel)]="sociaActual.fechaInicio" name="fechaInicio" />
+        </div>
+
+        <div class="form-group">
+          <label for="edit_fechaBaja">Fecha de Baja</label>
+          <input type="date" [(ngModel)]="sociaActual.fechaBaja" name="fechaBaja" />
+        </div>
+
+
+
         <div class="form-group">
           <label for="edit_nombreNegocio">Nombre del Negocio *</label>
           <input type="text" id="edit_nombreNegocio" name="nombreNegocio" [(ngModel)]="sociaActual.nombreNegocio" required class="form-control">
         </div>
-        
+
+        <div class="form-group">
+          <label for="edit_descripcionNegocio">Descripción</label>
+          <textarea id="edit_descripcionNegocio" name="descripcionNegocio" [(ngModel)]="sociaActual.descripcionNegocio" class="form-control"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="edit_direccion">Dirección</label>
+          <input type="text" id="edit_direccion" name="direccion" [(ngModel)]="sociaActual.direccion" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="edit_telefonoPersonal">Teléfono Personal</label>
+          <input type="tel" id="edit_telefonoPersonal" name="telefonoPersonal" [(ngModel)]="sociaActual.telefonoPersonal" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="edit_telefonoNegocio">Teléfono del Negocio</label>
+          <input type="tel" id="edit_telefonoNegocio" name="telefonoNegocio" [(ngModel)]="sociaActual.telefonoNegocio" class="form-control">
+        </div>
+
         <div class="form-group">
           <label for="edit_email">Email</label>
           <input type="email" id="edit_email" name="email" [(ngModel)]="sociaActual.email" class="form-control">
         </div>
-        
+
         <div class="form-group">
-          <label for="edit_telefonoPersonal">Teléfono</label>
-          <input type="tel" id="edit_telefonoPersonal" name="telefonoPersonal" [(ngModel)]="sociaActual.telefonoPersonal" class="form-control">
+          <label for="edit_cif">CIF</label>
+          <input type="text" id="edit_cif" name="cif" [(ngModel)]="sociaActual.cif" class="form-control">
         </div>
-        
+
+        <div class="form-group">
+          <label for="edit_numeroCuenta">Número de Cuenta</label>
+          <input type="text" id="edit_numeroCuenta" name="numeroCuenta" [(ngModel)]="sociaActual.numeroCuenta" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="edit_epigrafe">Epígrafe</label>
+          <input type="text" id="edit_epigrafe" name="epigrafe" [(ngModel)]="sociaActual.epigrafe" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label for="edit_observaciones">Observaciones</label>
+          <textarea id="edit_observaciones" name="observaciones" [(ngModel)]="sociaActual.observaciones" class="form-control"></textarea>
+        </div>
+
         <div class="form-group-checkbox">
           <input type="checkbox" id="edit_activa" name="activa" [(ngModel)]="sociaActual.activa">
           <label for="edit_activa">Activa</label>
         </div>
-        
+
         <div class="modal-footer">
-          <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="button" class="btn-secondary" (click)="cerrarModal()" [disabled]="guardando">Cancelar</button>
           <button type="submit" class="btn-primary" [disabled]="!editarSociaForm.valid || guardando">
             <div class="spinner" *ngIf="guardando"></div>
             Guardar Cambios
@@ -342,6 +507,7 @@
   </div>
 </div>
 
+
 <!-- Modal Eliminar Socia -->
 <div class="modal-overlay" *ngIf="modalActivo === 'eliminar'">
   <div class="modal-container delete-modal">
@@ -351,7 +517,7 @@
     </div>
     <div class="modal-body">
       <p class="confirm-message">
-        ¿Está seguro de que desea eliminar la socia <strong>{{ sociaActual?.nombre }} {{ sociaActual?.apellidos }}</strong>?
+        ¿Está seguro de que desea eliminar la socia <strong>{{ sociaActual.nombre }} {{ sociaActual.apellidos }}</strong>?
       </p>
       <p class="warning-message">Esta acción no se puede deshacer.</p>
       

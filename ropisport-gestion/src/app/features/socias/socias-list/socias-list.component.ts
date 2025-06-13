@@ -4,9 +4,9 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Subject, Subscription, of } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, catchError, finalize } from 'rxjs/operators';
-// ✅ CORREGIR esta línea (faltaba 'from' y había una coma extra)
-import { SociaService } from '../../../core/services/socia/socia.service'; // ← Ajustar la ruta correcta
-import { Socia,PaginatedResponse } from '../../../core/models/socia';
+import { SociaService } from '../../../core/services/socia/socia.service';
+import { Socia, PaginatedResponse } from '../../../core/models/socia';
+
 @Component({
   selector: 'app-socia-list',
   standalone: true,
@@ -18,7 +18,8 @@ export class SociaListComponent implements OnInit, OnDestroy {
   socias: Socia[] = [];
   loading = false;
   error = '';
-  
+  ultimoNumeroSociaAsignado = 0;
+
   // Paginación
   currentPage = 0;
   pageSize = 10;
@@ -44,6 +45,11 @@ export class SociaListComponent implements OnInit, OnDestroy {
   constructor(private sociaService: SociaService) { }
   
   ngOnInit(): void {
+    this.socias = this.socias.map(socia => ({
+      ...socia,
+      expandido: false
+    }));
+
     // Configurar búsqueda principal con debounce
     this.subscription.add(
       this.searchTerms.pipe(
@@ -84,7 +90,6 @@ export class SociaListComponent implements OnInit, OnDestroy {
   }
   
   ngOnDestroy(): void {
-    // Limpiar suscripciones para prevenir memory leaks
     this.subscription.unsubscribe();
   }
   
@@ -92,27 +97,66 @@ export class SociaListComponent implements OnInit, OnDestroy {
     return {
       nombre: '',
       apellidos: '',
+      telefonoPersonal: '', 
+      email: '',  
       nombreNegocio: '',
-      activa: true
+      activa: true,
+      descripcionNegocio: '',
+      direccion: '',
+      telefonoNegocio: '',
+      cif: '',
+      numeroCuenta: '',
+      epigrafe: '',
+      observaciones: '',
+      expandido: false,
+      fechaInicio: new Date(),
+      fechaBaja: null,
     };
   }
-  
+
+  // ✅ MÉTODO CORREGIDO - Sin logs duplicados
   loadSocias(): void {
     this.loading = true;
     this.error = '';
-    
-    // Si hay texto de búsqueda, usamos el endpoint de búsqueda
+
     const request = this.searchText
       ? this.sociaService.searchSocias(this.searchText, this.currentPage, this.pageSize)
       : this.sociaService.getAllSocias(this.currentPage, this.pageSize);
-    
+
     this.subscription.add(
       request.subscribe({
         next: (response: PaginatedResponse<Socia>) => {
-          this.socias = response.content;
+          // ✅ Log para debug - Ver respuesta del backend
+          console.log('📊 Respuesta completa del backend:', response);
+          console.log('📊 Primera socia cruda:', response.content[0]);
+          
+          this.socias = response.content.map(socia => ({
+            ...socia,
+            descripcionNegocio: socia.descripcionNegocio || '',
+            direccion: socia.direccion || '',
+            telefonoNegocio: socia.telefonoNegocio || '',
+            cif: socia.cif || '',
+            numeroCuenta: socia.numeroCuenta || '',
+            epigrafe: socia.epigrafe || '',
+            observaciones: socia.observaciones || '',
+            fechaBaja: socia.fechaBaja || null,
+            expandido: false
+          }));
+          
+          // ✅ Log después del mapeo
+          console.log('📊 Primera socia después del mapeo:', this.socias[0]);
+          console.log('📅 fechaBaja específicamente:', this.socias[0]?.fechaBaja);
+          console.log('📊 Todas las fechas de baja:', this.socias.map(s => ({ id: s.id, fechaBaja: s.fechaBaja })));
+          
           this.totalElements = response.totalElements;
           this.totalPages = response.totalPages;
           this.loading = false;
+
+          const max = this.socias.reduce((acc, s) => {
+            const numero = Number(s.numeroSocia);
+            return !isNaN(numero) && numero > acc ? numero : acc;
+          }, 0);
+          this.ultimoNumeroSociaAsignado = max;
         },
         error: (err) => {
           this.error = 'Error al cargar las socias: ' + (err.error?.message || 'Ocurrió un problema en el servidor');
@@ -136,15 +180,53 @@ export class SociaListComponent implements OnInit, OnDestroy {
   }
   
   // FUNCIONES PARA BÚSQUEDA EN MODAL
-  
   buscarSocias(): void {
     this.busquedaTerms.next(this.terminoBusqueda);
   }
   
-  // FUNCIONES PARA MODALES
+  // ✅ AÑADIR - Métodos para dar de baja y reactivar
+  darDeBaja(socia: Socia): void {
+    if (!socia.id) return;
+    
+    const observaciones = 'Dada de baja desde la gestión';
+    this.sociaService.cambiarEstado(socia.id, false, observaciones).subscribe({
+      next: () => {
+        console.log('✅ Socia dada de baja correctamente');
+        this.loadSocias(); // Recargar la lista
+      },
+      error: (err) => {
+        console.error('❌ Error al dar de baja:', err);
+        this.error = 'Error al dar de baja la socia';
+      }
+    });
+  }
+
+  reactivar(socia: Socia): void {
+    if (!socia.id) return;
+    
+    const observaciones = 'Reactivada desde la gestión';
+    this.sociaService.cambiarEstado(socia.id, true, observaciones).subscribe({
+      next: () => {
+        console.log('✅ Socia reactivada correctamente');
+        this.loadSocias(); // Recargar la lista
+      },
+      error: (err) => {
+        console.error('❌ Error al reactivar:', err);
+        this.error = 'Error al reactivar la socia';
+      }
+    });
+  }
   
+  // FUNCIONES PARA MODALES
   abrirModalNueva(): void {
     this.sociaActual = this.inicializarSocia();
+
+    const maxNumero = this.socias.reduce((max, s) => {
+      const num = Number(s.numeroSocia);
+      return !isNaN(num) && num > max ? num : max;
+    }, 0);
+
+    this.sociaActual.numeroSocia = String(maxNumero + 1);
     this.modalActivo = 'nueva';
   }
   
@@ -160,8 +242,16 @@ export class SociaListComponent implements OnInit, OnDestroy {
     this.modalActivo = 'buscarEliminar';
   }
   
-  seleccionarSociaParaEditar(socia: Socia): void {
+  seleccionarSociaParaEditar(socia: Socia) {
     this.sociaActual = { ...socia };
+
+    if (this.sociaActual.fechaInicio) {
+      this.sociaActual.fechaInicio = new Date(this.sociaActual.fechaInicio);
+    }
+    if (this.sociaActual.fechaBaja) {
+      this.sociaActual.fechaBaja = new Date(this.sociaActual.fechaBaja);
+    }
+
     this.modalActivo = 'editar';
   }
   
@@ -171,13 +261,19 @@ export class SociaListComponent implements OnInit, OnDestroy {
   }
   
   abrirModalEditar(socia: Socia): void {
-    // Para editar directamente desde la tabla
     this.sociaActual = { ...socia };
+    
+    if (this.sociaActual.fechaInicio) {
+      this.sociaActual.fechaInicio = new Date(this.sociaActual.fechaInicio);
+    }
+    if (this.sociaActual.fechaBaja) {
+      this.sociaActual.fechaBaja = new Date(this.sociaActual.fechaBaja);
+    }
+    
     this.modalActivo = 'editar';
   }
   
   abrirModalEliminar(socia: Socia): void {
-    // Para eliminar directamente desde la tabla
     this.sociaActual = socia;
     this.modalActivo = 'eliminar';
   }
@@ -186,51 +282,140 @@ export class SociaListComponent implements OnInit, OnDestroy {
     this.modalActivo = null;
     this.guardando = false;
   }
-  
+
   guardarNuevaSocia(): void {
-    if (this.guardando) return;
-    
     this.guardando = true;
     this.error = '';
-    
-    this.subscription.add(
-      this.sociaService.createSocia(this.sociaActual).subscribe({
-        next: (response) => {
-          this.loadSocias();
-          this.cerrarModal();
-          this.guardando = false;
-        },
-        error: (err) => {
-          this.guardando = false;
-          this.error = 'Error al crear la socia: ' + (err.error?.message || 'Ocurrió un problema en el servidor');
-          console.error('Error creando socia:', err);
-        }
-      })
-    );
+
+    const payload = {
+      nombre: this.sociaActual.nombre,
+      apellidos: this.sociaActual.apellidos,
+      telefonoPersonal: this.sociaActual.telefonoPersonal,
+      email: this.sociaActual.email,
+      nombreNegocio: this.sociaActual.nombreNegocio,
+      descripcionNegocio: this.sociaActual.descripcionNegocio,
+      direccion: this.sociaActual.direccion,
+      telefonoNegocio: this.sociaActual.telefonoNegocio,
+      cif: this.sociaActual.cif,
+      numeroCuenta: this.sociaActual.numeroCuenta,
+      epigrafe: this.sociaActual.epigrafe,
+      observaciones: this.sociaActual.observaciones,
+      activa: this.sociaActual.activa ?? true,
+      numeroSocia: this.sociaActual.numeroSocia,
+      fechaInicio: this.formatDateForBackend(this.sociaActual.fechaInicio || new Date()),
+      categoriaId: this.sociaActual.categoria?.id || null
+    };
+
+    console.log('📤 Payload al crear socia:', payload);
+
+    this.sociaService.createSocia(payload).subscribe({
+      next: (response) => {
+        console.log('✅ Socia creada correctamente');
+        this.loadSocias();
+        this.cerrarModal();
+        this.guardando = false;
+      },
+      error: (err) => {
+        console.error('❌ Error al crear socia:', err);
+        this.guardando = false;
+        this.error = 'Error al crear la socia: ' + (err.error?.message || 'Ocurrió un problema en el servidor');
+      }
+    });
   }
-  
+
+  get formattedFechaInicio(): string | null {
+    if (!this.sociaActual.fechaInicio) return null;
+    if (typeof this.sociaActual.fechaInicio === 'string') return this.sociaActual.fechaInicio;
+    return new Date(this.sociaActual.fechaInicio).toISOString().substring(0, 10);
+  }
+
+  set formattedFechaInicio(value: string | null) {
+    this.sociaActual.fechaInicio = value;
+  }
+
+  get formattedFechaBaja(): string | null {
+    if (!this.sociaActual.fechaBaja) return null;
+    if (typeof this.sociaActual.fechaBaja === 'string') return this.sociaActual.fechaBaja;
+    return new Date(this.sociaActual.fechaBaja).toISOString().substring(0, 10);
+  }
+
+  set formattedFechaBaja(value: string | null) {
+    this.sociaActual.fechaBaja = value;
+  }
+
   guardarEdicionSocia(): void {
-    if (this.guardando || !this.sociaActual.id) return;
-    
+    if (this.guardando) return;
+
+    if (!this.sociaActual.id) {
+      this.error = 'No se puede actualizar: ID de socia no definido.';
+      return;
+    }
+
     this.guardando = true;
     this.error = '';
-    
-    this.subscription.add(
-      this.sociaService.updateSocia(this.sociaActual.id, this.sociaActual).subscribe({
-        next: (response) => {
-          this.loadSocias();
-          this.cerrarModal();
-          this.guardando = false;
-        },
-        error: (err) => {
-          this.guardando = false;
-          this.error = 'Error al actualizar la socia: ' + (err.error?.message || 'Ocurrió un problema en el servidor');
-          console.error('Error actualizando socia:', err);
-        }
-      })
-    );
+
+    const payload: any = {
+      nombre: this.sociaActual.nombre,
+      apellidos: this.sociaActual.apellidos,
+      telefonoPersonal: this.sociaActual.telefonoPersonal,
+      email: this.sociaActual.email,
+      nombreNegocio: this.sociaActual.nombreNegocio,
+      descripcionNegocio: this.sociaActual.descripcionNegocio,
+      direccion: this.sociaActual.direccion,
+      telefonoNegocio: this.sociaActual.telefonoNegocio,
+      cif: this.sociaActual.cif,
+      numeroCuenta: this.sociaActual.numeroCuenta,
+      epigrafe: this.sociaActual.epigrafe,
+      observaciones: this.sociaActual.observaciones,
+      activa: this.sociaActual.activa,
+      numeroSocia: this.sociaActual.numeroSocia,
+      fechaInicio: this.formatDateForBackend(this.sociaActual.fechaInicio),
+      categoriaId: this.sociaActual.categoria?.id || null
+    };
+
+    // Eliminar propiedades null/undefined
+    Object.keys(payload).forEach(key => {
+      if (payload[key] === null || payload[key] === undefined) {
+        delete payload[key];
+      }
+    });
+
+    console.log('📤 Payload para actualización:', payload);
+
+    this.sociaService.updateSocia(this.sociaActual.id, payload).subscribe({
+      next: (response) => {
+        console.log('✅ Socia actualizada correctamente');
+        this.loadSocias();
+        this.cerrarModal();
+        this.guardando = false;
+      },
+      error: (err) => {
+        console.error('❌ Error actualizando socia:', err);
+        this.guardando = false;
+        this.error = 'Error al actualizar la socia: ' + (err.error?.message || 'Ocurrió un problema en el servidor');
+      }
+    });
   }
-  
+
+  private formatDateForBackend(date: Date | string | null | undefined): string | null {
+    if (!date) return null;
+    
+    try {
+      const dateObj = date instanceof Date ? date : new Date(date);
+      if (isNaN(dateObj.getTime())) return null;
+      
+      let isoString = dateObj.toISOString();
+      if (isoString.endsWith('Z')) {
+        isoString = isoString.substring(0, isoString.length - 1);
+      }
+      
+      return isoString;
+    } catch (error) {
+      console.warn('Error al formatear fecha:', date, error);
+      return null;
+    }
+  }
+
   confirmarEliminar(): void {
     if (this.guardando || !this.sociaActual.id) return;
     

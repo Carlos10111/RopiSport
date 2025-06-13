@@ -291,37 +291,70 @@ public class SociaServiceImpl implements SociaService {
 
         return dto;
     }
-
     private void updateSociaFromRequest(Socia socia, SociaRequest request) {
-        socia.setNumeroSocia(request.getNumeroSocia());
-        socia.setNombre(request.getNombre());
-        socia.setApellidos(request.getApellidos());
-        socia.setNombreNegocio(request.getNombreNegocio());
-        socia.setDescripcionNegocio(request.getDescripcionNegocio());
-        socia.setDireccion(request.getDireccion());
-        socia.setTelefonoPersonal(request.getTelefonoPersonal());
-        socia.setTelefonoNegocio(request.getTelefonoNegocio());
-        socia.setEmail(request.getEmail());
-        socia.setCif(request.getCif());
-        socia.setNumeroCuenta(request.getNumeroCuenta());
-        socia.setEpigrafe(request.getEpigrafe());
-        socia.setActiva(request.getActiva());
-        socia.setObservaciones(request.getObservaciones());
+        try {
+            socia.setNumeroSocia(request.getNumeroSocia());
+            socia.setNombre(request.getNombre());
+            socia.setApellidos(request.getApellidos());
+            socia.setNombreNegocio(request.getNombreNegocio());
+            socia.setDescripcionNegocio(request.getDescripcionNegocio());
+            socia.setDireccion(request.getDireccion());
+            socia.setTelefonoPersonal(request.getTelefonoPersonal());
+            socia.setTelefonoNegocio(request.getTelefonoNegocio());
+            socia.setEmail(request.getEmail());
+            socia.setCif(request.getCif());
+            socia.setNumeroCuenta(request.getNumeroCuenta());
+            socia.setEpigrafe(request.getEpigrafe());
+            socia.setActiva(request.getActiva());
+            socia.setObservaciones(request.getObservaciones());
 
-        if (request.getFechaInicio() != null) {
-            socia.setFechaInicio(LocalDateTime.parse(request.getFechaInicio()));
-        }
+            // Manejar fechaInicio
+            if (request.getFechaInicio() != null && !request.getFechaInicio().isEmpty()) {
+                try {
+                    String fechaStr = request.getFechaInicio();
+                    if (fechaStr.endsWith("Z")) {
+                        fechaStr = fechaStr.substring(0, fechaStr.length() - 1);
+                    }
+                    LocalDateTime fechaInicio = LocalDateTime.parse(fechaStr);
+                    socia.setFechaInicio(fechaInicio);
+                    System.out.println("✅ FechaInicio parseada: " + fechaInicio);
+                } catch (Exception e) {
+                    System.err.println("❌ Error parsing fechaInicio: " + e.getMessage());
+                    socia.setFechaInicio(LocalDateTime.now());
+                }
+            }
 
-        // La fecha de baja no se establece desde la request, se gestiona con el método cambiarEstado
+            // ✅ AÑADIR - Manejar fechaBaja
+            if (request.getFechaBaja() != null && !request.getFechaBaja().isEmpty()) {
+                try {
+                    String fechaStr = request.getFechaBaja();
+                    if (fechaStr.endsWith("Z")) {
+                        fechaStr = fechaStr.substring(0, fechaStr.length() - 1);
+                    }
+                    LocalDateTime fechaBaja = LocalDateTime.parse(fechaStr);
+                    socia.setFechaBaja(fechaBaja);
+                    System.out.println("✅ FechaBaja parseada: " + fechaBaja);
+                } catch (Exception e) {
+                    System.err.println("❌ Error parsing fechaBaja: " + e.getMessage());
+                }
+            } else {
+                // Si no se envía fechaBaja, mantener el valor actual o establecer null
+                System.out.println("⚠️ FechaBaja no proporcionada o vacía");
+            }
 
-        // Asignar categoría si se proporciona
-        if (request.getCategoriaId() != null) {
-            CategoriaNegocio categoria = categoriaNegocioRepository.findById(request.getCategoriaId())
-                    .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con ID: " + request.getCategoriaId()));
-            socia.setCategoria(categoria);
+            // Asignar categoría
+            if (request.getCategoriaId() != null) {
+                CategoriaNegocio categoria = categoriaNegocioRepository.findById(request.getCategoriaId())
+                        .orElseThrow(() -> new EntityNotFoundException("Categoría no encontrada con ID: " + request.getCategoriaId()));
+                socia.setCategoria(categoria);
+            }
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error en updateSociaFromRequest: " + e.getMessage());
+            e.printStackTrace();
+            throw e;
         }
     }
-
     private Pageable createPageable(int page, int size, String sort) {
         String[] sortParams = sort.split(",");
         String sortField = sortParams[0];

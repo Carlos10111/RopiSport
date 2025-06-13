@@ -57,3 +57,23 @@
 
 $headings-font-family: "Montserrat", sans-serif; /* Tipografía de bootstrap de encabezados (H1, H2, etc.). */
 $font-family-base: "Poppins", sans-serif; /* Tipografía de bootstrap de textos (p, span, input, etc.). */
+// src/assets/fonts.scss
+
+// Importa las fuentes de Google Fonts (puedes ajustar las URL si ya las importas de otra forma)
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+$font-primary: 'Poppins', sans-serif;    // Para el cuerpo del texto
+$font-secondary: 'Montserrat', sans-serif; // Para títulos y elementos importantes
+
+// Definiciones de tamaños base (opcional, pero útil para consistencia)
+$font-size-base: 1rem; // 16px
+$font-size-sm: 0.875rem; // 14px
+$font-size-lg: 1.25rem; // 20px
+
+// Puedes añadir variables para font-weights si lo deseas
+$font-weight-light: 300;
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+$font-weight-extrabold: 800;

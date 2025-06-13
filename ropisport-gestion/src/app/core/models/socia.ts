@@ -13,13 +13,17 @@
       numeroCuenta?: string;
       epigrafe?: string;
       activa: boolean;
-      fechaInicio?: string;
-      fechaBaja?: string;
+      fechaInicio?: Date | string |null;
+      fechaBaja?: Date | string |null;
       observaciones?: string;
+        expandido?: boolean;
+       expandidoNegocio?: boolean;
+       
       categoria?: {
         id: number;
         nombre: string;
       };
+
     }
 
     export interface PaginatedResponse<T> {
