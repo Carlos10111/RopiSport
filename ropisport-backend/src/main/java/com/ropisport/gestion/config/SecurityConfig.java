@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -36,6 +37,9 @@ public class SecurityConfig {
     private final AuthEntryPointJwt unauthorizedHandler;
     private final AuthTokenFilter authTokenFilter;
 
+    @Value("${app.cors.allowed-origins:http://localhost:4200}")
+    private String allowedOrigins;
+
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -56,31 +60,37 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+        http
+            .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/public/**").permitAll()
-                .requestMatchers("/error").permitAll()
+                .requestMatchers("/api/auth/**", "/api/public/**", "/error").permitAll()
 
-                // Solo ADMIN general - SIN prefijo ROLE_
-                .requestMatchers("/api/admin/**").hasRole(Constants.ROLE_ADMIN)
-                .requestMatchers("/api/usuarios/**").hasRole(Constants.ROLE_ADMIN)
-                .requestMatchers("/api/roles/**").hasRole(Constants.ROLE_ADMIN)
-                
-                // ADMIN general O ADMIN_SOCIAS - SIN prefijo ROLE_
-                .requestMatchers("/api/empresas/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
-                .requestMatchers("/api/instituciones/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
-                .requestMatchers("/api/tipo-instituciones/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
-                .requestMatchers("/api/categorias/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
-                .requestMatchers("/api/socias/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
-                .requestMatchers("/api/pagos/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
-                .requestMatchers("/api/pago-detalles/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
+                .requestMatchers("/api/usuarios/**", "/api/roles/**")
+                    .hasRole(Constants.ROLE_ADMIN)
+
+                .requestMatchers(
+                    "/api/dashboard/**",
+                    "/api/empresas/**",
+                    "/api/instituciones/**",
+                    "/api/tipo-instituciones/**",
+                    "/api/categorias/**",
+                    "/api/socias/**",
+                    "/api/pagos/**",
+                    "/api/pago-detalles/**"
+                ).hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
 
                 .anyRequest().authenticated()
-            );
+            )
+            .headers(headers -> headers
+            	    .defaultsDisabled()
+            	    .frameOptions(frame -> frame.deny())
+            	    .contentSecurityPolicy(csp ->
+            	        csp.policyDirectives("default-src 'self'; script-src 'self'; object-src 'none'; frame-ancestors 'none';"))
+            	)
+;
 
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authTokenFilter, UsernamePasswordAuthenticationFilter.class);
@@ -91,9 +101,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:4200"));
+
+        List<String> origins = Arrays.asList(allowedOrigins.split(","));
+        config.setAllowedOrigins(origins);
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
+        config.setExposedHeaders(List.of("Authorization"));
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
 

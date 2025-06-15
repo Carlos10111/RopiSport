@@ -260,19 +260,27 @@ export class SociaListComponent implements OnInit, OnDestroy {
     this.modalActivo = 'eliminar';
   }
   
-  abrirModalEditar(socia: Socia): void {
-    this.sociaActual = { ...socia };
-    
-    if (this.sociaActual.fechaInicio) {
-      this.sociaActual.fechaInicio = new Date(this.sociaActual.fechaInicio);
-    }
-    if (this.sociaActual.fechaBaja) {
-      this.sociaActual.fechaBaja = new Date(this.sociaActual.fechaBaja);
-    }
-    
-    this.modalActivo = 'editar';
+abrirModalEditar(socia: Socia): void {
+  this.sociaActual = { ...socia };
+  
+  // ✅ MEJORAR: Convertir fechas correctamente
+  if (this.sociaActual.fechaInicio) {
+    this.sociaActual.fechaInicio = new Date(this.sociaActual.fechaInicio);
+  }
+  if (this.sociaActual.fechaBaja) {
+    this.sociaActual.fechaBaja = new Date(this.sociaActual.fechaBaja);
   }
   
+  console.log('📅 Socia para editar:', {
+    id: this.sociaActual.id,
+    nombre: this.sociaActual.nombre,
+    fechaInicio: this.sociaActual.fechaInicio,
+    fechaBaja: this.sociaActual.fechaBaja,
+    activa: this.sociaActual.activa
+  });
+  
+  this.modalActivo = 'editar';
+}
   abrirModalEliminar(socia: Socia): void {
     this.sociaActual = socia;
     this.modalActivo = 'eliminar';
@@ -343,59 +351,63 @@ export class SociaListComponent implements OnInit, OnDestroy {
     this.sociaActual.fechaBaja = value;
   }
 
-  guardarEdicionSocia(): void {
-    if (this.guardando) return;
+// src/app/features/socias/socias-list/socias-list.component.ts
 
-    if (!this.sociaActual.id) {
-      this.error = 'No se puede actualizar: ID de socia no definido.';
-      return;
-    }
+guardarEdicionSocia(): void {
+  if (this.guardando) return;
 
-    this.guardando = true;
-    this.error = '';
-
-    const payload: any = {
-      nombre: this.sociaActual.nombre,
-      apellidos: this.sociaActual.apellidos,
-      telefonoPersonal: this.sociaActual.telefonoPersonal,
-      email: this.sociaActual.email,
-      nombreNegocio: this.sociaActual.nombreNegocio,
-      descripcionNegocio: this.sociaActual.descripcionNegocio,
-      direccion: this.sociaActual.direccion,
-      telefonoNegocio: this.sociaActual.telefonoNegocio,
-      cif: this.sociaActual.cif,
-      numeroCuenta: this.sociaActual.numeroCuenta,
-      epigrafe: this.sociaActual.epigrafe,
-      observaciones: this.sociaActual.observaciones,
-      activa: this.sociaActual.activa,
-      numeroSocia: this.sociaActual.numeroSocia,
-      fechaInicio: this.formatDateForBackend(this.sociaActual.fechaInicio),
-      categoriaId: this.sociaActual.categoria?.id || null
-    };
-
-    // Eliminar propiedades null/undefined
-    Object.keys(payload).forEach(key => {
-      if (payload[key] === null || payload[key] === undefined) {
-        delete payload[key];
-      }
-    });
-
-    console.log('📤 Payload para actualización:', payload);
-
-    this.sociaService.updateSocia(this.sociaActual.id, payload).subscribe({
-      next: (response) => {
-        console.log('✅ Socia actualizada correctamente');
-        this.loadSocias();
-        this.cerrarModal();
-        this.guardando = false;
-      },
-      error: (err) => {
-        console.error('❌ Error actualizando socia:', err);
-        this.guardando = false;
-        this.error = 'Error al actualizar la socia: ' + (err.error?.message || 'Ocurrió un problema en el servidor');
-      }
-    });
+  if (!this.sociaActual.id) {
+    this.error = 'No se puede actualizar: ID de socia no definido.';
+    return;
   }
+
+  this.guardando = true;
+  this.error = '';
+
+  const payload: any = {
+    nombre: this.sociaActual.nombre,
+    apellidos: this.sociaActual.apellidos,
+    telefonoPersonal: this.sociaActual.telefonoPersonal,
+    email: this.sociaActual.email,
+    nombreNegocio: this.sociaActual.nombreNegocio,
+    descripcionNegocio: this.sociaActual.descripcionNegocio,
+    direccion: this.sociaActual.direccion,
+    telefonoNegocio: this.sociaActual.telefonoNegocio,
+    cif: this.sociaActual.cif,
+    numeroCuenta: this.sociaActual.numeroCuenta,
+    epigrafe: this.sociaActual.epigrafe,
+    observaciones: this.sociaActual.observaciones,
+    activa: this.sociaActual.activa,
+    numeroSocia: this.sociaActual.numeroSocia,
+    fechaInicio: this.formatDateForBackend(this.sociaActual.fechaInicio),
+    // ✅ AGREGAR: Incluir fechaBaja en el payload
+    fechaBaja: this.formatDateForBackend(this.sociaActual.fechaBaja),
+    categoriaId: this.sociaActual.categoria?.id || null
+  };
+
+  // ✅ MODIFICAR: No eliminar fechaBaja si es null (puede ser intencional)
+  Object.keys(payload).forEach(key => {
+    if (payload[key] === undefined) { // Solo eliminar undefined, no null
+      delete payload[key];
+    }
+  });
+
+  console.log('📤 Payload para actualización:', payload);
+
+  this.sociaService.updateSocia(this.sociaActual.id, payload).subscribe({
+    next: (response) => {
+      console.log('✅ Socia actualizada correctamente');
+      this.loadSocias();
+      this.cerrarModal();
+      this.guardando = false;
+    },
+    error: (err) => {
+      console.error('❌ Error actualizando socia:', err);
+      this.guardando = false;
+      this.error = 'Error al actualizar la socia: ' + (err.error?.message || 'Ocurrió un problema en el servidor');
+    }
+  });
+}
 
   private formatDateForBackend(date: Date | string | null | undefined): string | null {
     if (!date) return null;
