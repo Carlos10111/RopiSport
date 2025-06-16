@@ -12,28 +12,28 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-@Data
-@Getter
-@Setter
+@Data  // Con @Data no necesitas @Getter @Setter
 public abstract class Auditable {
 
+    // Cuándo se creó este registro (se llena automáticamente)
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    // Cuándo se modificó por última vez (se actualiza automáticamente)
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    // Quién creó este registro (se llena automáticamente con el usuario logueado)
     @CreatedBy
     @Column(name = "created_by", updatable = false)
     private String createdBy;
 
+    // Quién modificó por última vez (se actualiza automáticamente)
     @LastModifiedBy
     @Column(name = "updated_by")
     private String updatedBy;

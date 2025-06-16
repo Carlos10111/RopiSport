@@ -1,0 +1,153 @@
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1><i class="fas fa-tachometer-alt"></i> Panel de Control</h1>
+    <button class="refresh-btn" (click)="loadDashboardData()" [disabled]="loading">
+      <i class="fas fa-sync-alt" [class.spinning]="loading"></i>
+      Actualizar
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Cargando datos del dashboard...</p>
+  </div>
+
+  <div *ngIf="error && !loading" class="error-container">
+    <i class="fas fa-exclamation-triangle"></i>
+    <p>{{ error }}</p>
+    <button class="retry-btn" (click)="loadDashboardData()">Intentar de nuevo</button>
+  </div>
+
+  <div *ngIf="!loading && !error" class="dashboard-content">
+    <div class="metrics-grid" *ngIf="metricas">
+      <div class="metric-card socias-card" (click)="navigateToSocias()">
+        <div class="metric-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <div class="metric-content">
+          <h3>{{ metricas.totalSocias }}</h3>
+          <p class="card-title">Total Socias</p>
+          <div class="metric-detail">
+            <span class="detail-tag active-count">{{ metricas.sociasActivas }} activas</span>
+            <span class="detail-tag new-count">+{{ metricas.nuevasSociasMes }} este mes</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-card empresas-card" (click)="navigateToEmpresas()">
+        <div class="metric-icon">
+          <i class="fas fa-building"></i>
+        </div>
+        <div class="metric-content">
+          <h3>{{ metricas.totalEmpresas }}</h3>
+          <p class="card-title">Total Empresas</p>
+          <div class="metric-detail">
+            <span class="detail-tag new-count">+{{ metricas.nuevasEmpresasMes }} este mes</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-card ingresos-card">
+        <div class="metric-icon">
+          <i class="fas fa-euro-sign"></i>
+        </div>
+        <div class="metric-content">
+          <h3>{{ metricas.ingresosMes | currency:'EUR':'symbol':'1.2-2' }}</h3>
+          <p class="card-title">Ingresos del Mes</p>
+          <div class="metric-detail">
+            <span class="detail-tag" [class]="getChangeClass(metricas.porcentajeCrecimiento)">
+              <i [class]="getChangeIcon(metricas.porcentajeCrecimiento)"></i>
+              {{ metricas.porcentajeCrecimiento | number:'1.1-1' }}%
+            </span>
+            <span class="detail-tag vs-anterior">vs mes anterior</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="metric-card pagos-card" (click)="navigateToPagos()">
+        <div class="metric-icon">
+          <i class="fas fa-credit-card"></i>
+        </div>
+        <div class="metric-content">
+          <h3>{{ metricas.totalPagos }}</h3>
+          <p class="card-title">Total Pagos</p>
+          <div class="metric-detail">
+            <span class="detail-tag pending-count">{{ metricas.pagosPendientes }} pendientes</span>
+            <span class="detail-tag unconfirmed-count">{{ metricas.pagosNoConfirmados }} sin confirmar</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alerts-section" *ngIf="alertas && (alertas.pagosPendientes > 0 || alertas.sociasMorosas > 0 || alertas.renovacionesVencen > 0 || alertas.pagosNoConfirmados > 0 || alertas.empresasSinActualizar > 0)">
+        <h2><i class="fas fa-bell"></i> Alertas</h2>
+        <div class="alerts-grid">
+            <div class="alert-item warning" *ngIf="alertas.pagosPendientes > 0">
+                <i class="fas fa-exclamation-circle"></i>
+                <span>**{{ alertas.pagosPendientes }}** pagos pendientes</span>
+            </div>
+            <div class="alert-item danger" *ngIf="alertas.sociasMorosas > 0">
+                <i class="fas fa-user-times"></i>
+                <span>**{{ alertas.sociasMorosas }}** socias que falta pagar</span>
+            </div>
+            <div class="alert-item warning" *ngIf="alertas.renovacionesVencen > 0">
+                <i class="fas fa-calendar-times"></i>
+                <span>**{{ alertas.renovacionesVencen }}** renovaciones próximas a vencer</span>
+            </div>
+            <div class="alert-item info" *ngIf="alertas.pagosNoConfirmados > 0">
+                <i class="fas fa-question-circle"></i>
+                <span>**{{ alertas.pagosNoConfirmados }}** pagos sin confirmar</span>
+            </div>
+            <div class="alert-item danger" *ngIf="alertas.empresasSinActualizar > 0">
+                <i class="fas fa-building"></i>
+                <span>**{{ alertas.empresasSinActualizar }}** empresas sin actualizar</span>
+            </div>
+        </div>
+    </div>
+    <div class="no-alerts" *ngIf="alertas && alertas.pagosPendientes === 0 && alertas.sociasMorosas === 0 && alertas.renovacionesVencen === 0 && alertas.pagosNoConfirmados === 0 && alertas.empresasSinActualizar === 0">
+        <p><i class="fas fa-check-circle"></i> No hay alertas pendientes. ¡Todo en orden!</p>
+    </div>
+
+    <div class="chart-section" *ngIf="ingresosMensuales && ingresosMensuales.length > 0">
+      <h2><i class="fas fa-chart-line"></i> Evolución de Ingresos (Últimos 6 meses)</h2>
+      <div class="chart-container">
+        <div class="chart-bar-container">
+          <div *ngFor="let ingreso of ingresosMensuales" class="chart-bar-wrapper">
+            <div
+              class="chart-bar"
+              [style.height.%]="getMaxIngreso() > 0 ? (ingreso.importe / getMaxIngreso()) * 100 : 20"
+            >
+              <div class="bar-value">{{ ingreso.importe | currency:'EUR':'symbol':'1.0-0' }}</div>
+            </div>
+            <div class="bar-label">
+              <div class="month">{{ ingreso.mes }}</div>
+              <div class="payments">{{ ingreso.numeroPagos }} pagos</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <h2><i class="fas fa-bolt"></i> Acciones Rápidas</h2>
+      <div class="actions-grid">
+        <button class="action-btn" (click)="navigateToSocias()">
+          <i class="fas fa-user-plus"></i>
+          <span>Gestionar Socias</span>
+        </button>
+        <button class="action-btn" (click)="navigateToEmpresas()">
+          <i class="fas fa-building"></i>
+          <span>Gestionar Empresas</span>
+        </button>
+        <button class="action-btn" (click)="navigateToPagos()">
+          <i class="fas fa-credit-card"></i>
+          <span>Gestionar Pagos</span>
+        </button>
+        <button class="action-btn" (click)="navigateToReportes()">
+          <i class="fas fa-chart-bar"></i>
+          <span>Ver Reportes</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -32,7 +32,7 @@ export class TokenInterceptor implements HttpInterceptor {
     
     if (token && !this.tokenService.isTokenExpired(token)) {
       // Clonar petición y añadir Authorization header
-      const authReq = req.clone({
+      const authReq = req.clone({ 
         setHeaders: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

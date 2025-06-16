@@ -26,9 +26,6 @@ import com.ropisport.gestion.security.jwt.AuthTokenFilter;
 import com.ropisport.gestion.security.service.UserDetailsServiceImpl;
 import com.ropisport.gestion.util.Constants;
 
-/**
- * Configuración de seguridad de la aplicación RopiSport
- */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -39,9 +36,6 @@ public class SecurityConfig {
     private final AuthEntryPointJwt unauthorizedHandler;
     private final AuthTokenFilter authTokenFilter;
 
-    /**
-     * Proveedor de autenticación
-     */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -50,25 +44,16 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    /**
-     * Codificador de contraseñas
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * Administrador de autenticación
-     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
-    /**
-     * Filtro de seguridad principal
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
@@ -80,17 +65,17 @@ public class SecurityConfig {
                 .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/error").permitAll()
 
-                // Solo ADMIN general ( admin general )
+                // Solo ADMIN general - SIN prefijo ROLE_
                 .requestMatchers("/api/admin/**").hasRole(Constants.ROLE_ADMIN)
                 .requestMatchers("/api/usuarios/**").hasRole(Constants.ROLE_ADMIN)
                 .requestMatchers("/api/roles/**").hasRole(Constants.ROLE_ADMIN)
                 
-                // ADMIN general O ADMIN_SOCIAS
-                .requestMatchers("/api/empresas/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS) // ← Corregir typo
-                .requestMatchers("/api/instituciones/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS) // ← Corregir hasanyRole
+                // ADMIN general O ADMIN_SOCIAS - SIN prefijo ROLE_
+                .requestMatchers("/api/empresas/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
+                .requestMatchers("/api/instituciones/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
                 .requestMatchers("/api/tipo-instituciones/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
                 .requestMatchers("/api/categorias/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
-                .requestMatchers("/api/socias/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS) // ← Corregir hasanyRole
+                .requestMatchers("/api/socias/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
                 .requestMatchers("/api/pagos/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
                 .requestMatchers("/api/pago-detalles/**").hasAnyRole(Constants.ROLE_ADMIN, Constants.ROLE_ADMIN_SOCIAS)
 
@@ -103,9 +88,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * Configuración CORS
-     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();

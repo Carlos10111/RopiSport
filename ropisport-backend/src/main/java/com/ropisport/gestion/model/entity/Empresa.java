@@ -1,5 +1,7 @@
 package com.ropisport.gestion.model.entity;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ropisport.gestion.model.audit.Auditable;
 
@@ -11,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -67,4 +70,11 @@ public class Empresa extends Auditable {
 
     @Column(name = "otras_redes")
     private String otrasRedes;
+    @Column(name = "fecha_creacion")
+    private LocalDateTime fechaCreacion;
+
+    @PrePersist
+    protected void onCreate() {
+        fechaCreacion = LocalDateTime.now();
+    }
 }
