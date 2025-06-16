@@ -1,0 +1,51 @@
+.home-container {
+    text-align: center;
+    padding: 3rem 1rem;
+    background-color: #f8f9fa;
+  
+    .welcome-title {
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serifW;
+      font-size: 2rem;
+      color: #343a40;
+      margin-bottom: 0.5rem;
+    }
+  
+    .welcome-subtitle {
+      font-size: 1.1rem;
+      color: #6c757d;
+      margin-bottom: 2.5rem;
+    }
+  
+    .button-grid {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+  
+      .admin-card {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        background-color: #e9ecef;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        width: 200px;
+        height: 120px;
+        transition: background-color 0.2s ease, transform 0.2s ease;
+  
+        .card-title {
+          color: #343a40;
+          font-weight: 600;
+          font-size: 1rem;
+          text-align: center;
+        }
+  
+        &:hover {
+          background-color: #dee2e6;
+          transform: translateY(-2px);
+        }
+      }
+    }
+  }
+  

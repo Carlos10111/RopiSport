@@ -1,0 +1,99 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+  <div class="form-group">
+    <label for="nombre_institucion">Nombre de la institución</label>
+    <input id="nombre_institucion" formControlName="nombreInstitucion" class="form-control" placeholder="Nombre de la institución" />
+    <div *ngIf="form.get('nombre_institucion')?.invalid && form.get('nombre_institucion')?.touched" class="text-danger">
+      El nombre de la institución es obligatorio.
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="persona_contacto">Persona de contacto</label>
+    <input id="persona_contacto" formControlName="personaContacto" class="form-control" placeholder="Persona de contacto" />
+    <div *ngIf="form.get('persona_contacto')?.invalid && form.get('persona_contacto')?.touched" class="text-danger">
+      La persona de contacto es obligatoria.
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="cargo">Cargo</label>
+    <input id="cargo" formControlName="cargo" class="form-control" placeholder="Cargo" />
+    <div *ngIf="form.get('cargo')?.invalid && form.get('cargo')?.touched" class="text-danger">
+      El cargo es obligatorio.
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="telefono">Teléfono</label>
+    <input id="telefono" formControlName="telefono" class="form-control" placeholder="Teléfono" />
+    <div *ngIf="form.get('telefono')?.invalid && form.get('telefono')?.touched" class="text-danger">
+      El teléfono es obligatorio.
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="email">Email</label>
+    <input id="email" formControlName="email" class="form-control" placeholder="Email" />
+    <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="text-danger">
+      El email es obligatorio.
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="web">Sitio web</label>
+    <input id="web" formControlName="web" class="form-control" placeholder="Sitio web" />
+    <div *ngIf="form.get('web')?.invalid && form.get('web')?.touched" class="text-danger">
+      El sitio web es obligatorio.
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="observaciones">Observaciones</label>
+    <textarea id="observaciones" formControlName="observaciones" class="form-control" placeholder="Observaciones"></textarea>
+    <div *ngIf="form.get('observaciones')?.invalid && form.get('observaciones')?.touched" class="text-danger">
+      Las observaciones son obligatorias.
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="tipoInstitucionId">Tipo de institución</label>
+    <select id="tipoInstitucionId" formControlName="tipoInstitucionId" class="form-control">
+      <option *ngFor="let tipo of tiposInstitucion$ | async" [value]="tipo.id">
+        {{ tipo.nombre }}
+      </option>
+    </select>
+    <!--<div *ngIf="form.get('tipoInstitucionId')?.invalid && form.get('tipoInstitucionId')?.touched" class="text-danger">
+      El tipo de institución es obligatorio.
+    </div>-->
+  </div>
+
+  <!--enviuar-->
+  <div class="form-group">
+    <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+      {{ institucionId ? 'Actualizar' : 'Crear' }} Institución
+    </button>
+  </div>
+</form>
+
+<!-- Mensaje de error general 
+<div *ngIf="form.submitted && form.invalid" class="alert alert-danger">
+  <strong>Error:</strong> Por favor, completa todos los campos obligatorios.
+</div>
+-->
+  
+  <!--
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <label for="nombre">Nombre:</label>
+  <input id="nombre" formControlName="nombre" />
+
+  <label for="tipoInstitucionId">Tipo de Institución:</label>
+  <select id="tipoInstitucionId" formControlName="tipoInstitucionId">
+    <option *ngFor="let tipo of tiposInstitucion$ | async" [value]="tipo.id">
+      {{ tipo.nombre }}
+    </option>
+  </select>
+
+  <button type="submit" [disabled]="form.invalid">Guardar</button>
+</form>
+  -->

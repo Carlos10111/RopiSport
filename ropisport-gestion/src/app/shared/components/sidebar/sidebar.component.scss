@@ -1,0 +1,259 @@
+:host {
+  display: block;
+  height: calc(100vh - 56px); // Restamos la altura del header navbar
+  position: fixed;
+  top: 56px; // Posicionamos 56px debajo del header
+  left: 0;
+  z-index: 998; // Menor que el header (que suele tener 1000+)
+}
+
+// Variables CSS personalizadas
+:root {
+  --primary-black: #1a1a1a;
+  --secondary-gray: #2d2d2d;
+  --light-gray: #404040;
+  --accent-red: #8B0000;
+  --soft-red: #A52A2A;
+  --text-light: #e0e0e0;
+  --text-muted: #b0b0b0;
+  --hover-gray: #353535;
+  --header-height: 56px; // Variable para fácil ajuste
+}
+
+.sidebar-container {
+  width: 280px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--primary-black) 0%, var(--secondary-gray) 100%);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.4s ease-out;
+  
+  // Asegurar que esté por encima del contenido pero debajo del header
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar-header {
+  padding: 2rem 1.5rem 1.5rem;
+  border-bottom: 1px solid var(--light-gray);
+  background: rgba(139, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.brand-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-light);
+  margin: 0;
+  letter-spacing: -0.5px;
+
+  .brand-accent {
+    color: var(--soft-red);
+  }
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--soft-red);
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(139, 0, 0, 0.2);
+    transform: scale(1.1);
+  }
+}
+
+.nav-section {
+  flex: 1;
+  padding: 1.5rem 0;
+  overflow-y: auto;
+
+  // Scrollbar personalizado
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--secondary-gray);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--light-gray);
+    border-radius: 3px;
+
+    &:hover {
+      background: var(--soft-red);
+    }
+  }
+}
+
+.nav-item {
+  margin: 0 1rem 0.5rem;
+}
+
+.nav-button {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: var(--soft-red);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+  }
+
+  &:hover {
+    background: var(--hover-gray);
+    color: var(--text-light);
+    transform: translateX(8px);
+
+    &::before {
+      transform: scaleY(1);
+    }
+  }
+
+  &.active {
+    background: #f8e4e4 !important;
+    color: var(--primary-black) !important;
+    font-weight: 700 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    border: 2px solid var(--soft-red) !important;
+
+    &::before {
+      transform: scaleY(1) !important;
+      background: var(--soft-red) !important;
+      width: 4px !important;
+    }
+
+    .nav-text {
+      font-weight: 700 !important;
+      letter-spacing: 0.8px !important;
+      color: var(--primary-black) !important;
+    }
+
+    .nav-icon {
+      color: var(--soft-red) !important;
+    }
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(139, 0, 0, 0.5);
+  }
+}
+
+.nav-icon {
+  font-size: 1.2rem;
+  min-width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-text {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.section-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--light-gray), transparent);
+  margin: 2rem 1.5rem;
+}
+
+.bottom-section {
+  padding: 1rem;
+  border-top: 1px solid var(--light-gray);
+  background: rgba(0, 0, 0, 0.2);
+  flex-shrink: 0;
+}
+
+.logout-button {
+  background: #9b3d3dc4;
+  border: none;
+  color: white;
+
+  &:hover {
+    background: linear-gradient(135deg, #c82333, #bd2130);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+  }
+}
+
+// Animación de entrada
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  :host {
+    top: var(--header-height); // Usar variable para consistencia
+    height: calc(100vh - var(--header-height));
+  }
+
+  .sidebar-container {
+    width: 100%;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+
+    &.open {
+      transform: translateX(0);
+    }
+  }
+}
+
+// Ajuste para diferentes alturas de navbar
+@media (min-width: 992px) {
+  :host {
+    top: var(--header-height); // Mantener consistente
+    height: calc(100vh - var(--header-height));
+  }
+}
+
+// Clase de utilidad si necesitas ajustar la altura del header dinámicamente
+.header-large {
+  :host {
+    top: 70px; // Para headers más altos
+    height: calc(100vh - 70px);
+  }
+}
+

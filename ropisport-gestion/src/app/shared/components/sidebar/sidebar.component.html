@@ -1,0 +1,64 @@
+<div class="sidebar-container">
+  <!-- Header -->
+  <div class="sidebar-header">
+    <div class="brand-container">
+      <h2 class="brand-title">
+        <span class="brand-accent ms-3">AMEA</span>
+      </h2>
+      <button class="close-btn" (click)="closeSidebar()">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="nav-section">
+    <div class="nav-item">
+      <button class="nav-button" routerLink="/admin/dashboard" routerLinkActive="active">
+        <i class="nav-icon bi bi-house-door"></i>
+        <span class="nav-text">Home</span>
+      </button>
+    </div>
+
+    <div class="nav-item">
+      <button class="nav-button" routerLink="/admin/socias" routerLinkActive="active">
+        <i class="nav-icon bi bi-people"></i>
+        <span class="nav-text">SOCIAS</span>
+      </button>
+    </div>
+
+    <div class="nav-item">
+      <button class="nav-button" routerLink="/admin/instituciones" routerLinkActive="active">
+        <i class="nav-icon bi bi-building"></i>
+        <span class="nav-text">INSTITUCIONES</span>
+      </button>
+    </div>
+
+    <div class="nav-item">
+      <button class="nav-button" routerLink="/admin/pagos" routerLinkActive="active">
+        <i class="nav-icon bi bi-credit-card"></i>
+        <span class="nav-text">PAGOS</span>
+      </button>
+    </div>
+
+    <div class="section-divider"></div>
+  </div>
+
+  <!-- Bottom Section -->
+  <div class="bottom-section">
+    <div class="nav-item" *ngIf="userStateService.getUserRole() === 'ROLE_ADMIN'"><!--[hidden]="userStateService.getUserRole() !== 'ROLE_ADMIN'"-->
+      <button class="nav-button tools-button" routerLink="/admin/usuarios" routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }">
+        <i class="nav-icon bi bi-tools"></i>
+        <span class="nav-text">Administración</span>
+      </button>
+    </div>
+
+  <div class="nav-item">
+    <button class="nav-button logout-button" (click)="logout()">
+      <i class="nav-icon bi bi-power"></i>
+      <span class="nav-text">Cerrar sesión</span>
+    </button>
+  </div>
+</div>
+</div>
