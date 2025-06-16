@@ -79,9 +79,10 @@ export class TokenService {
   // Obtener rol del usuario
   getUserRole(): string | null {
     const userData = this.getUserData();
-    return userData?.rol || null;
+    return userData?.nombreRol || null;  //return userData?.rol?.name || null;
   }
-
+  
+  
   // Limpiar token y datos
   clearToken(): void {
     localStorage.removeItem(this.TOKEN_KEY);

@@ -2,7 +2,7 @@
   <div class="container-fluid">
     <a class="navbar-brand d-flex align-items-center" [routerLink]="isAuthenticated ? ['/admin'] : ['/']">
       <img src="logo.png" alt="Logo" class="logo">
-      <span class="ms-2">ROPISPORT</span>
+      <span class="ms-2">AMEA</span>
     </a>
 
     <!-- Barra de búsqueda - solo mostrar si está autenticado -->
@@ -45,13 +45,13 @@
           <li>
             <a class="dropdown-item" (click)="goToProfile()">
               <i class="bi bi-person me-2"></i>
-              Mi Perfil
+              Perfil
             </a>
           </li>
           <li>
             <a class="dropdown-item" (click)="goToAdmin()">
               <i class="bi bi-speedometer2 me-2"></i>
-              Panel de Control
+              Panel
             </a>
           </li>
           <li><hr class="dropdown-divider"></li>

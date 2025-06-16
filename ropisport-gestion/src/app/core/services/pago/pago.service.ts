@@ -49,13 +49,20 @@ export class PagoService {
     return this.http.get<Pago[]>(`${this.apiUrl}/confirmados`, { params });
   }
 
-  // Buscar pagos (similar al patrón de instituciones)
-  searchPagos(termino: string): Observable<Pago[]> {
-    // Implementamos una búsqueda que combine varios criterios
-    // Podrías necesitar crear este endpoint en el backend o usar filtros existentes
-    const params = new HttpParams().set('search', termino);
-    return this.http.get<Pago[]>(`${this.apiUrl}/search`, { params });
+  searchPagos(
+    termino: string,
+    page: number = 0,
+    size: number = 10,
+    sort: string = 'fechaPago,desc'
+  ): Observable<PaginatedResponse<Pago>> {
+    const params = new HttpParams()
+      .set('texto', termino)
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('sort', sort);
+    return this.http.get<PaginatedResponse<Pago>>(`${this.apiUrl}/buscar`, { params });
   }
+  
 
   // Crear nuevo pago
   createPago(pagoDTO: PagoDTO): Observable<Pago> {

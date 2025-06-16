@@ -45,13 +45,29 @@ export class InstitucionService {
     });
   }
 
-  searchInstituciones(searchTerm: string): Observable<Institucion[]> {
-    const searchRequest: SearchRequest = { searchTerm };
-    
-    return this.http.post<Institucion[]>(`${this.apiUrl}/search`, searchRequest, {
-      headers: this.getAuthHeaders()
+  searchInstituciones(
+    texto: string,
+    tipoInstitucionId?: number,
+    page: number = 0,
+    size: number = 10,
+    sort: string = 'id,desc'
+  ): Observable<PaginatedResponse<Institucion>> {
+    let params = new HttpParams()
+      .set('texto', texto)
+      .set('page', page.toString())
+      .set('size', size.toString())
+      .set('sort', sort);
+  
+    if (tipoInstitucionId !== undefined && tipoInstitucionId !== null) {
+      params = params.set('tipoInstitucionId', tipoInstitucionId.toString());
+    }
+  
+    return this.http.get<PaginatedResponse<Institucion>>(`${this.apiUrl}/buscar`, {
+      headers: this.getAuthHeaders(),
+      params
     });
   }
+  
 
   getInstitucionById(id: number): Observable<Institucion> {
     return this.http.get<Institucion>(`${this.apiUrl}/${id}`, {

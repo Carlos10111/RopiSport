@@ -4,10 +4,12 @@ import { UseStateService } from '../../../core/auth/use-state.service';
 import { PopupService } from '../../utils/popup.service';
 import { TokenInterceptor } from '../../../core/interceptors/token.interceptor';
 import { Router, RouterModule } from '@angular/router';
+import { TokenService } from '../../../core/auth/token.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterModule],
+  imports: [RouterModule, CommonModule],
   standalone: true,
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.scss'
@@ -22,13 +24,17 @@ export class SidebarComponent implements OnInit {
     private sidebarStatusService: SidebarStatusService,
     private tokenInterceptor: TokenInterceptor,
     private popupService: PopupService,
-    private userStateService: UseStateService,
     private router: Router,
+    public userStateService: UseStateService,
+    public tokenService: TokenService
   ) {}
 
   ngOnInit(): void {
     this.sidebarStatusService.status$.subscribe(status => {
       this.isActiveMenuHeader = status;
+      
+    console.log('Usuario logueado:', this.userStateService.getUsername());
+    console.log('Rol:', this.userStateService.getUserRole());
     });
   }
 

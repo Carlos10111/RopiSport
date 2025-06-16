@@ -85,9 +85,19 @@ export class InstitucionListComponent implements OnInit, OnDestroy {
             finalize(() => this.buscando = false)
           );
         })
-      ).subscribe((results: Institucion[]) => {
-        this.resultadosBusqueda = results;
+      ).subscribe((results: never[] | PaginatedResponse<Institucion>) => {
+        if (Array.isArray(results)) {
+          // Puede ser un array vacío
+          this.resultadosBusqueda = results;
+        } else {
+          // Es un objeto paginado
+          this.resultadosBusqueda = results.content;
+          this.totalElements = results.totalElements;
+          this.totalPages = results.totalPages;
+        }
       })
+      
+      
     );
     
     // Cargar datos iniciales
@@ -123,19 +133,20 @@ export class InstitucionListComponent implements OnInit, OnDestroy {
     if (this.searchText.trim()) {
       // Modo búsqueda
       this.subscription.add(
-        this.institucionService.searchInstituciones(this.searchText).subscribe({
-          next: (results: Institucion[]) => {
-            console.log('Respuesta de búsqueda:', results);
-            this.instituciones = results;
-            this.totalElements = results.length;
-            this.totalPages = 1;
-            this.currentPage = 0;
-            this.loading = false;
-          },
-          error: (err) => {
-            this.handleError('Error al buscar las instituciones', err);
-          }
-        })
+        this.institucionService.searchInstituciones(this.searchText, undefined, this.currentPage, this.pageSize, 'id,desc')
+  .subscribe({
+    next: (response) => {
+      this.instituciones = response.content;
+      this.totalElements = response.totalElements;
+      this.totalPages = response.totalPages;
+      this.currentPage = response.page;
+      this.loading = false;
+    },
+    error: (err) => {
+      this.handleError('Error al buscar las instituciones', err);
+    }
+  })
+
       );
     } else {
       // Modo paginado normal
@@ -203,9 +214,24 @@ export class InstitucionListComponent implements OnInit, OnDestroy {
   }
   
   // FUNCIONES PARA BÚSQUEDA EN MODAL
-  buscarInstituciones(): void {
-    this.busquedaTerms.next(this.terminoBusqueda);
+  buscarInstituciones() {
+    const term = this.terminoBusqueda?.toLowerCase().trim();
+  
+    if (!term) {
+      this.resultadosBusqueda = [];
+      return;
+    }
+  
+    this.resultadosBusqueda = this.instituciones.filter(inst => {
+      const nombre = inst.nombreInstitucion?.toLowerCase() || '';
+      const contacto = inst.personaContacto?.toLowerCase() || '';
+  
+      return nombre.includes(term) || contacto.includes(term);
+    });
+  
+    console.log('Resultados encontrados:', this.resultadosBusqueda);
   }
+  
   
   // FUNCIONES PARA MODALES
   abrirModalNueva(): void {
@@ -217,6 +243,7 @@ export class InstitucionListComponent implements OnInit, OnDestroy {
     this.terminoBusqueda = '';
     this.resultadosBusqueda = [];
     this.modalActivo = 'buscarModificar';
+    //this.buscarInstituciones();
   }
   
   abrirModalBuscarParaEliminar(): void {

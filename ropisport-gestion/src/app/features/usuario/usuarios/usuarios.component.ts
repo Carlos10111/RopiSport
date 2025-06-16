@@ -7,6 +7,7 @@ import { UsuarioService } from '../../../core/services/usuario/usuario.service';
 import { PaginatedResponse } from '../../../core/models/paginated-response';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { PopupService } from '../../../shared/utils/popup.service';
 
 @Component({
   selector: 'app-usuarios',
@@ -52,8 +53,8 @@ export class UsuariosComponent implements OnInit {
   roles: Rol[] = [];
 
   constructor(
-    private usuarioService: UsuarioService,
-    private credentialsService: CredentialsService
+    private usuarioService: UsuarioService, private credentialsService: CredentialsService,
+    private popup: PopupService
   ) {}
 
   ngOnInit(): void {
@@ -161,34 +162,42 @@ export class UsuariosComponent implements OnInit {
 
   // Métodos para crear usuario
   crearUsuario(): void {
-    this.limpiarAlertas();
-    
-    // Validaciones
-    if (!this.validarFormularioCreacion()) {
-      return;
-    }
+  this.limpiarAlertas();
 
-    this.guardando = true;
-    
-    // Usar el servicio de usuarios en lugar de credentials
-    this.usuarioService.createUsuario(this.nuevoUsuario)
-      .subscribe({
-        next: (response) => {
-          this.success = 'Usuario creado exitosamente';
-          this.limpiarFormulario();
-          this.guardando = false;
-          // Recargar usuarios si estamos en esa pestaña
-          if (this.activeTab === 'usuarios') {
-            this.cargarUsuarios();
-          }
-        },
-        error: (error) => {
-          console.error('Error al crear usuario:', error);
-          this.error = error.error?.message || 'Error al crear el usuario';
-          this.guardando = false;
-        }
-      });
+  // Validaciones
+  if (!this.validarFormularioCreacion()) {
+    return;
   }
+
+  this.guardando = true;
+
+  // Opcional: Mostrar loader
+  this.popup.loader('Creando usuario...', 'Por favor, espera');
+
+  this.usuarioService.createUsuario(this.nuevoUsuario)
+    .subscribe({
+      next: (response) => {
+        this.popup.close(); // Cerrar loader
+        this.popup.showMessage('Éxito', 'Usuario creado exitosamente', 'success');
+        this.limpiarFormulario();
+        this.activeTab = 'usuarios'; // Cambiar a la pestaña de gestión
+        this.guardando = false;
+
+        // Si ya estamos en la pestaña "usuarios", recargar la lista
+        if (this.activeTab === 'usuarios') {
+          this.cargarUsuarios();
+        }
+      },
+      error: (error) => {
+        this.popup.close(); // Cerrar loader
+        console.error('Error al crear usuario:', error);
+        const errorMsg = error.error?.message || 'Error al crear el usuario';
+        this.popup.showMessage('Error', errorMsg, 'error');
+        this.guardando = false;
+      }
+    });
+}
+
 
   validarFormularioCreacion(): boolean {
     // Validar email

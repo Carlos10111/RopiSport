@@ -2,6 +2,6 @@ export interface PagoDetalleDTO {
     pagoId: number,
     concepto: string,
     monto: number,
-    fechaDetalle: string,
+    fechaDetalle: string, // o date
     notas: string
 }

@@ -31,7 +31,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/usuarios")
-@PreAuthorize("hasRole('ADMIN')")  // el administrador general puede acceder a este controlador
+//@PreAuthorize("hasRole('ADMIN')")  // el administrador general puede acceder a este controlador
 public class UsuarioController {
 
     @Autowired

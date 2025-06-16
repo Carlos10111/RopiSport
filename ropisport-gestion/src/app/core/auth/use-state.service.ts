@@ -30,7 +30,6 @@ export class UseStateService {
     const user = this.getCurrentUser();
     return user?.rol || null;
   }
-
   isUserLoggedIn(): boolean {
     return this.getCurrentUser() !== null;
   }

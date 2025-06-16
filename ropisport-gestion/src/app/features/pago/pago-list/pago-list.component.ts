@@ -86,13 +86,26 @@ export class PagoListComponent implements OnInit, OnDestroy {
             catchError(error => {
               console.error('Error en búsqueda:', error);
               this.error = 'Error al buscar pagos: ' + (error.error?.message || error.message || 'Error desconocido');
-              return of([]);
+              return of({
+                content: [],
+                page: 0,
+                size: 0,
+                totalElements: 0,
+                totalPages: 0,
+                last: true
+              } as PaginatedResponse<Pago>);
             }),
             finalize(() => this.buscando = false)
           );
         })
-      ).subscribe((results: Pago[]) => {
-        this.resultadosBusqueda = results;
+      ).subscribe((results: PaginatedResponse<Pago> | never[]) => {
+        if (Array.isArray(results)) {
+          // Si viene un array vacío, asigna array vacío
+          this.resultadosBusqueda = results;
+        } else {
+          // Si viene paginación, usa content
+          this.resultadosBusqueda = results.content;
+        }
       })
     );
     
@@ -137,17 +150,19 @@ export class PagoListComponent implements OnInit, OnDestroy {
   loadPagos(): void {
     this.loading = true;
     this.error = '';
-    
+  
     if (this.searchText.trim()) {
-      // Modo búsqueda
       this.subscription.add(
-        this.pagoService.searchPagos(this.searchText).subscribe({
-          next: (results: Pago[]) => {
-            console.log('Respuesta de búsqueda:', results);
-            this.pagos = this.procesarPagos(results);
-            this.totalElements = results.length;
-            this.totalPages = 1;
-            this.currentPage = 0;
+        this.pagoService.searchPagos(this.searchText, this.currentPage, this.pageSize).subscribe({
+          next: (response: PaginatedResponse<Pago>) => {
+            const pagosConFechaProcesada = response.content.map(p => ({
+              ...p,
+              fecha: this.procesarFechaDelBackend(p.fechaPago)
+            }));
+    
+            this.pagos = this.procesarPagos(pagosConFechaProcesada);
+            this.totalElements = response.totalElements;
+            this.totalPages = response.totalPages;
             this.loading = false;
           },
           error: (err) => {
@@ -161,10 +176,15 @@ export class PagoListComponent implements OnInit, OnDestroy {
         this.pagoService.getAllPagos(this.currentPage, this.pageSize, 'fechaPago').subscribe({
           next: (response: PaginatedResponse<Pago>) => {
             console.log('Respuesta del backend completa:', response);
-            
-            // CORRECCIÓN PROBLEMA 1: Procesar correctamente la respuesta paginada
+  
             if (response && response.content && Array.isArray(response.content)) {
-              this.pagos = this.procesarPagos(response.content);
+              // Procesar fechas aquí
+              const pagosConFechaProcesada = response.content.map(p => ({
+                ...p,
+                fecha: this.procesarFechaDelBackend(p.fechaPago)
+              }));
+  
+              this.pagos = this.procesarPagos(pagosConFechaProcesada);
               this.totalElements = response.totalElements || 0;
               this.totalPages = response.totalPages || 0;
             } else {
@@ -173,7 +193,7 @@ export class PagoListComponent implements OnInit, OnDestroy {
               this.totalElements = 0;
               this.totalPages = 0;
             }
-            
+  
             console.log('Pagos procesados:', this.pagos);
             this.loading = false;
           },
@@ -184,8 +204,9 @@ export class PagoListComponent implements OnInit, OnDestroy {
       );
     }
   }
+  
 
-  // CORRECCIÓN PROBLEMA 3: Función para procesar fechas del backend
+  // procesar fechas del backend
   private procesarPagos(pagos: Pago[]): Pago[] {
     return pagos.map(pago => ({
       ...pago,
@@ -197,7 +218,6 @@ export class PagoListComponent implements OnInit, OnDestroy {
     }));
   }
 
-  // CORRECCIÓN PROBLEMA 3: Procesar fecha que viene del backend
   private procesarFechaDelBackend(fecha: string): string {
     if (!fecha) return '';
     

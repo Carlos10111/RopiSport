@@ -6,7 +6,7 @@ export interface Pago {
   sociaId: number;
   nombreSocia: string;
   monto: number;
-  fechaPago: string; // ISO 8601
+  fechaPago: string; // o date
   concepto: string;
   metodoPago: MetodoPago;
   confirmado: boolean;
