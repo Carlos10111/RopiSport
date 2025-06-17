@@ -225,12 +225,25 @@ export class InstitucionListComponent implements OnInit, OnDestroy {
     this.resultadosBusqueda = this.instituciones.filter(inst => {
       const nombre = inst.nombreInstitucion?.toLowerCase() || '';
       const contacto = inst.personaContacto?.toLowerCase() || '';
+      const email = inst.email?.toLowerCase() || '';
+      const telefono = inst.telefono || '';
+      const cargo = inst.cargo?.toLowerCase() || '';
+      const tipoNombre = inst.nombreTipoInstitucion?.toLowerCase() || '';
   
-      return nombre.includes(term) || contacto.includes(term);
+      return (
+        nombre.includes(term) ||
+        contacto.includes(term) ||
+        email.includes(term) ||
+        telefono.includes(term) ||
+        cargo.includes(term) ||
+        tipoNombre.includes(term)
+      );
     });
   
     console.log('Resultados encontrados:', this.resultadosBusqueda);
   }
+  
+
   
   
   // FUNCIONES PARA MODALES

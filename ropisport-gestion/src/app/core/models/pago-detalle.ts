@@ -3,9 +3,9 @@ export interface PagoDetalle {
     pagoId: number; // FK al pago
     concepto: string;
     monto: number;
-    fechaDetalle: string; // // o date
+    fechaDetalle: Date | string; // // o date
     notas: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: Date | string;
+    updatedAt: Date | string;
   }
   

@@ -13,7 +13,7 @@ import { InstitucionFormComponent } from './features/institucion/institucion-for
 import { SociasFormComponent } from './features/socias/socias-form/socias-form.component';
 import { SociaListComponent } from './features/socias/socias-list/socias-list.component';
 import { DashboardComponent } from './features/dashboard/dashboard.component';
-import { EmpresaListComponent } from './features/empresa/empresa-list/empresa-list.component';
+import { EmpresaComponent } from './features/empresa/empresa-list/empresa-list.component';
 import { HomeComponent } from './features/home/home.component';
 
 export const routes: Routes = [
@@ -49,7 +49,7 @@ export const routes: Routes = [
       },
       { path: 'dashboard', component: DashboardComponent },
       { path: 'home', component: HomeComponent},
-      //{ path : 'empresa', component : EmpresaListComponent},
+      { path : 'empresas', component : EmpresaComponent},
       { path: 'socias', component: SociaListComponent },
       { path: 'socias-form', component: SociasFormComponent},
       { path: 'instituciones', component: InstitucionListComponent },

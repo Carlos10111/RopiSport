@@ -1,3 +1,17 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 56px; // o lo que mida tu header
+  z-index: 1000; // que esté por encima de sidebar y contenido
+  background-color: #1a1a1a; // para que no sea transparente
+}
+
+.d-flex{
+  margin-top: 56px;
+}
+
 .main-layout {
   display: flex;
   flex-direction: column;

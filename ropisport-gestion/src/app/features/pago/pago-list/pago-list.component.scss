@@ -21,7 +21,7 @@ $btn-eliminar: #fef2f2;     // Rosa muy claro para eliminar
 $btn-crear: #374151;        // Gris oscuro para crear
 $text-black: #1f2937;       // Negro para texto en badges
 
-// Mixins
+// Mixins para reutilizar codigo jeje
 @mixin button-base {
   padding: 8px 16px;
   border: none;
@@ -80,7 +80,7 @@ $text-black: #1f2937;       // Negro para texto en badges
 // Header
 .header {
   padding: 24px;
-  background-color: $white;
+  background-color: #b7b9c2;
   border-bottom: 1px solid $medium-gray;
   
   h2 {

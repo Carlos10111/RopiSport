@@ -35,7 +35,7 @@
           <tr *ngFor="let pago of pagos">
             <td>{{ pago.nombreSocia }}</td>
             <td class="amount">{{ pago.monto | currency:'USD':'symbol':'1.2-2' }}</td>
-            <td>{{ pago.fechaPago }}</td> <!--| date:'dd/MM/yyyy HH:mm'-->
+            <td>{{ pago.fechaPago | date:'dd/MM/yyyy HH:mm'}}</td> <!---->
             <td>{{ pago.concepto || '-' }}</td>
             <td>
               <span class="badge badge-metodo" [ngClass]="'badge-' + pago.metodoPago.toLowerCase()">
@@ -261,7 +261,7 @@
             <tr *ngFor="let pago of resultadosBusqueda">
               <td>{{ pago.nombreSocia }}</td>
               <td>{{ pago.monto | currency:'USD':'symbol':'1.2-2' }}</td>
-              <td>{{ pago.fechaPago }}</td><!--| date:'dd/MM/yyyy HH:mm'-->
+              <td>{{ pago.fechaPago | date:'dd/MM/yyyy HH:mm'}}</td><!--| date:'dd/MM/yyyy HH:mm'-->
               <td>
                 <span class="badge" [ngClass]="pago.confirmado ? 'badge-confirmed' : 'badge-pending'">
                   {{ pago.confirmado ? 'Confirmado' : 'Pendiente' }}
@@ -322,7 +322,7 @@
             <tr *ngFor="let pago of resultadosBusqueda">
               <td>{{ pago.nombreSocia }}</td>
               <td>{{ pago.monto | currency:'USD':'symbol':'1.2-2' }}</td>
-              <td>{{ pago.fechaPago }}</td> <!--| date:'dd/MM/yyyy HH:mm'-->
+              <td>{{ pago.fechaPago | date:'dd/MM/yyyy HH:mm'}}</td> <!--| date:'dd/MM/yyyy HH:mm'-->
               <td>
                 <span class="badge" [ngClass]="pago.confirmado ? 'badge-confirmed' : 'badge-pending'">
                   {{ pago.confirmado ? 'Confirmado' : 'Pendiente' }}
@@ -515,7 +515,7 @@
         </div>
         <div class="info-row">
           <span class="label">Fecha del Pago:</span>
-          <span class="value">{{ pagoActual?.fechaPago }}</span> <!--| date:'dd/MM/yyyy HH:mm'-->
+          <span class="value">{{ pagoActual?.fechaPago | date:'dd/MM/yyyy HH:mm'}}</span> <!--| date:'dd/MM/yyyy HH:mm'-->
         </div>
         <div class="info-row">
           <span class="label">Estado:</span>
@@ -540,7 +540,7 @@
             <!-- Campos correctos del modelo PagoDetalle -->
             <p><strong>Concepto del Detalle:</strong> {{ detalle.concepto || '-' }}</p>
             <p><strong>Monto del Detalle:</strong> {{ detalle.monto | currency:'USD':'symbol':'1.2-2' }}</p>
-            <p><strong>Fecha del Detalle:</strong> {{ detalle.fechaDetalle }}</p> <!--| date:'dd/MM/yyyy HH:mm'-->
+            <p><strong>Fecha del Detalle:</strong> {{ detalle.fechaDetalle | date:'dd/MM/yyyy HH:mm'}}</p> <!--| date:'dd/MM/yyyy HH:mm'-->
             <p *ngIf="detalle.notas"><strong>Notas:</strong> {{ detalle.notas }}</p>
             <p *ngIf="!detalle.notas"><strong>Notas:</strong> -</p>
           </div>

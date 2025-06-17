@@ -6,11 +6,11 @@ export interface Pago {
   sociaId: number;
   nombreSocia: string;
   monto: number;
-  fechaPago: string; // o date
+  fechaPago: Date | string; // o date
   concepto: string;
   metodoPago: MetodoPago;
   confirmado: boolean;
   detalles: PagoDetalle [];
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date | string;
+  updatedAt: Date | string;
 }

@@ -339,5 +339,27 @@ export class UsuariosComponent implements OnInit {
     this.error = '';
     this.success = '';
   }
-  
+
+  // Método para convertir arrays de fecha a Date
+convertirFecha(fechaArray: any): Date | null {
+  if (!fechaArray) return null;
+ 
+  // Si ya es un Date, devolverlo tal como está
+  if (fechaArray instanceof Date) return fechaArray;
+ 
+  // Si es un string, convertirlo a Date
+  if (typeof fechaArray === 'string') {
+    return new Date(fechaArray);
+  }
+ 
+  // Si es un array [año, mes, día, hora, minuto, segundo]
+  if (Array.isArray(fechaArray) && fechaArray.length >= 3) {
+    const [year, month, day, hour = 0, minute = 0, second = 0] = fechaArray;
+    // Restar 1 al mes porque JavaScript usa meses 0-11
+    return new Date(year, month - 1, day, hour, minute, second);
+  }
+ 
+  return null;
+}
+
 }

@@ -1,1 +1,473 @@
-<p>empresa-list works!</p>
+<div class="container">
+    <div class="main-panel">
+      <div class="header">
+        <h2>Empresas</h2>
+        <div class="action-bar">
+          <div class="search-container">
+            <input type="text" class="search-input" placeholder="Busca empresa por nombre, CIF o email....."
+              (input)="onSearch($event)">
+          </div>
+          <div class="header-actions">
+            <button class="btn-edit" (click)="abrirModalBuscarParaModificar()">
+              <i class="fas fa-edit"></i> Modificar
+            </button>
+            <button class="btn-delete" (click)="abrirModalBuscarParaEliminar()">
+              <i class="fas fa-trash"></i> Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+  
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Nombre Negocio</th>
+              <th>CIF</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Categoría</th>
+              <th>Dirección</th>
+              <th>Web</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let empresa of empresas">
+              <td>{{ empresa.nombreNegocio }}</td>
+              <td>{{ empresa.cif }}</td>
+              <td>{{ empresa.emailNegocio }}</td>
+              <td>{{ empresa.telefonoNegocio }}</td>
+              <td>{{ empresa.nombreCategoria || '-' }}</td>
+              <td>{{ empresa.direccion }}</td>
+              <td>
+                <a *ngIf="empresa.web" [href]="empresa.web" target="_blank" class="btn-details">
+                  <i class="fas fa-external-link-alt"></i>
+                </a>
+                <span *ngIf="!empresa.web">-</span>
+              </td>
+            </tr>
+  
+            <!-- Mostrar mensaje si no hay resultados -->
+            <tr *ngIf="empresas.length === 0 && !loading">
+              <td colspan="7" class="no-results">No se encontraron empresas</td>
+            </tr>
+  
+            <!-- Loader mientras se cargan los datos -->
+            <tr *ngIf="loading">
+              <td colspan="7" class="loading-cell">
+                <div class="spinner"></div>
+                <span>Cargando...</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <!-- Paginación -->
+      <div class="pagination-container" *ngIf="totalPages > 1">
+        <button class="btn-page" [disabled]="currentPage === 0" (click)="onPageChange(currentPage - 1)">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+  
+        <span class="page-info">
+          Página {{ currentPage + 1 }} de {{ totalPages }}
+        </span>
+  
+        <button class="btn-page" [disabled]="currentPage === totalPages - 1" (click)="onPageChange(currentPage + 1)">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+  
+      <!-- Botones de acción -->
+      <div class="footer">
+        <button class="btn-primary" (click)="abrirModalNuevo()">
+          <i class="fas fa-plus"></i> Crear Empresa
+        </button>
+      </div>
+    </div>
+  
+    <!-- Alerta de error -->
+    <div class="alert alert-danger" *ngIf="error">
+      {{ error }}
+      <button class="btn-close" (click)="error = ''">×</button>
+    </div>
+  </div>
+  
+  <!-- MODALES -->
+  
+  <!-- Modal Nueva Empresa -->
+  <div class="modal-overlay" *ngIf="modalActivo === 'nuevo'">
+    <div class="modal-container modal-large">
+      <div class="modal-header">
+        <h3>Nueva Empresa</h3>
+        <button class="btn-close" (click)="cerrarModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form #nuevaEmpresaForm="ngForm" (ngSubmit)="guardarNuevaEmpresa()">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="sociaId">Socia *</label>
+              <select id="sociaId" name="sociaId" [(ngModel)]="empresaActual.sociaId" required class="form-control" [class.is-invalid]="!empresaActual.sociaId">
+                <option value="">Seleccione una socia</option>
+                <option *ngFor="let socia of socias" [value]="socia.id">{{ socia.nombre }} {{ socia.apellidos }}</option>
+              </select>
+            </div>
+  
+            <div class="form-group">
+              <label for="nombreNegocio">Nombre del Negocio *</label>
+              <input type="text" id="nombreNegocio" name="nombreNegocio" [(ngModel)]="empresaActual.nombreNegocio" required
+                class="form-control" placeholder="Nombre del negocio">
+            </div>
+          </div>
+  
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cif">CIF *</label>
+              <input type="text" id="cif" name="cif" [(ngModel)]="empresaActual.cif" required
+                class="form-control" placeholder="CIF de la empresa">
+            </div>
+  
+            <div class="form-group">
+              <label for="categoriaId">Categoría</label>
+              <select id="categoriaId" name="categoriaId" [(ngModel)]="empresaActual.categoriaId" class="form-control">
+                <option value="">Seleccione una categoría</option>
+                <option *ngFor="let categoria of categorias" [value]="categoria.id">{{ categoria.nombre }}</option>
+              </select>
+            </div>
+          </div>
+  
+          <div class="form-group">
+            <label for="descripcionNegocio">Descripción del Negocio</label>
+            <textarea id="descripcionNegocio" name="descripcionNegocio" [(ngModel)]="empresaActual.descripcionNegocio"
+              class="form-control" rows="3" placeholder="Descripción del negocio"></textarea>
+          </div>
+  
+          <div class="form-row">
+            <div class="form-group">
+              <label for="emailNegocio">Email del Negocio</label>
+              <input type="email" id="emailNegocio" name="emailNegocio" [(ngModel)]="empresaActual.emailNegocio"
+                class="form-control" placeholder="email@empresa.com">
+            </div>
+  
+            <div class="form-group">
+              <label for="telefonoNegocio">Teléfono del Negocio</label>
+              <input type="tel" id="telefonoNegocio" name="telefonoNegocio" [(ngModel)]="empresaActual.telefonoNegocio"
+                class="form-control" placeholder="Teléfono">
+            </div>
+          </div>
+  
+          <div class="form-group">
+            <label for="direccion">Dirección</label>
+            <input type="text" id="direccion" name="direccion" [(ngModel)]="empresaActual.direccion"
+              class="form-control" placeholder="Dirección completa">
+          </div>
+  
+          <div class="form-group">
+            <label for="epigrafe">Epígrafe</label>
+            <input type="text" id="epigrafe" name="epigrafe" [(ngModel)]="empresaActual.epigrafe"
+              class="form-control" placeholder="Epígrafe">
+          </div>
+  
+          <div class="form-row">
+            <div class="form-group">
+              <label for="web">Página Web</label>
+              <input type="url" id="web" name="web" [(ngModel)]="empresaActual.web"
+                class="form-control" placeholder="https://www.empresa.com">
+            </div>
+  
+            <div class="form-group">
+              <label for="instagram">Instagram</label>
+              <input type="text" id="instagram" name="instagram" [(ngModel)]="empresaActual.instagram"
+                class="form-control" placeholder="@usuario_instagram">
+            </div>
+          </div>
+  
+          <div class="form-row">
+            <div class="form-group">
+              <label for="facebook">Facebook</label>
+              <input type="text" id="facebook" name="facebook" [(ngModel)]="empresaActual.facebook"
+                class="form-control" placeholder="Facebook">
+            </div>
+  
+            <div class="form-group">
+              <label for="linkedin">LinkedIn</label>
+              <input type="text" id="linkedin" name="linkedin" [(ngModel)]="empresaActual.linkedin"
+                class="form-control" placeholder="LinkedIn">
+            </div>
+          </div>
+  
+          <div class="form-group">
+            <label for="otrasRedes">Otras Redes Sociales</label>
+            <textarea id="otrasRedes" name="otrasRedes" [(ngModel)]="empresaActual.otrasRedes"
+              class="form-control" rows="2" placeholder="Otras redes sociales"></textarea>
+          </div>
+  
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+            <button type="submit" class="btn-primary" [disabled]="!nuevaEmpresaForm.valid || guardando">
+              <div class="spinner" *ngIf="guardando"></div>
+              Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Buscar para Modificar -->
+  <div class="modal-overlay" *ngIf="modalActivo === 'buscarModificar'">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>Buscar Empresa para Modificar</h3>
+        <button class="btn-close" (click)="cerrarModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="buscarEmpresa"><b>Filtrar por:</b> nombre del negocio, CIF, email o teléfono.</label>
+          <input type="text" id="buscarEmpresa" class="form-control" [(ngModel)]="terminoBusqueda" (input)="buscarEmpresas()"
+            placeholder="Buscar...">
+        </div>
+  
+        <div class="results-container">
+          <div class="loading-indicator" *ngIf="buscando">
+            <div class="spinner"></div>
+            <span>Buscando...</span>
+          </div>
+  
+          <table class="table results-table" *ngIf="resultadosBusqueda.length > 0">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>CIF</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let empresa of resultadosBusqueda">
+                <td>{{ empresa.nombreNegocio }}</td>
+                <td>{{ empresa.cif }}</td>
+                <td>{{ empresa.emailNegocio }}</td>
+                <td>{{ empresa.telefonoNegocio }}</td>
+                <td>
+                  <button class="btn-edit" (click)="seleccionarEmpresaParaEditar(empresa)">
+                    <i class="fas fa-edit"></i> Modificar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+  
+          <div class="no-results-message" *ngIf="resultadosBusqueda.length === 0 && terminoBusqueda && !buscando">
+            No se encontraron empresas con ese criterio de búsqueda
+          </div>
+        </div>
+  
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Buscar para Eliminar -->
+  <div class="modal-overlay" *ngIf="modalActivo === 'buscarEliminar'">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>Buscar Empresa para Eliminar</h3>
+        <button class="btn-close" (click)="cerrarModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="buscarEmpresaEliminar"><b>Filtrar por:</b> nombre del negocio, CIF, email o teléfono.</label>
+          <input type="text" id="buscarEmpresaEliminar" class="form-control" [(ngModel)]="terminoBusqueda"
+            (input)="buscarEmpresas()" placeholder="Buscar...">
+        </div>
+  
+        <div class="results-container">
+          <div class="loading-indicator" *ngIf="buscando">
+            <div class="spinner"></div>
+            <span>Buscando...</span>
+          </div>
+  
+          <table class="table results-table" *ngIf="resultadosBusqueda.length > 0">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>CIF</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let empresa of resultadosBusqueda">
+                <td>{{ empresa.nombreNegocio }}</td>
+                <td>{{ empresa.cif }}</td>
+                <td>{{ empresa.emailNegocio }}</td>
+                <td>{{ empresa.telefonoNegocio }}</td>
+                <td>
+                  <button class="btn-delete" (click)="seleccionarEmpresaParaEliminar(empresa)">
+                    <i class="fas fa-trash"></i> Eliminar
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+  
+          <div class="no-results-message" *ngIf="resultadosBusqueda.length === 0 && terminoBusqueda && !buscando">
+            No se encontraron empresas con ese criterio de búsqueda
+          </div>
+        </div>
+  
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Editar Empresa -->
+  <div class="modal-overlay" *ngIf="modalActivo === 'editar'">
+    <div class="modal-container modal-large">
+      <div class="modal-header">
+        <h3>Modificar Empresa</h3>
+        <button class="btn-close" (click)="cerrarModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form #editarEmpresaForm="ngForm" (ngSubmit)="guardarEdicionEmpresa()">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit_sociaId">Socia *</label>
+              <select id="edit_sociaId" name="sociaId" [(ngModel)]="empresaActual.sociaId" required class="form-control" [class.is-invalid]="!empresaActual.sociaId">
+                <option value="">Seleccione una socia</option>
+                <option *ngFor="let socia of socias" [value]="socia.id">{{ socia.nombre }} {{ socia.apellidos }}</option>
+              </select>
+            </div>
+  
+            <div class="form-group">
+              <label for="edit_nombreNegocio">Nombre del Negocio *</label>
+              <input type="text" id="edit_nombreNegocio" name="nombreNegocio" [(ngModel)]="empresaActual.nombreNegocio" required
+                class="form-control">
+            </div>
+          </div>
+  
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit_cif">CIF *</label>
+              <input type="text" id="edit_cif" name="cif" [(ngModel)]="empresaActual.cif" required
+                class="form-control">
+            </div>
+  
+            <div class="form-group">
+              <label for="edit_categoriaId">Categoría</label>
+              <select id="edit_categoriaId" name="categoriaId" [(ngModel)]="empresaActual.categoriaId" class="form-control">
+                <option value="">Seleccione una categoría</option>
+                <option *ngFor="let categoria of categorias" [value]="categoria.id">{{ categoria.nombre }}</option>
+              </select>
+            </div>
+          </div>
+  
+          <div class="form-group">
+            <label for="edit_descripcionNegocio">Descripción del Negocio</label>
+            <textarea id="edit_descripcionNegocio" name="descripcionNegocio" [(ngModel)]="empresaActual.descripcionNegocio"
+              class="form-control" rows="3"></textarea>
+          </div>
+  
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit_emailNegocio">Email del Negocio</label>
+              <input type="email" id="edit_emailNegocio" name="emailNegocio" [(ngModel)]="empresaActual.emailNegocio"
+                class="form-control">
+            </div>
+  
+            <div class="form-group">
+              <label for="edit_telefonoNegocio">Teléfono del Negocio</label>
+              <input type="tel" id="edit_telefonoNegocio" name="telefonoNegocio" [(ngModel)]="empresaActual.telefonoNegocio"
+                class="form-control">
+            </div>
+          </div>
+  
+          <div class="form-group">
+            <label for="edit_direccion">Dirección</label>
+            <input type="text" id="edit_direccion" name="direccion" [(ngModel)]="empresaActual.direccion"
+              class="form-control">
+          </div>
+  
+          <div class="form-group">
+            <label for="edit_epigrafe">Epígrafe</label>
+            <input type="text" id="edit_epigrafe" name="epigrafe" [(ngModel)]="empresaActual.epigrafe"
+              class="form-control">
+          </div>
+  
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit_web">Página Web</label>
+              <input type="url" id="edit_web" name="web" [(ngModel)]="empresaActual.web"
+                class="form-control">
+            </div>
+  
+            <div class="form-group">
+              <label for="edit_instagram">Instagram</label>
+              <input type="text" id="edit_instagram" name="instagram" [(ngModel)]="empresaActual.instagram"
+                class="form-control">
+            </div>
+          </div>
+  
+          <div class="form-row">
+            <div class="form-group">
+              <label for="edit_facebook">Facebook</label>
+              <input type="text" id="edit_facebook" name="facebook" [(ngModel)]="empresaActual.facebook"
+                class="form-control">
+            </div>
+  
+            <div class="form-group">
+              <label for="edit_linkedin">LinkedIn</label>
+              <input type="text" id="edit_linkedin" name="linkedin" [(ngModel)]="empresaActual.linkedin"
+                class="form-control">
+            </div>
+          </div>
+  
+          <div class="form-group">
+            <label for="edit_otrasRedes">Otras Redes Sociales</label>
+            <textarea id="edit_otrasRedes" name="otrasRedes" [(ngModel)]="empresaActual.otrasRedes"
+              class="form-control" rows="2"></textarea>
+          </div>
+  
+          <div class="modal-footer">
+            <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+            <button type="submit" class="btn-primary" [disabled]="!editarEmpresaForm.valid || guardando">
+              <div class="spinner" *ngIf="guardando"></div>
+              Guardar Cambios
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal Eliminar Empresa -->
+  <div class="modal-overlay" *ngIf="modalActivo === 'eliminar'">
+    <div class="modal-container delete-modal">
+      <div class="modal-header">
+        <h3>Eliminar Empresa</h3>
+        <button class="btn-close" (click)="cerrarModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="confirm-message">
+          ¿Está seguro de que desea eliminar la empresa <strong>{{ empresaActual?.nombreNegocio }}</strong>
+          con CIF <strong>{{ empresaActual?.cif }}</strong>?
+        </p>
+        <p class="warning-message">Esta acción no se puede deshacer.</p>
+  
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
+          <button type="button" class="btn-danger" (click)="confirmarEliminar()" [disabled]="guardando">
+            <div class="spinner" *ngIf="guardando"></div>
+            Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>

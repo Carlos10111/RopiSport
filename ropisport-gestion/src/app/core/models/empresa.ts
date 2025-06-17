@@ -15,7 +15,7 @@ export interface Empresa {
     facebook: string;
     linkedin: string;
     otrasRedes: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: Date | string |null;
+    updatedAt: Date | string |null;
   }
   

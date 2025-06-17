@@ -100,11 +100,9 @@ export class PagoListComponent implements OnInit, OnDestroy {
         })
       ).subscribe((results: PaginatedResponse<Pago> | never[]) => {
         if (Array.isArray(results)) {
-          // Si viene un array vacío, asigna array vacío
           this.resultadosBusqueda = results;
         } else {
-          // Si viene paginación, usa content
-          this.resultadosBusqueda = results.content;
+          this.resultadosBusqueda = this.procesarPagos(results.content);
         }
       })
     );
@@ -124,13 +122,13 @@ export class PagoListComponent implements OnInit, OnDestroy {
       sociaId: 0,
       nombreSocia: '',
       monto: 0,
-      fechaPago: '',
+      fechaPago: new Date(),
       concepto: '',
       metodoPago: MetodoPago.EFECTIVO,
       confirmado: false,
       detalles: [],
-      createdAt: '',
-      updatedAt: ''
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
   }
   
@@ -140,11 +138,105 @@ export class PagoListComponent implements OnInit, OnDestroy {
       pagoId: 0,
       concepto: '',
       monto: 0,
-      fechaDetalle: '',
+      fechaDetalle: new Date(),
       notas: '',
-      createdAt: '',
-      updatedAt: ''
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
+  }
+
+  /**
+   * Convierte LocalDateTime del backend a Date
+   */
+  private parseLocalDateTime(dateValue: any): Date {
+    if (!dateValue) return new Date();
+    
+    // Si ya es una fecha válida
+    if (dateValue instanceof Date) return dateValue;
+    
+    // Si es string ISO
+    if (typeof dateValue === 'string' && (dateValue.includes('T') || dateValue.includes('-'))) {
+      return new Date(dateValue);
+    }
+    
+    // Si viene como array [year, month, day, hour, minute, second, nano]
+    if (Array.isArray(dateValue) && dateValue.length >= 3) {
+      const [year, month, day, hour = 0, minute = 0, second = 0] = dateValue;
+      // JavaScript months are 0-indexed, LocalDateTime months are 1-indexed
+      return new Date(year, month - 1, day, hour, minute, second);
+    }
+    
+    // Si es string que parece un array
+    if (typeof dateValue === 'string' && dateValue.includes('[')) {
+      try {
+        const arrayStr = dateValue.replace(/[\[\]]/g, '');
+        const parts = arrayStr.split(',').map(n => parseInt(n.trim()));
+        if (parts.length >= 3) {
+          const [year, month, day, hour = 0, minute = 0, second = 0] = parts;
+          return new Date(year, month - 1, day, hour, minute, second);
+        }
+      } catch (error) {
+        console.warn('Error parsing date array string:', dateValue, error);
+      }
+    }
+    
+    // Fallback: intentar crear fecha directamente
+    try {
+      return new Date(dateValue);
+    } catch (error) {
+      console.warn('Could not parse date:', dateValue, error);
+      return new Date();
+    }
+  }
+
+  /**
+   * Convierte Date a formato compatible con input datetime-local
+   */
+  private formatDateForInput(date: Date): string {
+    if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
+      return new Date().toISOString().slice(0, 16);
+    }
+    return date.toISOString().slice(0, 16);
+  }
+
+  /**
+   * Convierte Date a formato LocalDateTime para el backend
+   */
+  private formatDateForBackend(date: Date | string): string {
+    let parsedDate: Date;
+    
+    if (typeof date === 'string') {
+      parsedDate = new Date(date);
+    } else if (date instanceof Date) {
+      parsedDate = date;
+    } else {
+      parsedDate = new Date();
+    }
+    
+    if (isNaN(parsedDate.getTime())) {
+      parsedDate = new Date();
+    }
+    
+    // Formato LocalDateTime: YYYY-MM-DDTHH:mm:ss
+    return parsedDate.toISOString().slice(0, 19);
+  }
+  
+  /**
+   * Procesa los pagos convirtiendo las fechas del backend
+   */
+  private procesarPagos(pagos: any[]): Pago[] {
+    return pagos.map(pago => ({
+      ...pago,
+      fechaPago: this.parseLocalDateTime(pago.fechaPago),
+      createdAt: this.parseLocalDateTime(pago.createdAt),
+      updatedAt: this.parseLocalDateTime(pago.updatedAt),
+      detalles: pago.detalles ? pago.detalles.map((detalle: any) => ({
+        ...detalle,
+        fechaDetalle: this.parseLocalDateTime(detalle.fechaDetalle),
+        createdAt: this.parseLocalDateTime(detalle.createdAt),
+        updatedAt: this.parseLocalDateTime(detalle.updatedAt)
+      })) : []
+    }));
   }
   
   loadPagos(): void {
@@ -155,12 +247,7 @@ export class PagoListComponent implements OnInit, OnDestroy {
       this.subscription.add(
         this.pagoService.searchPagos(this.searchText, this.currentPage, this.pageSize).subscribe({
           next: (response: PaginatedResponse<Pago>) => {
-            const pagosConFechaProcesada = response.content.map(p => ({
-              ...p,
-              fecha: this.procesarFechaDelBackend(p.fechaPago)
-            }));
-    
-            this.pagos = this.procesarPagos(pagosConFechaProcesada);
+            this.pagos = this.procesarPagos(response.content);
             this.totalElements = response.totalElements;
             this.totalPages = response.totalPages;
             this.loading = false;
@@ -171,20 +258,13 @@ export class PagoListComponent implements OnInit, OnDestroy {
         })
       );
     } else {
-      // Modo paginado normal
       this.subscription.add(
         this.pagoService.getAllPagos(this.currentPage, this.pageSize, 'fechaPago').subscribe({
           next: (response: PaginatedResponse<Pago>) => {
             console.log('Respuesta del backend completa:', response);
   
             if (response && response.content && Array.isArray(response.content)) {
-              // Procesar fechas aquí
-              const pagosConFechaProcesada = response.content.map(p => ({
-                ...p,
-                fecha: this.procesarFechaDelBackend(p.fechaPago)
-              }));
-  
-              this.pagos = this.procesarPagos(pagosConFechaProcesada);
+              this.pagos = this.procesarPagos(response.content);
               this.totalElements = response.totalElements || 0;
               this.totalPages = response.totalPages || 0;
             } else {
@@ -202,73 +282,6 @@ export class PagoListComponent implements OnInit, OnDestroy {
           }
         })
       );
-    }
-  }
-  
-
-  // procesar fechas del backend
-  private procesarPagos(pagos: Pago[]): Pago[] {
-    return pagos.map(pago => ({
-      ...pago,
-      fechaPago: this.procesarFechaDelBackend(pago.fechaPago),
-      detalles: pago.detalles ? pago.detalles.map(detalle => ({
-        ...detalle,
-        fechaDetalle: this.procesarFechaDelBackend(detalle.fechaDetalle)
-      })) : []
-    }));
-  }
-
-  private procesarFechaDelBackend(fecha: string): string {
-    if (!fecha) return '';
-    
-    try {
-      // Si viene como array [2025,5,30,23,27], convertirlo
-      if (fecha.includes(',')) {
-        const parts = fecha.replace(/[\[\]]/g, '').split(',').map(n => parseInt(n.trim()));
-        if (parts.length >= 5) {
-          // Los meses en JavaScript van de 0-11, pero LocalDateTime va de 1-12
-          const date = new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4], parts[5] || 0);
-          return date.toISOString();
-        }
-      }
-      
-      // Si es una fecha ISO válida, devolverla como está
-      if (fecha.includes('T') || fecha.includes('-')) {
-        return new Date(fecha).toISOString();
-      }
-      
-      return fecha;
-    } catch (error) {
-      console.error('Error procesando fecha:', fecha, error);
-      return '';
-    }
-  }
-
-  // CORRECCIÓN PROBLEMA 3: Convertir fecha para enviar al backend (formato LocalDateTime)
-  private convertirFechaParaBackend(fechaHtml: string): string {
-    if (!fechaHtml) return '';
-    
-    try {
-      const date = new Date(fechaHtml);
-      // Formato: YYYY-MM-DDTHH:MM:SS (sin la Z del final para LocalDateTime)
-      return date.toISOString().slice(0, 19);
-    } catch (error) {
-      console.error('Error convirtiendo fecha para backend:', fechaHtml, error);
-      return fechaHtml;
-    }
-  }
-
-  // CORRECCIÓN PROBLEMA 3: Convertir fecha del backend para el input datetime-local
-  private convertirFechaParaInput(fecha: string): string {
-    if (!fecha) return '';
-    
-    try {
-      const date = new Date(fecha);
-      // Formato para datetime-local: YYYY-MM-DDTHH:MM
-      return date.toISOString().slice(0, 16);
-    } catch (error) {
-      console.error('Error convirtiendo fecha para input:', fecha, error);
-      return '';
     }
   }
   
@@ -324,9 +337,6 @@ export class PagoListComponent implements OnInit, OnDestroy {
   // FUNCIONES PARA MODALES
   abrirModalNuevo(): void {
     this.pagoActual = this.inicializarPago();
-    // Establecer fecha actual por defecto en formato datetime-local
-    const now = new Date();
-    this.pagoActual.fechaPago = now.toISOString().slice(0, 16);
     this.modalActivo = 'nuevo';
   }
   
@@ -347,18 +357,6 @@ export class PagoListComponent implements OnInit, OnDestroy {
       ...pago,
       detalles: pago.detalles ? [...pago.detalles] : []
     };
-    
-    // CORRECCIÓN PROBLEMA 3: Convertir fecha para el input
-    this.pagoActual.fechaPago = this.convertirFechaParaInput(pago.fechaPago);
-    
-    // Convertir fechas de detalles también
-    if (this.pagoActual.detalles) {
-      this.pagoActual.detalles = this.pagoActual.detalles.map(detalle => ({
-        ...detalle,
-        fechaDetalle: this.convertirFechaParaInput(detalle.fechaDetalle)
-      }));
-    }
-    
     this.modalActivo = 'editar';
   }
   
@@ -392,9 +390,6 @@ export class PagoListComponent implements OnInit, OnDestroy {
       this.pagoActual.detalles = [];
     }
     const nuevoDetalle = this.inicializarDetalle();
-    // Establecer fecha actual por defecto
-    const now = new Date();
-    nuevoDetalle.fechaDetalle = now.toISOString().slice(0, 16);
     this.pagoActual.detalles.push(nuevoDetalle);
   }
   
@@ -409,14 +404,14 @@ export class PagoListComponent implements OnInit, OnDestroy {
       pagoId: pago.id,
       concepto: detalle.concepto || '',
       monto: detalle.monto || 0,
-      fechaDetalle: this.convertirFechaParaBackend(detalle.fechaDetalle), // CORRECCIÓN PROBLEMA 3
+      fechaDetalle: this.formatDateForBackend(detalle.fechaDetalle),
       notas: detalle.notas || ''
     })) : [];
     
     return {
       sociaId: pago.sociaId,
       monto: pago.monto,
-      fechaPago: this.convertirFechaParaBackend(pago.fechaPago), // CORRECCIÓN PROBLEMA 3
+      fechaPago: this.formatDateForBackend(pago.fechaPago),
       concepto: pago.concepto || '',
       metodoPago: pago.metodoPago.toString(),
       confirmado: pago.confirmado,
@@ -506,5 +501,25 @@ export class PagoListComponent implements OnInit, OnDestroy {
       case 'DOMICILIACION': return 'Domiciliación';
       default: return metodo;
     }
+  }
+
+  // Métodos helper para el template
+  getFechaFormateada(fecha: Date | string): string {
+    if (!fecha) return '-';
+    const dateObj = fecha instanceof Date ? fecha : new Date(fecha);
+    if (isNaN(dateObj.getTime())) return '-';
+    return dateObj.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  getFechaParaInput(fecha: Date | string): string {
+    if (!fecha) return '';
+    const dateObj = fecha instanceof Date ? fecha : new Date(fecha);
+    return this.formatDateForInput(dateObj);
   }
 }

@@ -7,9 +7,9 @@ export interface Usuario {
     rolId: number;
     nombreRol: string;
     activo: boolean;
-    fechaCreacion: string;
+    fechaCreacion: Date | string;
     ultimoAcceso: string;
-    createdAt: string;
-    updatedAt: string;
+    createdAt: Date | string;
+    updatedAt: Date | string;
   }
   
