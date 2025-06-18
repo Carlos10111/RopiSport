@@ -7,12 +7,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ropisport.gestion.model.dto.response.AlertasDashboardResponse;
 import com.ropisport.gestion.model.dto.response.DashboardMetricsResponse;
 import com.ropisport.gestion.model.dto.response.IngresoMensualResponse;
+import com.ropisport.gestion.model.entity.Empresa;
+import com.ropisport.gestion.model.entity.Socia;
 import com.ropisport.gestion.repository.EmpresaRepository;
 import com.ropisport.gestion.repository.PagoRepository;
 import com.ropisport.gestion.repository.SociaRepository;
@@ -40,12 +45,11 @@ public class DashboardServiceImpl implements DashboardService {
         LocalDateTime finMesAnterior = inicioMes.minusDays(1).withHour(23).withMinute(59).withSecond(59);
 
         try {
-            // Métricas de socias
+            // ✅ MÉTRICAS EXISTENTES - mantener
             Long totalSocias = sociaRepository.count();
             Long sociasActivas = sociaRepository.countActiveSocias();
             Long nuevasSociasMes = sociaRepository.countNuevasSociasMes(inicioMes);
 
-            // Métricas de empresas
             Long totalEmpresas = empresaRepository.count();
             Long nuevasEmpresasMes = empresaRepository.countNuevasEmpresasMes(inicioMes);
 
@@ -53,19 +57,47 @@ public class DashboardServiceImpl implements DashboardService {
             BigDecimal ingresosMes = pagoRepository.sumIngresosByFechaBetween(inicioMes, finMes);
             BigDecimal ingresosAnterior = pagoRepository.sumIngresosByFechaBetween(inicioMesAnterior, finMesAnterior);
             
-            // Asegurar valores no nulos
             ingresosMes = ingresosMes != null ? ingresosMes : BigDecimal.ZERO;
             ingresosAnterior = ingresosAnterior != null ? ingresosAnterior : BigDecimal.ZERO;
 
-            // Calcular porcentaje de crecimiento
             Double porcentajeCrecimiento = calcularPorcentajeCrecimiento(ingresosMes, ingresosAnterior);
 
             // Métricas de pagos
             Long totalPagos = pagoRepository.count();
-            Long pagosPendientes = pagoRepository.countPagosPendientes(ahora.plusDays(7)); // Próximos a vencer en 7 días
+            Long pagosPendientes = pagoRepository.countPagosPendientes(ahora.plusDays(7));
             Long pagosNoConfirmados = pagoRepository.countPagosNoConfirmados();
 
+            // ✅ NUEVAS MÉTRICAS MANY-TO-MANY
+            Long sociasConEmpresas = sociaRepository.countSociasConEmpresas();
+            Long sociasEmprendedoras = sociaRepository.countSociasEmprendedoras();
+            Long empresasColaborativas = empresaRepository.countEmpresasColaborativas();
+            Double promedioEmpresasPorSocia = sociaRepository.promedioEmpresasPorSocia();
+            Double promedioSociasPorEmpresa = empresaRepository.promedioSociasPorEmpresa();
+
+            // ✅ TOP RANKINGS
+            Pageable top5 = PageRequest.of(0, 5);
+            
+            Page<Socia> topSocias = sociaRepository.findSociasWithMostEmpresas(top5);
+            List<DashboardMetricsResponse.TopSociaDto> topSociasDto = topSocias.getContent().stream()
+                    .map(s -> new DashboardMetricsResponse.TopSociaDto(
+                        s.getId(), 
+                        s.getNombre(), 
+                        s.getApellidos(),
+                        s.getNombre() + " " + s.getApellidos(),
+                        s.getEmpresas().size()))
+                    .collect(Collectors.toList());
+
+            Page<Empresa> topEmpresas = empresaRepository.findEmpresasWithMostSocias(top5);
+            List<DashboardMetricsResponse.TopEmpresaDto> topEmpresasDto = topEmpresas.getContent().stream()
+                    .map(e -> new DashboardMetricsResponse.TopEmpresaDto(
+                        e.getId(), 
+                        e.getNombreNegocio(),
+                        e.getCategoria() != null ? e.getCategoria().getNombre() : "Sin categoría",
+                        e.getSocias().size()))
+                    .collect(Collectors.toList());
+
             return DashboardMetricsResponse.builder()
+                    // Métricas existentes
                     .totalSocias(totalSocias != null ? totalSocias : 0L)
                     .sociasActivas(sociasActivas != null ? sociasActivas : 0L)
                     .nuevasSociasMes(nuevasSociasMes != null ? nuevasSociasMes : 0L)
@@ -77,10 +109,17 @@ public class DashboardServiceImpl implements DashboardService {
                     .totalPagos(totalPagos != null ? totalPagos : 0L)
                     .pagosPendientes(pagosPendientes != null ? pagosPendientes : 0L)
                     .pagosNoConfirmados(pagosNoConfirmados != null ? pagosNoConfirmados : 0L)
+                    // ✅ Nuevas métricas
+                    .sociasConEmpresas(sociasConEmpresas != null ? sociasConEmpresas : 0L)
+                    .sociasEmprendedoras(sociasEmprendedoras != null ? sociasEmprendedoras : 0L)
+                    .empresasColaborativas(empresasColaborativas != null ? empresasColaborativas : 0L)
+                    .promedioEmpresasPorSocia(promedioEmpresasPorSocia != null ? promedioEmpresasPorSocia : 0.0)
+                    .promedioSociasPorEmpresa(promedioSociasPorEmpresa != null ? promedioSociasPorEmpresa : 0.0)
+                    .topSociasEmprendedoras(topSociasDto)
+                    .topEmpresasColaborativas(topEmpresasDto)
                     .build();
                     
         } catch (Exception e) {
-            // Log del error y devolver valores por defecto
             System.err.println("Error obteniendo métricas del dashboard: " + e.getMessage());
             e.printStackTrace();
             
@@ -90,10 +129,15 @@ public class DashboardServiceImpl implements DashboardService {
                     .ingresosMes(BigDecimal.ZERO).ingresosAnterior(BigDecimal.ZERO)
                     .porcentajeCrecimiento(0.0)
                     .totalPagos(0L).pagosPendientes(0L).pagosNoConfirmados(0L)
+                    // Valores por defecto para nuevas métricas
+                    .sociasConEmpresas(0L).sociasEmprendedoras(0L).empresasColaborativas(0L)
+                    .promedioEmpresasPorSocia(0.0).promedioSociasPorEmpresa(0.0)
+                    .topSociasEmprendedoras(List.of()).topEmpresasColaborativas(List.of())
                     .build();
         }
     }
 
+    // ✅ MANTENER MÉTODOS EXISTENTES
     @Override
     @Transactional(readOnly = true)
     public List<IngresoMensualResponse> getIngresosPorMeses(int meses) {
@@ -109,7 +153,7 @@ public class DashboardServiceImpl implements DashboardService {
         } catch (Exception e) {
             System.err.println("Error obteniendo ingresos mensuales: " + e.getMessage());
             e.printStackTrace();
-            return List.of(); // Lista vacía en caso de error
+            return List.of();
         }
     }
 
@@ -128,9 +172,9 @@ public class DashboardServiceImpl implements DashboardService {
             return AlertasDashboardResponse.builder()
                     .pagosPendientes(pagosPendientes != null ? pagosPendientes : 0L)
                     .sociasMorosas(sociasMorosas != null ? sociasMorosas : 0L)
-                    .renovacionesVencen(pagosVencidos != null ? pagosVencidos : 0L) // Usar pagos vencidos
+                    .renovacionesVencen(pagosVencidos != null ? pagosVencidos : 0L)
                     .pagosNoConfirmados(pagosNoConfirmados != null ? pagosNoConfirmados : 0L)
-                    .empresasSinActualizar(0L) // Por implementar si es necesario
+                    .empresasSinActualizar(0L)
                     .build();
                     
         } catch (Exception e) {
@@ -144,7 +188,7 @@ public class DashboardServiceImpl implements DashboardService {
         }
     }
     
-    // MÉTODOS AUXILIARES
+    // MÉTODOS AUXILIARES - mantener los existentes
     private Double calcularPorcentajeCrecimiento(BigDecimal actual, BigDecimal anterior) {
         if (anterior == null || anterior.compareTo(BigDecimal.ZERO) == 0) {
             return actual != null && actual.compareTo(BigDecimal.ZERO) > 0 ? 100.0 : 0.0;

@@ -1,5 +1,7 @@
 package com.ropisport.gestion.model.dto.response;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,12 +30,23 @@ public class SociaResponse {
     private String fechaBaja;
     private String observaciones;
     private CategoriaDto categoria;
-
+    
+    private List<EmpresaDto> empresas;
+    
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class CategoriaDto {
         private Integer id;
         private String nombre;
+    }
+    
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EmpresaDto {
+        private Integer id;
+        private String nombreNegocio;
+        private String descripcionNegocio;
     }
 }

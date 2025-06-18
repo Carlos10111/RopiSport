@@ -1,6 +1,7 @@
 package com.ropisport.gestion.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -74,7 +75,6 @@ public interface SociaRepository extends JpaRepository<Socia, Integer>, JpaSpeci
             @Param("categoriaId") Integer categoriaId,
             @Param("activa") Boolean activa,
             Pageable pageable);
- // Agregar al final de SociaRepository.java
     @Query("SELECT COUNT(s) FROM Socia s WHERE s.activa = true")
     Long countActiveSocias();
 
@@ -84,4 +84,26 @@ public interface SociaRepository extends JpaRepository<Socia, Integer>, JpaSpeci
     @Query("SELECT COUNT(s) FROM Socia s WHERE s.activa = true AND " +
            "NOT EXISTS (SELECT p FROM Pago p WHERE p.socia = s AND p.fechaPago >= :fechaInicio)")
     Long countSociasMorosas(@Param("fechaInicio") LocalDateTime fechaInicio);
+    
+
+ // Contar socias que tienen empresas
+ @Query("SELECT COUNT(s) FROM Socia s WHERE SIZE(s.empresas) > 0 AND s.activa = true")
+ Long countSociasConEmpresas();
+
+ // Contar socias emprendedoras (con múltiples empresas)
+ @Query("SELECT COUNT(s) FROM Socia s WHERE SIZE(s.empresas) > 1 AND s.activa = true")
+ Long countSociasEmprendedoras();
+
+ // Promedio de empresas por socia
+ @Query("SELECT AVG(SIZE(s.empresas)) FROM Socia s WHERE s.activa = true")
+ Double promedioEmpresasPorSocia();
+
+ // Top socias con más empresas
+ @Query("SELECT s FROM Socia s WHERE s.activa = true ORDER BY SIZE(s.empresas) DESC")
+ Page<Socia> findSociasWithMostEmpresas(Pageable pageable);
+
+ // Para estadísticas de distribución
+ @Query("SELECT SIZE(s.empresas) as cantidadEmpresas, COUNT(s) as cantidadSocias " +
+        "FROM Socia s WHERE s.activa = true GROUP BY SIZE(s.empresas) ORDER BY SIZE(s.empresas)")
+ List<Object[]> getDistribucionEmpresasPorSocia();
 }

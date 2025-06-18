@@ -216,7 +216,7 @@ public class ExcelExportServiceImpl implements ExcelExportService {
     private EmpresaExcelDto convertToEmpresaDto(Empresa e) {
         EmpresaExcelDto dto=new EmpresaExcelDto();
         dto.setId(e.getId());
-        dto.setNombreSocia(e.getSocia().getNombre()+" "+e.getSocia().getApellidos());
+        dto.setNombreSocia(((SociaExcelDto) e.getSocias()).getNombre()+" "+((SociaExcelDto) e.getSocias()).getApellidos());
         dto.setNombreNegocio(e.getNombreNegocio());
         dto.setNombreCategoria(e.getCategoria()!=null? e.getCategoria().getNombre():"");
         dto.setTelefonoNegocio(e.getTelefonoNegocio());
