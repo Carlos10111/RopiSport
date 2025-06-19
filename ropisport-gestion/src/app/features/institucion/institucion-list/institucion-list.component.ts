@@ -10,6 +10,8 @@ import { Institucion } from '../../../core/models/institucion';
 import { InstitucionDTO } from '../../../core/dtos/institucion-dto';
 import { PaginatedResponse } from '../../../core/models/paginated-response';
 import { TipoInstitucion } from '../../../core/models/tipo-institucion';
+import { TipoInstitucionDTO } from '../../../core/dtos/tipo-institucion-dto';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-institucion-list',
@@ -48,6 +50,10 @@ export class InstitucionListComponent implements OnInit, OnDestroy {
   // Tipos de institución para el select
   tiposInstitucion: TipoInstitucion[] = [];
   
+  mostrarFormularioTipo = false; mostrarEliminarTipo = false;
+  nuevoTipo: TipoInstitucionDTO = { nombre: '', descripcion: '' };
+  tipoAEliminarId: number | null = null;
+
   constructor(
     private institucionService: InstitucionService,
     private tipoInstitucionService: TipoInstitucionService
@@ -374,4 +380,87 @@ export class InstitucionListComponent implements OnInit, OnDestroy {
       })
     );
   }
+
+  crearNuevoTipoInstitucion(): void {
+    if (!this.nuevoTipo.nombre.trim()) return;
+  
+    this.tipoInstitucionService.createTipoInstitucion(this.nuevoTipo).subscribe({
+      next: (tipoCreado) => {
+        this.tiposInstitucion.push(tipoCreado);
+        this.institucionActual.tipoInstitucionId = tipoCreado.id;
+        this.nuevoTipo = { nombre: '', descripcion: '' };
+        this.mostrarFormularioTipo = false;
+        this.loadTiposInstitucion(); 
+      },
+      error: (err) => {
+        this.handleError('Error al crear tipo de institución', err);
+      }
+    });
+  }
+
+  eliminarTipoInstitucion() {
+    if (!this.tipoAEliminarId) return;
+  
+    this.tipoInstitucionService.deleteTipoInstitucion(this.tipoAEliminarId).subscribe({
+      next: () => {
+        this.tiposInstitucion = this.tiposInstitucion.filter(t => t.id !== this.tipoAEliminarId);
+        this.tipoAEliminarId = null;
+        this.mostrarEliminarTipo = false;
+        this.loadTiposInstitucion(); 
+      },
+      error: (err) => {
+        this.handleError('Error al eliminar tipo de institución', err);
+      }
+    });
+  }
+  
+    // Exportar tabla a Excel
+    exportarExcel(): void {
+      if (this.instituciones.length === 0) {
+        alert('No hay datos para exportar');
+        return;
+      }
+  
+      // Preparar los datos para Excel
+      const datosParaExcel = this.instituciones.map(institucion => ({
+        'ID': institucion.id || '',
+        'Nombre Institución': institucion.nombreInstitucion || '',
+        'Persona Contacto': institucion.personaContacto || '',
+        'Cargo': institucion.cargo || '',
+        'Teléfono': institucion.telefono || '',
+        'Email': institucion.email || '',
+        'Web': institucion.web || '',
+        'Tipo Institución': institucion.nombreTipoInstitucion || '',
+        'Observaciones': institucion.observaciones || '',
+        'Fecha Creación': this.getFechaFormateada(institucion.createdAt),
+        'Fecha Actualización': this.getFechaFormateada(institucion.updatedAt)
+      }));
+  
+      // Crear workbook y worksheet
+      const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(datosParaExcel);
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      
+      // Agregar worksheet al workbook
+      XLSX.utils.book_append_sheet(wb, ws, 'Instituciones');
+      
+      // Generar nombre del archivo con fecha actual
+      const fechaActual = new Date().toLocaleDateString('es-ES').replace(/\//g, '-');
+      const nombreArchivo = `instituciones_${fechaActual}.xlsx`;
+      
+      // Descargar archivo
+      XLSX.writeFile(wb, nombreArchivo);
+    }
+  
+    // Método auxiliar para formatear fechas
+    private getFechaFormateada(fecha: string | undefined): string {
+      if (!fecha) return '';
+      
+      try {
+        const fechaObj = new Date(fecha);
+        return fechaObj.toLocaleDateString('es-ES');
+      } catch (error) {
+        return '';
+      }
+    }
+
 }

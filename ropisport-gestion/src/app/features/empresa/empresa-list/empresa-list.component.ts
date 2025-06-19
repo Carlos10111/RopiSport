@@ -20,8 +20,8 @@ import { Categoria } from '../../../core/models/categoria';
   templateUrl: './empresa-list.component.html',
   styleUrls: ['./empresa-list.component.scss']
 })
-export class EmpresaComponent implements OnInit, OnDestroy {
-  empresas: Empresa[] = [];
+export class EmpresaComponent /*implements OnInit, OnDestroy^*/ {}
+/*  empresas: Empresa[] = [];
   loading = false;
   error = '';
 
@@ -118,7 +118,7 @@ export class EmpresaComponent implements OnInit, OnDestroy {
   inicializarEmpresa(): Empresa {
     return {
       id: 0,
-      sociaId: 0,
+      //sociaId: 0,
       nombreNegocio: '',
       descripcionNegocio: '',
       categoriaId: 0,
@@ -387,4 +387,4 @@ export class EmpresaComponent implements OnInit, OnDestroy {
     return categoria ? categoria.nombre : '';
   }
 }
-
+*/

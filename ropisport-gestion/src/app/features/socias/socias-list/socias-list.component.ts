@@ -7,6 +7,7 @@ import { debounceTime, distinctUntilChanged, switchMap, catchError, finalize } f
 import { SociaService } from '../../../core/services/socia/socia.service';
 import { Socia } from '../../../core/models/socia';
 import { PaginatedResponse } from '../../../core/models/paginated-response';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-socia-list',
@@ -185,18 +186,18 @@ export class SociaListComponent implements OnInit, OnDestroy {
     this.busquedaTerms.next(this.terminoBusqueda);
   }
   
-  // ✅ AÑADIR - Métodos para dar de baja y reactivar
+  // AÑADIR - Métodos para dar de baja y reactivar
   darDeBaja(socia: Socia): void {
     if (!socia.id) return;
     
     const observaciones = 'Dada de baja desde la gestión';
     this.sociaService.cambiarEstado(socia.id, false, observaciones).subscribe({
       next: () => {
-        console.log('✅ Socia dada de baja correctamente');
+        console.log('Socia dada de baja correctamente');
         this.loadSocias(); // Recargar la lista
       },
       error: (err) => {
-        console.error('❌ Error al dar de baja:', err);
+        console.error(' Error al dar de baja:', err);
         this.error = 'Error al dar de baja la socia';
       }
     });
@@ -208,11 +209,11 @@ export class SociaListComponent implements OnInit, OnDestroy {
     const observaciones = 'Reactivada desde la gestión';
     this.sociaService.cambiarEstado(socia.id, true, observaciones).subscribe({
       next: () => {
-        console.log('✅ Socia reactivada correctamente');
+        console.log('Socia reactivada correctamente');
         this.loadSocias(); // Recargar la lista
       },
       error: (err) => {
-        console.error('❌ Error al reactivar:', err);
+        console.error('Error al reactivar:', err);
         this.error = 'Error al reactivar la socia';
       }
     });
@@ -381,12 +382,12 @@ guardarEdicionSocia(): void {
     activa: this.sociaActual.activa,
     numeroSocia: this.sociaActual.numeroSocia,
     fechaInicio: this.formatDateForBackend(this.sociaActual.fechaInicio),
-    // ✅ AGREGAR: Incluir fechaBaja en el payload
+    // AGREGAR: Incluir fechaBaja en el payload
     fechaBaja: this.formatDateForBackend(this.sociaActual.fechaBaja),
     categoriaId: this.sociaActual.categoria?.id || null
   };
 
-  // ✅ MODIFICAR: No eliminar fechaBaja si es null (puede ser intencional)
+  // MODIFICAR: No eliminar fechaBaja si es null (puede ser intencional)
   Object.keys(payload).forEach(key => {
     if (payload[key] === undefined) { // Solo eliminar undefined, no null
       delete payload[key];
@@ -397,13 +398,13 @@ guardarEdicionSocia(): void {
 
   this.sociaService.updateSocia(this.sociaActual.id, payload).subscribe({
     next: (response) => {
-      console.log('✅ Socia actualizada correctamente');
+      console.log('Socia actualizada correctamente');
       this.loadSocias();
       this.cerrarModal();
       this.guardando = false;
     },
     error: (err) => {
-      console.error('❌ Error actualizando socia:', err);
+      console.error('Error actualizando socia:', err);
       this.guardando = false;
       this.error = 'Error al actualizar la socia: ' + (err.error?.message || 'Ocurrió un problema en el servidor');
     }
@@ -450,4 +451,61 @@ guardarEdicionSocia(): void {
       })
     );
   }
+
+  // Exportar tabla a Excel
+  exportarExcel(): void {
+    if (this.socias.length === 0) {
+      alert('No hay datos para exportar');
+      return;
+    }
+
+    // Preparar los datos para Excel
+    const datosParaExcel = this.socias.map(socia => ({
+      'Número Socia': socia.numeroSocia || '',
+      'Nombre': socia.nombre || '',
+      'Apellidos': socia.apellidos || '',
+      'Nombre Negocio': socia.nombreNegocio || '',
+      'Descripción Negocio': socia.descripcionNegocio || '',
+      'Dirección': socia.direccion || '',
+      'Teléfono Personal': socia.telefonoPersonal || '',
+      'Teléfono Negocio': socia.telefonoNegocio || '',
+      'Email': socia.email || '',
+      'CIF': socia.cif || '',
+      'Número Cuenta': socia.numeroCuenta || '',
+      'Epígrafe': socia.epigrafe || '',
+      'Activa': socia.activa ? 'Sí' : 'No',
+      'Fecha Inicio': this.getFechaFormateada(socia.fechaInicio),
+      'Fecha Baja': this.getFechaFormateada(socia.fechaBaja),
+      'Categoría': socia.categoria?.nombre || '',
+      'Observaciones': socia.observaciones || '',
+    }));
+
+    // Crear workbook y worksheet
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(datosParaExcel);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    
+    // Agregar worksheet al workbook
+    XLSX.utils.book_append_sheet(wb, ws, 'Socias');
+    
+    // Generar nombre del archivo con fecha actual
+    const fechaActual = new Date().toLocaleDateString('es-ES').replace(/\//g, '-');
+    const nombreArchivo = `socias_${fechaActual}.xlsx`;
+    
+    // Descargar archivo
+    XLSX.writeFile(wb, nombreArchivo);
+  }
+
+  private getFechaFormateada(fecha: Date | string | null | undefined): string {
+    if (!fecha) return '';
+    
+    try {
+      const fechaObj = typeof fecha === 'string' ? new Date(fecha) : fecha;
+      return fechaObj.toLocaleDateString('es-ES');
+    } catch (error) {
+      return '';
+    }
+  }
+
+
+
 }

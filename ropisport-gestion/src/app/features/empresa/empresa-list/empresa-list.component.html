@@ -1,4 +1,4 @@
-<div class="container">
+<!--<div class="container">
     <div class="main-panel">
       <div class="header">
         <h2>Empresas</h2>
@@ -47,12 +47,10 @@
               </td>
             </tr>
   
-            <!-- Mostrar mensaje si no hay resultados -->
             <tr *ngIf="empresas.length === 0 && !loading">
               <td colspan="7" class="no-results">No se encontraron empresas</td>
             </tr>
   
-            <!-- Loader mientras se cargan los datos -->
             <tr *ngIf="loading">
               <td colspan="7" class="loading-cell">
                 <div class="spinner"></div>
@@ -63,7 +61,6 @@
         </table>
       </div>
   
-      <!-- Paginación -->
       <div class="pagination-container" *ngIf="totalPages > 1">
         <button class="btn-page" [disabled]="currentPage === 0" (click)="onPageChange(currentPage - 1)">
           <i class="fas fa-chevron-left"></i>
@@ -78,7 +75,6 @@
         </button>
       </div>
   
-      <!-- Botones de acción -->
       <div class="footer">
         <button class="btn-primary" (click)="abrirModalNuevo()">
           <i class="fas fa-plus"></i> Crear Empresa
@@ -86,16 +82,13 @@
       </div>
     </div>
   
-    <!-- Alerta de error -->
     <div class="alert alert-danger" *ngIf="error">
       {{ error }}
       <button class="btn-close" (click)="error = ''">×</button>
     </div>
   </div>
   
-  <!-- MODALES -->
   
-  <!-- Modal Nueva Empresa -->
   <div class="modal-overlay" *ngIf="modalActivo === 'nuevo'">
     <div class="modal-container modal-large">
       <div class="modal-header">
@@ -214,7 +207,6 @@
     </div>
   </div>
   
-  <!-- Modal Buscar para Modificar -->
   <div class="modal-overlay" *ngIf="modalActivo === 'buscarModificar'">
     <div class="modal-container">
       <div class="modal-header">
@@ -271,7 +263,6 @@
     </div>
   </div>
   
-  <!-- Modal Buscar para Eliminar -->
   <div class="modal-overlay" *ngIf="modalActivo === 'buscarEliminar'">
     <div class="modal-container">
       <div class="modal-header">
@@ -328,7 +319,6 @@
     </div>
   </div>
   
-  <!-- Modal Editar Empresa -->
   <div class="modal-overlay" *ngIf="modalActivo === 'editar'">
     <div class="modal-container modal-large">
       <div class="modal-header">
@@ -447,7 +437,6 @@
     </div>
   </div>
   
-  <!-- Modal Eliminar Empresa -->
   <div class="modal-overlay" *ngIf="modalActivo === 'eliminar'">
     <div class="modal-container delete-modal">
       <div class="modal-header">
@@ -470,4 +459,4 @@
         </div>
       </div>
     </div>
-  </div>
+  </div>-->

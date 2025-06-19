@@ -34,13 +34,13 @@
         </div>
       </div>
 
-      <div class="metric-card empresas-card" (click)="navigateToEmpresas()">
+      <div class="metric-card empresas-card" (click)="navigateToInstituciones()">
         <div class="metric-icon">
           <i class="fas fa-building"></i>
         </div>
         <div class="metric-content">
-          <h3>{{ metricas.totalEmpresas }}</h3>
-          <p class="card-title">Total Empresas</p>
+          <h3>{{ metricas.totalEmpresas }}</h3><!--CORREGIR ESTO PA Q SALGAN LAS METRICAS DE INSTITUCIONES NO DE EMPRESAS-->
+          <p class="card-title">Total Instituciones</p>
           <div class="metric-detail">
             <span class="detail-tag new-count">+{{ metricas.nuevasEmpresasMes }} este mes</span>
           </div>
@@ -135,9 +135,9 @@
           <i class="fas fa-user-plus"></i>
           <span>Gestionar Socias</span>
         </button>
-        <button class="action-btn" (click)="navigateToEmpresas()">
+        <button class="action-btn" (click)="navigateToInstituciones()">
           <i class="fas fa-building"></i>
-          <span>Gestionar Empresas</span>
+          <span>Gestionar Instituciones</span>
         </button>
         <button class="action-btn" (click)="navigateToPagos()">
           <i class="fas fa-credit-card"></i>

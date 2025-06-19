@@ -4,13 +4,14 @@
       <h2>Socias</h2>
       <div class="action-bar">
         <div class="search-container">
-          <input 
-            type="text" 
-            class="search-input" 
-            placeholder="Busca socia....." 
-            (input)="onSearch($event)">
+          <input type="text" class="search-input" placeholder="Busca socia....." (input)="onSearch($event)">
         </div>
         <div class="header-actions">
+          <!-- Botón excel -->
+          <button class="btn-excel" (click)="exportarExcel()" [disabled]="socias.length === 0"
+            title="Exportar tabla de socias a Excel">
+            <i class="fas fa-file-excel"></i> Descargar Excel
+          </button>
           <button class="btn-edit" (click)="abrirModalBuscarParaModificar()">
             <i class="fas fa-edit"></i> Modificar
           </button>
@@ -20,140 +21,132 @@
         </div>
       </div>
     </div>
-    
-<div class="table-responsive">
-  <table class="table table-bordered table-sm excel-style-table">
-    <thead class="thead-light">
-      <tr>
-        <th>id</th>
-        <th>Estado</th>
-        <th>Nombre</th>
-        <th>Apellidos</th>
-        <th>Fecha de Inicio</th>
-        <th>Fecha de Baja</th>
-        
-        <th>Teléfono</th>
-        <th>Email</th>
-        <th>Negocio</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <ng-container *ngFor="let socia of socias;let i=index">
-        <!-- Fila principal -->
-        <tr>
-          <td>{{ socia.id}}</td>
-  <td>
-    <span [ngClass]="socia.activa ? 'text-success' : 'text-danger'">
-      {{ socia.activa ? 'Activa' : 'Baja' }}
-    </span>
-          </td>
-          <td>{{ socia.nombre }} </td>
-          <td>{{ socia.apellidos }}</td>
-          <td>{{ socia.fechaInicio | date:'dd/MM/yyyy' }}</td>
-          <td>{{(socia.fechaBaja | date:'dd/MM/yyyy') || '-'}}</td>
-          <td>{{ socia.telefonoPersonal || '-' }}</td>
-          <td>{{ socia.email || '-' }}</td>
-          <td>
-            <button class="btn btn-link btn-sm" (click)="socia.expandido = !socia.expandido">
-              {{ socia.expandido ? 'Ocultar' : 'Ver más' }}
-            </button>
-            
-          </td>
-          <td>
-            <button class="btn btn-sm mb-1" 
-                (click)="abrirModalEditar(socia)" 
-                style="background-color: #e0e0e0; border-color: #b7b9c2; color: #000;">
-                <i class="fas fa-edit"></i> Modificar
-            </button>
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm excel-style-table">
+        <thead class="thead-light">
+          <tr>
+            <th>id</th>
+            <th>Estado</th>
+            <th>Nombre</th>
+            <th>Apellidos</th>
+            <th>Fecha de Inicio</th>
+            <th>Fecha de Baja</th>
+
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Negocio</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let socia of socias;let i=index">
+            <!-- Fila principal -->
+            <tr>
+              <td>{{ socia.id}}</td>
+              <td>
+                <span [ngClass]="socia.activa ? 'text-success' : 'text-danger'">
+                  {{ socia.activa ? 'Activa' : 'Baja' }}
+                </span>
+              </td>
+              <td>{{ socia.nombre }} </td>
+              <td>{{ socia.apellidos }}</td>
+              <td>{{ socia.fechaInicio | date:'dd/MM/yyyy' }}</td>
+              <td>{{(socia.fechaBaja | date:'dd/MM/yyyy') || '-'}}</td>
+              <td>{{ socia.telefonoPersonal || '-' }}</td>
+              <td>{{ socia.email || '-' }}</td>
+              <td>
+                <button class="btn btn-link btn-sm" (click)="socia.expandido = !socia.expandido">
+                  {{ socia.expandido ? 'Ocultar' : 'Ver más' }}
+                </button>
+
+              </td>
+              <td>
+                <button class="btn btn-sm mb-1" (click)="abrirModalEditar(socia)"
+                  style="background-color: #e0e0e0; border-color: #b7b9c2; color: #000;">
+                  <i class="fas fa-edit"></i> Modificar
+                </button>
 
 
-          <button class="btn btn-sm mb-1" 
-              (click)="abrirModalEliminar(socia)" 
-              style="background-color: #ebc3c7; border-color: #b7b9c2; color: #000;">
-              <i class="fas fa-trash-alt"></i> Eliminar
-            </button>
-            
-          </td>
-        </tr>
+                <button class="btn btn-sm mb-1" (click)="abrirModalEliminar(socia)"
+                  style="background-color: #ebc3c7; border-color: #b7b9c2; color: #000;">
+                  <i class="fas fa-trash-alt"></i> Eliminar
+                </button>
+
+              </td>
+            </tr>
 
 
-<tr *ngIf="socia.expandido">
-  <td colspan="8" class="p-0">
-    <div class="detalle-animado m-3 p-4 bg-white border rounded shadow-sm animate-expand">
-      <h5 class="text-primary border-bottom pb-2 mb-4">
-        <i class="bi bi-clipboard-check"></i> Detalles del Negocio
-      </h5>
-      <div class="row gy-3">
-        <div class="col-md-6">
-          <i class="bi bi-shop me-2 text-secondary"></i><strong>Nombre:</strong>
-          <div class="text-muted">{{ socia.nombreNegocio || '–' }}</div>
-        </div>
-        <div class="col-md-6">
-          <i class="bi bi-chat-dots me-2 text-secondary"></i><strong>Descripción:</strong>
-          <div class="text-muted">{{ socia.descripcionNegocio || '–' }}</div>
-        </div>
-        <div class="col-md-6">
-          <i class="bi bi-geo-alt me-2 text-secondary"></i><strong>Dirección:</strong>
-          <div class="text-muted">{{ socia.direccion || '–' }}</div>
-        </div>
-        <div class="col-md-6">
-          <i class="bi bi-telephone me-2 text-secondary"></i><strong>Teléfono:</strong>
-          <div class="text-muted">{{ socia.telefonoNegocio || '–' }}</div>
-        </div>
-        <div class="col-md-6">
-          <i class="bi bi-card-text me-2 text-secondary"></i><strong>CIF:</strong>
-          <div class="text-muted">{{ socia.cif || '–' }}</div>
-        </div>
-        <div class="col-md-6">
-          <i class="bi bi-bank me-2 text-secondary"></i><strong>N° Cuenta:</strong>
-          <div class="text-muted">{{ socia.numeroCuenta || '–' }}</div>
-        </div>
-        <div class="col-md-6">
-          <i class="bi bi-file-earmark-text me-2 text-secondary"></i><strong>Epígrafe:</strong>
-          <div class="text-muted">{{ socia.epigrafe || '–' }}</div>
-        </div>
-        <div class="col-md-6">
-          <i class="bi bi-journal-text me-2 text-secondary"></i><strong>Observaciones:</strong>
-          <div class="text-muted">{{ socia.observaciones || '–' }}</div>
-        </div>
-      </div>
+            <tr *ngIf="socia.expandido">
+              <td colspan="8" class="p-0">
+                <div class="detalle-animado m-3 p-4 bg-white border rounded shadow-sm animate-expand">
+                  <h5 class="text-primary border-bottom pb-2 mb-4">
+                    <i class="bi bi-clipboard-check"></i> Detalles del Negocio
+                  </h5>
+                  <div class="row gy-3">
+                    <div class="col-md-6">
+                      <i class="bi bi-shop me-2 text-secondary"></i><strong>Nombre:</strong>
+                      <div class="text-muted">{{ socia.nombreNegocio || '–' }}</div>
+                    </div>
+                    <div class="col-md-6">
+                      <i class="bi bi-chat-dots me-2 text-secondary"></i><strong>Descripción:</strong>
+                      <div class="text-muted">{{ socia.descripcionNegocio || '–' }}</div>
+                    </div>
+                    <div class="col-md-6">
+                      <i class="bi bi-geo-alt me-2 text-secondary"></i><strong>Dirección:</strong>
+                      <div class="text-muted">{{ socia.direccion || '–' }}</div>
+                    </div>
+                    <div class="col-md-6">
+                      <i class="bi bi-telephone me-2 text-secondary"></i><strong>Teléfono:</strong>
+                      <div class="text-muted">{{ socia.telefonoNegocio || '–' }}</div>
+                    </div>
+                    <div class="col-md-6">
+                      <i class="bi bi-card-text me-2 text-secondary"></i><strong>CIF:</strong>
+                      <div class="text-muted">{{ socia.cif || '–' }}</div>
+                    </div>
+                    <div class="col-md-6">
+                      <i class="bi bi-bank me-2 text-secondary"></i><strong>N° Cuenta:</strong>
+                      <div class="text-muted">{{ socia.numeroCuenta || '–' }}</div>
+                    </div>
+                    <div class="col-md-6">
+                      <i class="bi bi-file-earmark-text me-2 text-secondary"></i><strong>Epígrafe:</strong>
+                      <div class="text-muted">{{ socia.epigrafe || '–' }}</div>
+                    </div>
+                    <div class="col-md-6">
+                      <i class="bi bi-journal-text me-2 text-secondary"></i><strong>Observaciones:</strong>
+                      <div class="text-muted">{{ socia.observaciones || '–' }}</div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+
+
+
+
+
+
+          </ng-container>
+        </tbody>
+      </table>
     </div>
-  </td>
-</tr>
 
 
-
-
-
-
-      </ng-container>
-    </tbody>
-  </table>
-</div>
-
-    
     <!-- Paginación -->
     <div class="pagination-container" *ngIf="totalPages > 1">
-      <button 
-        class="btn-page" 
-        [disabled]="currentPage === 0"
-        (click)="onPageChange(currentPage - 1)">
+      <button class="btn-page" [disabled]="currentPage === 0" (click)="onPageChange(currentPage - 1)">
         <i class="fas fa-chevron-left"></i>
       </button>
-      
+
       <span class="page-info">
         Página {{ currentPage + 1 }} de {{ totalPages }}
       </span>
-      
-      <button 
-        class="btn-page" 
-        [disabled]="currentPage === totalPages - 1"
-        (click)="onPageChange(currentPage + 1)">
+
+      <button class="btn-page" [disabled]="currentPage === totalPages - 1" (click)="onPageChange(currentPage + 1)">
         <i class="fas fa-chevron-right"></i>
       </button>
     </div>
-    
+
     <!-- Botones de acción -->
     <div class="footer">
       <button class="btn-primary" (click)="abrirModalNueva()">
@@ -161,7 +154,7 @@
       </button>
     </div>
   </div>
-  
+
   <!-- Alerta de error -->
   <div class="alert alert-danger" *ngIf="error">
     {{ error }}
@@ -193,18 +186,21 @@
 
           <div class="form-group">
             <label for="apellidos">Apellidos *</label>
-            <input type="text" id="apellidos" name="apellidos" [(ngModel)]="sociaActual.apellidos" required class="form-control">
+            <input type="text" id="apellidos" name="apellidos" [(ngModel)]="sociaActual.apellidos" required
+              class="form-control">
           </div>
 
           <div class="form-group">
             <label for="fechaInicio">Fecha de alta</label>
-            <input type="date" id="fechaInicio" name="fechaInicio" [(ngModel)]="sociaActual.fechaInicio" required class="form-control">
+            <input type="date" id="fechaInicio" name="fechaInicio" [(ngModel)]="sociaActual.fechaInicio" required
+              class="form-control">
           </div>
-            
+
 
           <div class="form-group">
             <label for="telefonoPersonal">Teléfono</label>
-            <input type="tel" id="telefonoPersonal" name="telefonoPersonal" [(ngModel)]="sociaActual.telefonoPersonal" class="form-control">
+            <input type="tel" id="telefonoPersonal" name="telefonoPersonal" [(ngModel)]="sociaActual.telefonoPersonal"
+              class="form-control">
           </div>
 
           <div class="form-group">
@@ -218,7 +214,7 @@
             <label for="activa">Activa</label>
           </div>
 
-          
+
         </fieldset>
 
         <!-- Información del Negocio -->
@@ -227,12 +223,14 @@
 
           <div class="form-group">
             <label for="nombreNegocio">Nombre del Negocio *</label>
-            <input type="text" id="nombreNegocio" name="nombreNegocio" [(ngModel)]="sociaActual.nombreNegocio" required class="form-control">
+            <input type="text" id="nombreNegocio" name="nombreNegocio" [(ngModel)]="sociaActual.nombreNegocio" required
+              class="form-control">
           </div>
 
           <div class="form-group">
             <label for="descripcionNegocio">Descripción</label>
-            <textarea id="descripcionNegocio" name="descripcionNegocio" [(ngModel)]="sociaActual.descripcionNegocio" class="form-control"></textarea>
+            <textarea id="descripcionNegocio" name="descripcionNegocio" [(ngModel)]="sociaActual.descripcionNegocio"
+              class="form-control"></textarea>
           </div>
 
           <div class="form-group">
@@ -242,7 +240,8 @@
 
           <div class="form-group">
             <label for="telefonoNegocio">Teléfono del Negocio</label>
-            <input type="tel" id="telefonoNegocio" name="telefonoNegocio" [(ngModel)]="sociaActual.telefonoNegocio" class="form-control">
+            <input type="tel" id="telefonoNegocio" name="telefonoNegocio" [(ngModel)]="sociaActual.telefonoNegocio"
+              class="form-control">
           </div>
 
           <div class="form-group">
@@ -252,7 +251,8 @@
 
           <div class="form-group">
             <label for="numeroCuenta">Número de Cuenta</label>
-            <input type="text" id="numeroCuenta" name="numeroCuenta" [(ngModel)]="sociaActual.numeroCuenta" class="form-control">
+            <input type="text" id="numeroCuenta" name="numeroCuenta" [(ngModel)]="sociaActual.numeroCuenta"
+              class="form-control">
           </div>
 
           <div class="form-group">
@@ -262,7 +262,8 @@
 
           <div class="form-group">
             <label for="observaciones">Observaciones</label>
-            <textarea id="observaciones" name="observaciones" [(ngModel)]="sociaActual.observaciones" class="form-control"></textarea>
+            <textarea id="observaciones" name="observaciones" [(ngModel)]="sociaActual.observaciones"
+              class="form-control"></textarea>
           </div>
         </fieldset>
 
@@ -291,21 +292,16 @@
     <div class="modal-body">
       <div class="form-group">
         <label for="buscarSocia">Ingrese nombre, apellido o número de socia</label>
-        <input 
-          type="text" 
-          id="buscarSocia" 
-          class="form-control" 
-          [(ngModel)]="terminoBusqueda" 
-          (input)="buscarSocias()"
+        <input type="text" id="buscarSocia" class="form-control" [(ngModel)]="terminoBusqueda" (input)="buscarSocias()"
           placeholder="Buscar...">
       </div>
-      
+
       <div class="results-container">
         <div class="loading-indicator" *ngIf="buscando">
           <div class="spinner"></div>
           <span>Buscando...</span>
         </div>
-        
+
         <table class="table results-table" *ngIf="resultadosBusqueda.length > 0">
           <thead>
             <tr>
@@ -329,12 +325,12 @@
             </tr>
           </tbody>
         </table>
-        
+
         <div class="no-results-message" *ngIf="resultadosBusqueda.length === 0 && terminoBusqueda && !buscando">
           No se encontraron socias con ese criterio de búsqueda
         </div>
       </div>
-      
+
       <div class="modal-footer">
         <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
       </div>
@@ -352,21 +348,16 @@
     <div class="modal-body">
       <div class="form-group">
         <label for="buscarSociaEliminar">Ingrese nombre, apellido o número de socia</label>
-        <input 
-          type="text" 
-          id="buscarSociaEliminar" 
-          class="form-control" 
-          [(ngModel)]="terminoBusqueda" 
-          (input)="buscarSocias()"
-          placeholder="Buscar...">
+        <input type="text" id="buscarSociaEliminar" class="form-control" [(ngModel)]="terminoBusqueda"
+          (input)="buscarSocias()" placeholder="Buscar...">
       </div>
-      
+
       <div class="results-container">
         <div class="loading-indicator" *ngIf="buscando">
           <div class="spinner"></div>
           <span>Buscando...</span>
         </div>
-        
+
         <table class="table results-table" *ngIf="resultadosBusqueda.length > 0">
           <thead>
             <tr>
@@ -381,7 +372,7 @@
               <td>{{ socia.nombre }}</td>
               <td>{{ socia.apellidos }}</td>
               <td>{{ socia.nombreNegocio }}</td>
-              
+
               <td>
                 <button class="btn-delete" (click)="seleccionarSociaParaEliminar(socia)">
                   <i class="fas fa-trash"></i> Eliminar
@@ -390,12 +381,12 @@
             </tr>
           </tbody>
         </table>
-        
+
         <div class="no-results-message" *ngIf="resultadosBusqueda.length === 0 && terminoBusqueda && !buscando">
           No se encontraron socias con ese criterio de búsqueda
         </div>
       </div>
-      
+
       <div class="modal-footer">
         <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
       </div>
@@ -417,19 +408,23 @@
 
         <div class="form-group">
           <label for="edit_numeroSocia">Número de Socia</label>
-          <input type="text" id="edit_numeroSocia" name="numeroSocia" [(ngModel)]="sociaActual.numeroSocia" class="form-control" [disabled]="guardando">
+          <input type="text" id="edit_numeroSocia" name="numeroSocia" [(ngModel)]="sociaActual.numeroSocia"
+            class="form-control" [disabled]="guardando">
         </div>
 
         <div class="form-group">
           <label for="edit_nombre">Nombre *</label>
-          <input type="text" id="edit_nombre" name="nombre" [(ngModel)]="sociaActual.nombre" required class="form-control" #nombre="ngModel" [disabled]="guardando">
+          <input type="text" id="edit_nombre" name="nombre" [(ngModel)]="sociaActual.nombre" required
+            class="form-control" #nombre="ngModel" [disabled]="guardando">
           <div *ngIf="nombre.invalid && nombre.touched" class="error-message">El nombre es obligatorio.</div>
         </div>
 
         <div class="form-group">
           <label for="edit_apellidos">Apellidos *</label>
-          <input type="text" id="edit_apellidos" name="apellidos" [(ngModel)]="sociaActual.apellidos" required class="form-control" #apellidos="ngModel" [disabled]="guardando">
-          <div *ngIf="apellidos.invalid && apellidos.touched" class="error-message">Los apellidos son obligatorios.</div>
+          <input type="text" id="edit_apellidos" name="apellidos" [(ngModel)]="sociaActual.apellidos" required
+            class="form-control" #apellidos="ngModel" [disabled]="guardando">
+          <div *ngIf="apellidos.invalid && apellidos.touched" class="error-message">Los apellidos son obligatorios.
+          </div>
         </div>
 
         <div class="form-group">
@@ -446,27 +441,32 @@
 
         <div class="form-group">
           <label for="edit_nombreNegocio">Nombre del Negocio *</label>
-          <input type="text" id="edit_nombreNegocio" name="nombreNegocio" [(ngModel)]="sociaActual.nombreNegocio" required class="form-control">
+          <input type="text" id="edit_nombreNegocio" name="nombreNegocio" [(ngModel)]="sociaActual.nombreNegocio"
+            required class="form-control">
         </div>
 
         <div class="form-group">
           <label for="edit_descripcionNegocio">Descripción</label>
-          <textarea id="edit_descripcionNegocio" name="descripcionNegocio" [(ngModel)]="sociaActual.descripcionNegocio" class="form-control"></textarea>
+          <textarea id="edit_descripcionNegocio" name="descripcionNegocio" [(ngModel)]="sociaActual.descripcionNegocio"
+            class="form-control"></textarea>
         </div>
 
         <div class="form-group">
           <label for="edit_direccion">Dirección</label>
-          <input type="text" id="edit_direccion" name="direccion" [(ngModel)]="sociaActual.direccion" class="form-control">
+          <input type="text" id="edit_direccion" name="direccion" [(ngModel)]="sociaActual.direccion"
+            class="form-control">
         </div>
 
         <div class="form-group">
           <label for="edit_telefonoPersonal">Teléfono Personal</label>
-          <input type="tel" id="edit_telefonoPersonal" name="telefonoPersonal" [(ngModel)]="sociaActual.telefonoPersonal" class="form-control">
+          <input type="tel" id="edit_telefonoPersonal" name="telefonoPersonal"
+            [(ngModel)]="sociaActual.telefonoPersonal" class="form-control">
         </div>
 
         <div class="form-group">
           <label for="edit_telefonoNegocio">Teléfono del Negocio</label>
-          <input type="tel" id="edit_telefonoNegocio" name="telefonoNegocio" [(ngModel)]="sociaActual.telefonoNegocio" class="form-control">
+          <input type="tel" id="edit_telefonoNegocio" name="telefonoNegocio" [(ngModel)]="sociaActual.telefonoNegocio"
+            class="form-control">
         </div>
 
         <div class="form-group">
@@ -481,7 +481,8 @@
 
         <div class="form-group">
           <label for="edit_numeroCuenta">Número de Cuenta</label>
-          <input type="text" id="edit_numeroCuenta" name="numeroCuenta" [(ngModel)]="sociaActual.numeroCuenta" class="form-control">
+          <input type="text" id="edit_numeroCuenta" name="numeroCuenta" [(ngModel)]="sociaActual.numeroCuenta"
+            class="form-control">
         </div>
 
         <div class="form-group">
@@ -491,7 +492,8 @@
 
         <div class="form-group">
           <label for="edit_observaciones">Observaciones</label>
-          <textarea id="edit_observaciones" name="observaciones" [(ngModel)]="sociaActual.observaciones" class="form-control"></textarea>
+          <textarea id="edit_observaciones" name="observaciones" [(ngModel)]="sociaActual.observaciones"
+            class="form-control"></textarea>
         </div>
 
         <div class="form-group-checkbox">
@@ -521,10 +523,11 @@
     </div>
     <div class="modal-body">
       <p class="confirm-message">
-        ¿Está seguro de que desea eliminar la socia <strong>{{ sociaActual.nombre }} {{ sociaActual.apellidos }}</strong>?
+        ¿Está seguro de que desea eliminar la socia <strong>{{ sociaActual.nombre }} {{ sociaActual.apellidos
+          }}</strong>?
       </p>
       <p class="warning-message">Esta acción no se puede deshacer.</p>
-      
+
       <div class="modal-footer">
         <button type="button" class="btn-secondary" (click)="cerrarModal()">Cancelar</button>
         <button type="button" class="btn-danger" (click)="confirmarEliminar()" [disabled]="guardando">

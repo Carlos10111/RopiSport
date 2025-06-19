@@ -93,8 +93,11 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/admin/socias']);
   }
 
-  navigateToEmpresas(): void {
+  /*navigateToEmpresas(): void {
     this.router.navigate(['/admin/empresa']); 
+  }*/
+  navigateToInstituciones(): void {
+    this.router.navigate(['/admin/instituciones']); 
   }
 
   navigateToPagos(): void {

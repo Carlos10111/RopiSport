@@ -13,6 +13,7 @@ import { PagoDetalleDTO } from '../../../core/dtos/pago-detalle-dto';
 import { PaginatedResponse } from '../../../core/models/paginated-response';
 import { Socia } from '../../../core/models/socia';
 import { MetodoPago } from '../../../core/enums/metodo-pago';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-pago-list',
@@ -145,15 +146,43 @@ export class PagoListComponent implements OnInit, OnDestroy {
     };
   }
 
-  /**
-   * Convierte LocalDateTime del backend a Date
-   */
+  //Exportar tabla a Excel
+  exportarExcel(): void {
+    if (this.pagos.length === 0) {
+      alert('No hay datos para exportar');
+      return;
+    }
+
+    // Preparar los datos para Excel
+    const datosParaExcel = this.pagos.map(pago => ({
+      'Socia': pago.nombreSocia || '',
+      'Monto': pago.monto || 0,
+      'Fecha Pago': this.getFechaFormateada(pago.fechaPago),
+      'Concepto': pago.concepto || '-',
+      'Método Pago': this.formatearMetodoPago(pago.metodoPago.toString()),
+      'Estado': pago.confirmado ? 'Confirmado' : 'Pendiente',
+      'Número de Detalles': pago.detalles ? pago.detalles.length : 0
+    }));
+
+    // Crear workbook y worksheet
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet(datosParaExcel);
+    const wb: XLSX.WorkBook = XLSX.utils.book_new();
+    // Agregar worksheet al workbook
+    XLSX.utils.book_append_sheet(wb, ws, 'Pagos');
+    // Generar nombre del archivo con fecha actual
+    const fechaActual = new Date().toLocaleDateString('es-ES').replace(/\//g, '-');
+    const nombreArchivo = `pagos_${fechaActual}.xlsx`;
+    // Descargar archivo
+    XLSX.writeFile(wb, nombreArchivo);
+  }
+
+  
+   //Convierte LocalDateTime del backend a Date
   private parseLocalDateTime(dateValue: any): Date {
     if (!dateValue) return new Date();
     
     // Si ya es una fecha válida
     if (dateValue instanceof Date) return dateValue;
-    
     // Si es string ISO
     if (typeof dateValue === 'string' && (dateValue.includes('T') || dateValue.includes('-'))) {
       return new Date(dateValue);
@@ -189,9 +218,8 @@ export class PagoListComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Convierte Date a formato compatible con input datetime-local
-   */
+  
+    //Convierte Date a formato compatible con input datetime-local
   private formatDateForInput(date: Date): string {
     if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
       return new Date().toISOString().slice(0, 16);
@@ -199,9 +227,7 @@ export class PagoListComponent implements OnInit, OnDestroy {
     return date.toISOString().slice(0, 16);
   }
 
-  /**
-   * Convierte Date a formato LocalDateTime para el backend
-   */
+   // Convierte Date a formato LocalDateTime para el backend
   private formatDateForBackend(date: Date | string): string {
     let parsedDate: Date;
     
@@ -221,9 +247,8 @@ export class PagoListComponent implements OnInit, OnDestroy {
     return parsedDate.toISOString().slice(0, 19);
   }
   
-  /**
-   * Procesa los pagos convirtiendo las fechas del backend
-   */
+  
+   // Procesa los pagos convirtiendo las fechas del backend
   private procesarPagos(pagos: any[]): Pago[] {
     return pagos.map(pago => ({
       ...pago,
